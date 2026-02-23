@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 export default function Admin() {
   const { identity, loginStatus } = useInternetIdentity();
   const { actor, isFetching: actorFetching } = useActor();
-  const { data: isAdmin, isLoading: isAdminLoading, isError: isAdminError, error: adminError, isFetched } = useIsCallerAdmin();
+  const { data: isAdmin, isLoading: isAdminLoading, isError: isAdminError, error: adminError, isFetched, fetchStatus } = useIsCallerAdmin();
   const { data: products, isLoading: productsLoading } = useGetAllProducts();
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -22,37 +22,71 @@ export default function Admin() {
 
   // Comprehensive debug logging
   useEffect(() => {
-    console.log('=== Admin Page State Debug ===');
+    console.log('╔════════════════════════════════════════════════════════════╗');
+    console.log('║           ADMIN PAGE STATE DEBUG                          ║');
+    console.log('╚════════════════════════════════════════════════════════════╝');
     console.log('Timestamp:', new Date().toISOString());
-    console.log('Identity:', identity ? 'Present' : 'None');
+    console.log('');
+    console.log('🔐 AUTHENTICATION STATE:');
+    console.log('  Identity:', identity ? '✅ Present' : '❌ None');
     if (identity) {
-      console.log('Identity Principal:', identity.getPrincipal().toString());
+      console.log('  Principal:', identity.getPrincipal().toString());
     }
-    console.log('Login Status:', loginStatus);
-    console.log('Actor:', actor ? 'Present' : 'None');
-    console.log('Actor Fetching:', actorFetching);
-    console.log('---');
-    console.log('isAdmin value:', isAdmin);
-    console.log('isAdmin type:', typeof isAdmin);
-    console.log('Is Admin Loading:', isAdminLoading);
-    console.log('Is Admin Fetched:', isFetched);
-    console.log('Is Admin Error:', isAdminError);
+    console.log('  Login Status:', loginStatus);
+    console.log('');
+    console.log('🎭 ACTOR STATE:');
+    console.log('  Actor:', actor ? '✅ Present' : '❌ None');
+    console.log('  Actor Fetching:', actorFetching);
+    if (actor) {
+      console.log('  Actor has isCallerAdmin:', typeof actor.isCallerAdmin === 'function' ? '✅ Yes' : '❌ No');
+    }
+    console.log('');
+    console.log('👑 ADMIN CHECK STATE:');
+    console.log('  isAdmin value:', isAdmin);
+    console.log('  isAdmin type:', typeof isAdmin);
+    console.log('  isAdmin === true:', isAdmin === true);
+    console.log('  isAdmin === false:', isAdmin === false);
+    console.log('  Is Loading:', isAdminLoading);
+    console.log('  Is Fetched:', isFetched);
+    console.log('  Fetch Status:', fetchStatus);
+    console.log('  Is Error:', isAdminError);
     if (adminError) {
-      console.log('Admin Error Details:', adminError);
-      console.log('Admin Error Message:', (adminError as any)?.message);
+      console.log('  Error Details:', adminError);
+      console.log('  Error Message:', (adminError as any)?.message);
+      console.log('  Error Name:', (adminError as any)?.name);
     }
-    console.log('---');
-    console.log('Decision tree:');
-    console.log('  - Has identity?', !!identity);
-    console.log('  - Is loading?', isAdminLoading || actorFetching);
-    console.log('  - Has error?', isAdminError);
-    console.log('  - Is admin?', isAdmin);
-    console.log('  - Should show access denied?', isFetched && !isAdminLoading && !actorFetching && !isAdmin);
-    console.log('==============================');
-  }, [identity, loginStatus, actor, actorFetching, isAdmin, isAdminLoading, isAdminError, adminError, isFetched]);
+    console.log('');
+    console.log('🎯 DECISION TREE:');
+    console.log('  1. Has identity?', !!identity ? '✅' : '❌');
+    console.log('  2. Is loading?', (isAdminLoading || actorFetching) ? '⏳ Yes' : '✅ No');
+    console.log('  3. Has error?', isAdminError ? '❌ Yes' : '✅ No');
+    console.log('  4. Is fetched?', isFetched ? '✅ Yes' : '⏳ No');
+    console.log('  5. Is admin?', isAdmin === true ? '✅ Yes' : isAdmin === false ? '❌ No' : '❓ Unknown');
+    console.log('');
+    console.log('📊 RENDER DECISION:');
+    const willShowAccessDenied = isFetched && !isAdminLoading && !actorFetching && isAdmin === false;
+    const willShowLoading = isAdminLoading || actorFetching || !isFetched;
+    const willShowError = isAdminError;
+    const willShowDashboard = isFetched && !isAdminLoading && !actorFetching && isAdmin === true;
+    console.log('  Show Access Denied?', willShowAccessDenied ? '✅ YES' : '❌ No');
+    console.log('  Show Loading?', willShowLoading ? '✅ YES' : '❌ No');
+    console.log('  Show Error?', willShowError ? '✅ YES' : '❌ No');
+    console.log('  Show Dashboard?', willShowDashboard ? '✅ YES' : '❌ No');
+    console.log('════════════════════════════════════════════════════════════');
+  }, [identity, loginStatus, actor, actorFetching, isAdmin, isAdminLoading, isAdminError, adminError, isFetched, fetchStatus]);
+
+  // Log when isAdmin value changes
+  useEffect(() => {
+    console.log('🔄 isAdmin value changed to:', isAdmin, '(type:', typeof isAdmin, ')');
+  }, [isAdmin]);
+
+  // Log when isFetched changes
+  useEffect(() => {
+    console.log('🔄 isFetched changed to:', isFetched);
+  }, [isFetched]);
 
   if (!identity) {
-    console.log('Rendering: Login prompt (no identity)');
+    console.log('🖼️ RENDERING: Login prompt (no identity)');
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto text-center">
@@ -73,7 +107,7 @@ export default function Admin() {
   }
 
   if (isAdminLoading || actorFetching) {
-    console.log('Rendering: Loading state');
+    console.log('🖼️ RENDERING: Loading state (isAdminLoading:', isAdminLoading, ', actorFetching:', actorFetching, ')');
     return (
       <div className="container mx-auto px-4 py-12 flex justify-center items-center min-h-[400px]">
         <div className="text-center">
@@ -85,7 +119,7 @@ export default function Admin() {
   }
 
   if (isAdminError) {
-    console.log('Rendering: Admin check error');
+    console.log('🖼️ RENDERING: Admin check error');
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
@@ -124,13 +158,13 @@ export default function Admin() {
 
   // Only show access denied if we've actually fetched the admin status and it's false
   if (isFetched && isAdmin === false) {
-    console.log('Rendering: Access denied (not admin, query completed)');
+    console.log('🖼️ RENDERING: Access denied (isAdmin is explicitly false, query completed)');
     return <AccessDeniedScreen />;
   }
 
   // If we haven't fetched yet, show loading
   if (!isFetched) {
-    console.log('Rendering: Loading (not fetched yet)');
+    console.log('🖼️ RENDERING: Loading (not fetched yet, isFetched:', isFetched, ')');
     return (
       <div className="container mx-auto px-4 py-12 flex justify-center items-center min-h-[400px]">
         <div className="text-center">
@@ -141,7 +175,7 @@ export default function Admin() {
     );
   }
 
-  console.log('Rendering: Admin dashboard');
+  console.log('🖼️ RENDERING: Admin dashboard (isAdmin:', isAdmin, ')');
 
   const handleDelete = async (productId: bigint, productName: string) => {
     if (confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {

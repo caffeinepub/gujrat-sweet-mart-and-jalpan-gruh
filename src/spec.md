@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the admin authorization logic to allow authenticated users to access the admin panel.
+**Goal:** Fix admin authorization to resolve the "admin access required" error and allow authenticated users to access the admin panel.
 
 **Planned changes:**
-- Debug and correct the admin authorization logic in the Admin page component to resolve the 'Access Denied' error
-- Review and fix the backend isAdmin implementation to correctly identify admin users based on caller principal
-- Add comprehensive error logging in the useAuth hook to capture errors from the admin check query
+- Debug and fix the `isCallerAdmin` method in the backend to correctly identify admin users
+- Add detailed logging in the backend to output caller principal and admin check results
+- Verify the `useAuth` hook correctly receives and displays admin status from the backend
+- Add console logging in the Admin page component to display authentication state and isAdmin result for debugging
 
-**User-visible outcome:** Authenticated admin users can successfully access and use the admin panel without encountering 'Access Denied' errors.
+**User-visible outcome:** Authenticated users can successfully access the Admin page and manage products without seeing the "Access Denied" error.

@@ -1,52 +1,54 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T13:35:32.772Z",
+  "generatedAt": "2026-02-23T13:41:05.009Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
+    "total": 4,
     "implemented": 2,
     "items": [
       {
-        "id": "REQ-15",
-        "summary": "Debug and fix the admin authorization logic in the Admin page component (frontend/src/pages/Admin.tsx) to resolve the 'Access Denied' error that prevents authenticated users from accessing the admin panel",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Admin.tsx",
-          "frontend/src/hooks/useAuth.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Admin.tsx",
-          "frontend/src/hooks/useAuth.ts"
-        ]
-      },
-      {
-        "id": "REQ-16",
-        "summary": "Review and fix the backend isAdmin implementation in backend/main.mo to ensure it correctly identifies admin users based on caller principal",
+        "id": "REQ-18",
+        "summary": "Debug and fix the backend isCallerAdmin method in backend/main.mo to correctly identify admin users based on their caller principal, ensuring authenticated users are granted admin access",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-17",
-        "summary": "Add comprehensive error logging in the useAuth hook (frontend/src/hooks/useAuth.ts) to capture and display any errors from the admin check query",
+        "id": "REQ-19",
+        "summary": "Add detailed logging in the backend isCallerAdmin method to output the caller principal and the admin check result for debugging purposes",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-20",
+        "summary": "Verify that the useAuth hook in frontend/src/hooks/useAuth.ts correctly receives and displays the admin status from the backend isCallerAdmin query",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useAuth.ts",
+          "frontend/src/hooks/useAuth.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useAuth.ts"
+        ]
+      },
+      {
+        "id": "REQ-21",
+        "summary": "Add console logging in the Admin page component (frontend/src/pages/Admin.tsx) to display the authentication state, isAdmin result, and actor availability for debugging the access denied issue",
+        "status": "implemented",
+        "plannedFiles": [
           "frontend/src/pages/Admin.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useAuth.ts",
           "frontend/src/pages/Admin.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",

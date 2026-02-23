@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 9,
+  "projectStateVersion": 11,
   "summary": "Website for an Indian sweets, snacks and namkeen shop with Indian theme and editable product database",
   "architectural_notes": [],
   "known_issues": [
     "Admin panel feature was not actually implemented in the previous build despite being in the feature list",
-    "Admin page displays 'Access Denied' message instead of the admin panel - authentication or authorization logic is blocking access"
+    "Admin page still displays 'Admin access required' message after authentication fix attempt in Version 4"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -128,6 +128,22 @@
         "REQ-17"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-verify-that-the-useauth-hook-in-frontend-src-hooks-useauth-ts-correctly-receives-and-displays-the-admin-status-from-the-backend-iscalleradmin-query",
+      "title": "Verify that the useAuth hook in frontend/src/hooks/useAuth.ts correctly receives and displays the admin status from the backend isCallerAdmin query",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-console-logging-in-the-admin-page-component-frontend-src-pages-admin-tsx-to-display-the-authentication-state-isadmin-result-and-actor-availability-for-debugging-the-access-denied-issue",
+      "title": "Add console logging in the Admin page component (frontend/src/pages/Admin.tsx) to display the authentication state, isAdmin result, and actor availability for debugging the access denied issue",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -150,6 +166,22 @@
       "summary": "Review and fix the backend isAdmin implementation in backend/main.mo to ensure it correctly identifies admin users based on caller principal",
       "reqIds": [
         "REQ-16"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Debug and fix the backend isCallerAdmin method in backend/main.mo to correctly identify admin users based on their caller principal, ensuring authenticated users are granted admin access",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add detailed logging in the backend isCallerAdmin method to output the caller principal and the admin check result for debugging purposes",
+      "reqIds": [
+        "REQ-19"
       ],
       "status": "pending"
     }

@@ -1,67 +1,83 @@
 {
   "kind": "build_request",
-  "title": "Fix admin access denied error by correcting authorization logic",
+  "title": "Fix admin access authorization to resolve 'admin access required' error",
   "projectName": "Gujrat Sweet Mart",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-15",
-      "text": "Debug and fix the admin authorization logic in the Admin page component (frontend/src/pages/Admin.tsx) to resolve the 'Access Denied' error that prevents authenticated users from accessing the admin panel",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "it is saying that admin access denied"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The Admin page renders the product management interface without showing 'Access Denied'",
-        "Console logs show successful authentication and admin check results",
-        "The useAuth hook correctly identifies admin status"
-      ]
-    },
-    {
-      "id": "REQ-16",
-      "text": "Review and fix the backend isAdmin implementation in backend/main.mo to ensure it correctly identifies admin users based on caller principal",
+      "id": "REQ-18",
+      "text": "Debug and fix the backend isCallerAdmin method in backend/main.mo to correctly identify admin users based on their caller principal, ensuring authenticated users are granted admin access",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-user-latest"
+        ],
+        "quotes": [
+          "it is saying admin acess is required?"
         ]
       },
       "acceptanceCriteria": [
-        "The isAdmin method returns true for authorized admin principals",
-        "The method does not reject valid authenticated users",
-        "Admin status check works correctly with Internet Identity authentication"
+        "The isCallerAdmin method returns true for authenticated users who should have admin access",
+        "The Admin page displays the product management interface instead of the 'Access Denied' screen",
+        "Admin users can successfully access all CRUD operations for products"
       ]
     },
     {
-      "id": "REQ-17",
-      "text": "Add comprehensive error logging in the useAuth hook (frontend/src/hooks/useAuth.ts) to capture and display any errors from the admin check query",
-      "target": "frontend",
+      "id": "REQ-19",
+      "text": "Add detailed logging in the backend isCallerAdmin method to output the caller principal and the admin check result for debugging purposes",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-user-latest"
         ]
       },
       "acceptanceCriteria": [
-        "Console logs show the exact error or response from the isAdmin backend call",
-        "The hook logs the caller principal being checked",
-        "Error states are properly handled and displayed"
+        "Console logs show the caller principal when isCallerAdmin is invoked",
+        "Console logs show the boolean result of the admin check",
+        "Logs are visible during development for troubleshooting"
+      ]
+    },
+    {
+      "id": "REQ-20",
+      "text": "Verify that the useAuth hook in frontend/src/hooks/useAuth.ts correctly receives and displays the admin status from the backend isCallerAdmin query",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-latest"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The useAuth hook successfully calls the backend isCallerAdmin method",
+        "The hook returns the correct admin status to consuming components",
+        "Error states are properly handled and logged"
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "text": "Add console logging in the Admin page component (frontend/src/pages/Admin.tsx) to display the authentication state, isAdmin result, and actor availability for debugging the access denied issue",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-latest"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Console logs show whether the user is authenticated",
+        "Console logs display the isAdmin boolean value",
+        "Console logs confirm actor availability",
+        "Logs help identify where the authorization flow is failing"
       ]
     }
   ],
   "constraints": [
-    "Preserve the existing Internet Identity authentication flow",
-    "Do not modify the ProfileSetup modal functionality",
-    "Keep the AccessDeniedScreen component for legitimate access denial cases"
+    "Do not modify the Internet Identity authentication flow in useInternetIdentity.ts",
+    "Preserve the existing single-actor architecture in backend/main.mo",
+    "Do not change the UI component structure in frontend/src/components/ui"
   ],
   "nonGoals": [
-    "Adding new admin features beyond fixing access",
-    "Changing the product management interface design",
-    "Modifying the authentication provider setup"
+    "Adding new authentication methods beyond Internet Identity",
+    "Implementing role-based access control for multiple admin levels",
+    "Creating a separate admin user management interface"
   ],
   "imageRequirements": {
     "required": [],

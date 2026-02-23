@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-debug-and-fix-the-admin-authorization-logic-in-the-admin-page-component-frontend-src-pages-admin-tsx-to-resolve-the-access-denied-error-that-prevents-authenticated-users-from-accessing-the-admin-panel",
-      "featureTitle": "Debug and fix the admin authorization logic in the Admin page component (frontend/src/pages/Admin.tsx) to resolve the 'Access Denied' error that prevents authenticated users from accessing the admin panel",
+      "featureId": "feature-verify-that-the-useauth-hook-in-frontend-src-hooks-useauth-ts-correctly-receives-and-displays-the-admin-status-from-the-backend-iscalleradmin-query",
+      "featureTitle": "Verify that the useAuth hook in frontend/src/hooks/useAuth.ts correctly receives and displays the admin status from the backend isCallerAdmin query",
       "files": [
-        "frontend/src/hooks/useAuth.ts",
-        "frontend/src/pages/Admin.tsx"
+        "frontend/src/hooks/useAuth.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -17,15 +16,14 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-15"
+        "REQ-20"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-comprehensive-error-logging-in-the-useauth-hook-frontend-src-hooks-useauth-ts-to-capture-and-display-any-errors-from-the-admin-check-query",
-      "featureTitle": "Add comprehensive error logging in the useAuth hook (frontend/src/hooks/useAuth.ts) to capture and display any errors from the admin check query",
+      "featureId": "feature-add-console-logging-in-the-admin-page-component-frontend-src-pages-admin-tsx-to-display-the-authentication-state-isadmin-result-and-actor-availability-for-debugging-the-access-denied-issue",
+      "featureTitle": "Add console logging in the Admin page component (frontend/src/pages/Admin.tsx) to display the authentication state, isAdmin result, and actor availability for debugging the access denied issue",
       "files": [
-        "frontend/src/hooks/useAuth.ts",
         "frontend/src/pages/Admin.tsx"
       ],
       "components": [
@@ -37,7 +35,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-17"
+        "REQ-21"
       ],
       "confidence": "high"
     }
