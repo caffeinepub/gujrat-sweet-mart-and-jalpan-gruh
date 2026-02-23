@@ -1,60 +1,130 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T13:41:05.009Z",
+  "generatedAt": "2026-02-23T15:30:53.279Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 2,
+    "total": 10,
+    "implemented": 7,
     "items": [
       {
-        "id": "REQ-18",
-        "summary": "Debug and fix the backend isCallerAdmin method in backend/main.mo to correctly identify admin users based on their caller principal, ensuring authenticated users are granted admin access",
+        "id": "REQ-42",
+        "summary": "Add 'beverages' as a fourth product category option in the backend product data model alongside sweets, snacks, and namkeen",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-19",
-        "summary": "Add detailed logging in the backend isCallerAdmin method to output the caller principal and the admin check result for debugging purposes",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-20",
-        "summary": "Verify that the useAuth hook in frontend/src/hooks/useAuth.ts correctly receives and displays the admin status from the backend isCallerAdmin query",
+        "id": "REQ-43",
+        "summary": "Add 'beverages' as a category option in the ProductForm component's category selection dropdown in the admin panel",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useAuth.ts"
+          "frontend/src/components/ProductForm.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useAuth.ts"
+          "frontend/src/components/ProductForm.tsx"
         ]
       },
       {
-        "id": "REQ-21",
-        "summary": "Add console logging in the Admin page component (frontend/src/pages/Admin.tsx) to display the authentication state, isAdmin result, and actor availability for debugging the access denied issue",
+        "id": "REQ-44",
+        "summary": "Display beverages category section on the Products page with the same styling and layout as sweets, snacks, and namkeen sections",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/Admin.tsx"
+          "frontend/src/pages/Products.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/Admin.tsx"
+          "frontend/src/pages/Products.tsx"
+        ]
+      },
+      {
+        "id": "REQ-45",
+        "summary": "Add a unit type field to the backend Product data model with two options: 'per_kg' for weight-based pricing and 'single' for individual unit pricing",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-46",
+        "summary": "Add a unit type selection dropdown in the ProductForm component with options 'Per Kg' and 'Single Unit' for admins to specify pricing unit when adding or editing products",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductForm.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductForm.tsx"
+        ]
+      },
+      {
+        "id": "REQ-47",
+        "summary": "Display the unit type (per kg or single unit) alongside the price on ProductCard components so customers can see the pricing basis for each product",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductCard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductCard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-48",
+        "summary": "Add a photoUrl field to the backend Product data model to store the uploaded product photo URL",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-49",
+        "summary": "Add a file upload input in the ProductForm component that allows admins to select and upload a product photo image file",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductForm.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductForm.tsx"
+        ]
+      },
+      {
+        "id": "REQ-50",
+        "summary": "Convert the uploaded product photo to a base64 data URL and save it in the photoUrl field when creating or editing a product",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductForm.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductForm.tsx"
+        ]
+      },
+      {
+        "id": "REQ-51",
+        "summary": "Display the product photo on ProductCard components when a photoUrl exists, showing the image above or beside the product details",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductCard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductCard.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/hooks/useAuth.ts",
-    "frontend/src/pages/Admin.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/ProductCard.tsx",
+    "frontend/src/components/ProductForm.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useProductMutations.ts",
+    "frontend/src/pages/Products.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

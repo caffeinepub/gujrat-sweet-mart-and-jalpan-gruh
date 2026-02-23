@@ -1,11 +1,17 @@
-import Text "mo:core/Text";
-import Principal "mo:core/Principal";
 import Map "mo:core/Map";
+import Nat "mo:core/Nat";
+import Text "mo:core/Text";
 import Runtime "mo:core/Runtime";
+import Debug "mo:core/Debug";
+import Principal "mo:core/Principal";
+import Migration "migration";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
+(with migration = Migration.run)
 actor {
+  type ProductId = Nat;
+
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
@@ -13,6 +19,12 @@ actor {
     #sweets;
     #snacks;
     #namkeen;
+    #beverages;
+  };
+
+  public type Unit = {
+    #per_kg;
+    #single;
   };
 
   public type Product = {
@@ -22,18 +34,26 @@ actor {
     description : Text;
     price : Nat;
     available : Bool;
+    unit : Unit;
+    photoUrl : Text;
   };
-
-  public type ProductId = Nat;
 
   public type UserProfile = {
     name : Text;
   };
 
   var nextProductId : ProductId = 0;
-
   let products = Map.empty<ProductId, Product>();
   let userProfiles = Map.empty<Principal, UserProfile>();
+
+  // Debug utility to print all products
+  public shared ({ caller }) func debugPrintProducts() : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Debug.print("Unauthorized debug attempt by: " # debug_show (caller));
+      Runtime.trap("Unauthorized: Only admins can debug products");
+    };
+    Debug.print("Current products: " # debug_show (products));
+  };
 
   // User Profile Management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
@@ -57,8 +77,15 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  // Admin-only: Add Product
-  public shared ({ caller }) func addProduct(name : Text, category : Category, description : Text, price : Nat, available : Bool) : async ProductId {
+  public shared ({ caller }) func addProduct(
+    name : Text,
+    category : Category,
+    description : Text,
+    price : Nat,
+    available : Bool,
+    unit : Unit,
+    photoUrl : Text,
+  ) : async ProductId {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can add products");
     };
@@ -71,6 +98,8 @@ actor {
       description;
       price;
       available;
+      unit;
+      photoUrl;
     };
 
     products.add(productId, newProduct);
@@ -78,13 +107,21 @@ actor {
     productId;
   };
 
-  // Admin-only: Edit Product
-  public shared ({ caller }) func editProduct(productId : ProductId, name : Text, category : Category, description : Text, price : Nat, available : Bool) : async () {
+  public shared ({ caller }) func editProduct(
+    productId : ProductId,
+    name : Text,
+    category : Category,
+    description : Text,
+    price : Nat,
+    available : Bool,
+    unit : Unit,
+    photoUrl : Text,
+  ) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can edit products");
     };
 
-    if (not products.containsKey(productId)) {
+    if (products.get(productId) == null) {
       Runtime.trap("Product not found");
     };
 
@@ -95,38 +132,34 @@ actor {
       description;
       price;
       available;
+      unit;
+      photoUrl;
     };
 
     products.add(productId, updatedProduct);
   };
 
-  // Admin-only: Delete Product
   public shared ({ caller }) func deleteProduct(productId : ProductId) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can delete products");
     };
 
-    if (not products.containsKey(productId)) {
+    if (products.get(productId) == null) {
       Runtime.trap("Product not found");
     };
 
     products.remove(productId);
   };
 
-  // Public: Get all products (no authorization needed - guests can view)
   public query func getAllProducts() : async [Product] {
-    products.toArray().map(func(entry : (ProductId, Product)) : Product { entry.1 });
+    products.toArray().map(func(entry) { entry.1 });
   };
 
-  // Public: Get product by ID (no authorization needed - guests can view)
   public query func getProduct(productId : ProductId) : async ?Product {
     products.get(productId);
   };
 
-  // Public: Get products by category (no authorization needed - guests can view)
   public query func getProductsByCategory(category : Category) : async [Product] {
-    products.toArray()
-      .map(func(entry : (ProductId, Product)) : Product { entry.1 })
-      .filter(func(product : Product) : Bool { product.category == category });
+    products.toArray().map(func(entry) { entry.1 }).filter(func(product) { product.category == category });
   };
 };

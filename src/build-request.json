@@ -1,83 +1,202 @@
 {
   "kind": "build_request",
-  "title": "Fix admin access authorization to resolve 'admin access required' error",
+  "title": "Add beverages category, unit selection, and product photo upload",
   "projectName": "Gujrat Sweet Mart",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-18",
-      "text": "Debug and fix the backend isCallerAdmin method in backend/main.mo to correctly identify admin users based on their caller principal, ensuring authenticated users are granted admin access",
+      "id": "REQ-42",
+      "text": "Add 'beverages' as a fourth product category option in the backend product data model alongside sweets, snacks, and namkeen",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-6"
         ],
         "quotes": [
-          "it is saying admin acess is required?"
+          "add a section named beverages"
         ]
       },
       "acceptanceCriteria": [
-        "The isCallerAdmin method returns true for authenticated users who should have admin access",
-        "The Admin page displays the product management interface instead of the 'Access Denied' screen",
-        "Admin users can successfully access all CRUD operations for products"
+        "Backend Product type includes 'beverages' as a valid category variant",
+        "Products can be created with category set to beverages",
+        "Existing products with other categories remain unaffected"
       ]
     },
     {
-      "id": "REQ-19",
-      "text": "Add detailed logging in the backend isCallerAdmin method to output the caller principal and the admin check result for debugging purposes",
+      "id": "REQ-43",
+      "text": "Add 'beverages' as a category option in the ProductForm component's category selection dropdown in the admin panel",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "add a section named beverages"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Category dropdown in ProductForm includes 'Beverages' option",
+        "Selecting beverages category saves correctly",
+        "Category label displays 'Beverages' consistently with other categories"
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "text": "Display beverages category section on the Products page with the same styling and layout as sweets, snacks, and namkeen sections",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "add a section named beverages"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Beverages section appears on Products page when beverages products exist",
+        "Section uses consistent styling with other category sections",
+        "Products are filtered and displayed correctly under beverages"
+      ]
+    },
+    {
+      "id": "REQ-45",
+      "text": "Add a unit type field to the backend Product data model with two options: 'per_kg' for weight-based pricing and 'single' for individual unit pricing",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-6"
+        ],
+        "quotes": [
+          "in a option in which we can select between per kg unit or single unit"
         ]
       },
       "acceptanceCriteria": [
-        "Console logs show the caller principal when isCallerAdmin is invoked",
-        "Console logs show the boolean result of the admin check",
-        "Logs are visible during development for troubleshooting"
+        "Product type includes unitType field with per_kg and single variants",
+        "Existing products default to an appropriate unit type",
+        "Unit type is stored and retrieved correctly for each product"
       ]
     },
     {
-      "id": "REQ-20",
-      "text": "Verify that the useAuth hook in frontend/src/hooks/useAuth.ts correctly receives and displays the admin status from the backend isCallerAdmin query",
+      "id": "REQ-46",
+      "text": "Add a unit type selection dropdown in the ProductForm component with options 'Per Kg' and 'Single Unit' for admins to specify pricing unit when adding or editing products",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-6"
+        ],
+        "quotes": [
+          "in a option in which we can select between per kg unit or single unit"
         ]
       },
       "acceptanceCriteria": [
-        "The useAuth hook successfully calls the backend isCallerAdmin method",
-        "The hook returns the correct admin status to consuming components",
-        "Error states are properly handled and logged"
+        "Unit type dropdown appears in ProductForm with 'Per Kg' and 'Single Unit' options",
+        "Selected unit type is saved when creating or editing products",
+        "Form validation ensures unit type is selected before submission"
       ]
     },
     {
-      "id": "REQ-21",
-      "text": "Add console logging in the Admin page component (frontend/src/pages/Admin.tsx) to display the authentication state, isAdmin result, and actor availability for debugging the access denied issue",
+      "id": "REQ-47",
+      "text": "Display the unit type (per kg or single unit) alongside the price on ProductCard components so customers can see the pricing basis for each product",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-6"
+        ],
+        "quotes": [
+          "in a option in which we can select between per kg unit or single unit"
         ]
       },
       "acceptanceCriteria": [
-        "Console logs show whether the user is authenticated",
-        "Console logs display the isAdmin boolean value",
-        "Console logs confirm actor availability",
-        "Logs help identify where the authorization flow is failing"
+        "Price display includes unit type indicator (e.g., '₹150/kg' or '₹50/piece')",
+        "Unit type display is consistent across all product cards",
+        "Unit type is clearly visible and legible"
+      ]
+    },
+    {
+      "id": "REQ-48",
+      "text": "Add a photoUrl field to the backend Product data model to store the uploaded product photo URL",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "add a function that can allow me to add the photo of the product"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Product type includes optional photoUrl field of type Text",
+        "Products can be saved with or without a photo URL",
+        "Photo URL is retrieved correctly when fetching products"
+      ]
+    },
+    {
+      "id": "REQ-49",
+      "text": "Add a file upload input in the ProductForm component that allows admins to select and upload a product photo image file",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "add a function that can allow me to add the photo of the product"
+        ]
+      },
+      "acceptanceCriteria": [
+        "File input accepts common image formats (jpg, png, webp)",
+        "Selected image file is validated for type and size before upload",
+        "Upload UI shows selected filename or image preview"
+      ]
+    },
+    {
+      "id": "REQ-50",
+      "text": "Convert the uploaded product photo to a base64 data URL and save it in the photoUrl field when creating or editing a product",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "add a function that can allow me to add the photo of the product"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Image file is converted to base64 data URL before saving",
+        "Base64 string is stored in the product's photoUrl field",
+        "Upload handles errors gracefully with user feedback"
+      ]
+    },
+    {
+      "id": "REQ-51",
+      "text": "Display the product photo on ProductCard components when a photoUrl exists, showing the image above or beside the product details",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "add a function that can allow me to add the photo of the product"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Product photo displays on ProductCard when photoUrl is present",
+        "Image has appropriate sizing and aspect ratio",
+        "Products without photos display gracefully with placeholder or no image section"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the Internet Identity authentication flow in useInternetIdentity.ts",
-    "Preserve the existing single-actor architecture in backend/main.mo",
-    "Do not change the UI component structure in frontend/src/components/ui"
+    "Maintain single-actor backend architecture in backend/main.mo",
+    "Do not modify immutable frontend paths including useInternetIdentity hook, useActor hook, main.tsx, and components/ui directory",
+    "Preserve existing product categories (sweets, snacks, namkeen) functionality",
+    "Maintain compatibility with existing product data structure"
   ],
   "nonGoals": [
-    "Adding new authentication methods beyond Internet Identity",
-    "Implementing role-based access control for multiple admin levels",
-    "Creating a separate admin user management interface"
+    "Implementing external cloud storage for product photos",
+    "Adding image editing or cropping functionality",
+    "Creating a separate beverages-only page or route",
+    "Implementing quantity or inventory tracking",
+    "Adding shopping cart or order functionality"
   ],
   "imageRequirements": {
     "required": [],

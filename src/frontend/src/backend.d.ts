@@ -14,7 +14,9 @@ export interface UserProfile {
 export interface Product {
     id: ProductId;
     name: string;
+    unit: Unit;
     description: string;
+    photoUrl: string;
     available: boolean;
     category: Category;
     price: bigint;
@@ -22,7 +24,12 @@ export interface Product {
 export enum Category {
     snacks = "snacks",
     namkeen = "namkeen",
+    beverages = "beverages",
     sweets = "sweets"
+}
+export enum Unit {
+    per_kg = "per_kg",
+    single = "single"
 }
 export enum UserRole {
     admin = "admin",
@@ -30,10 +37,11 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
-    addProduct(name: string, category: Category, description: string, price: bigint, available: boolean): Promise<ProductId>;
+    addProduct(name: string, category: Category, description: string, price: bigint, available: boolean, unit: Unit, photoUrl: string): Promise<ProductId>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    debugPrintProducts(): Promise<void>;
     deleteProduct(productId: ProductId): Promise<void>;
-    editProduct(productId: ProductId, name: string, category: Category, description: string, price: bigint, available: boolean): Promise<void>;
+    editProduct(productId: ProductId, name: string, category: Category, description: string, price: bigint, available: boolean, unit: Unit, photoUrl: string): Promise<void>;
     getAllProducts(): Promise<Array<Product>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;

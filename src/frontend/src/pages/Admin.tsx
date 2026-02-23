@@ -6,87 +6,90 @@ import { useActor } from '../hooks/useActor';
 import AccessDeniedScreen from '../components/AccessDeniedScreen';
 import ProductForm from '../components/ProductForm';
 import { Product } from '../backend';
-import { Loader2, Pencil, Trash2, Plus, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Loader2, Pencil, Trash2, Plus, X, Bug } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function Admin() {
   const { identity, loginStatus } = useInternetIdentity();
-  const { actor, isFetching: actorFetching } = useActor();
-  const { data: isAdmin, isLoading: isAdminLoading, isError: isAdminError, error: adminError, isFetched, fetchStatus } = useIsCallerAdmin();
+  const { data: isAdmin, isLoading: isAdminLoading, isError: isAdminError, error: adminError, isFetched } = useIsCallerAdmin();
   const { data: products, isLoading: productsLoading } = useGetAllProducts();
+  const { actor } = useActor();
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [debugResult, setDebugResult] = useState<string | null>(null);
+  const [debugLoading, setDebugLoading] = useState(false);
 
   const deleteProductMutation = useDeleteProduct();
 
-  // Comprehensive debug logging
-  useEffect(() => {
-    console.log('╔════════════════════════════════════════════════════════════╗');
-    console.log('║           ADMIN PAGE STATE DEBUG                          ║');
-    console.log('╚════════════════════════════════════════════════════════════╝');
-    console.log('Timestamp:', new Date().toISOString());
-    console.log('');
-    console.log('🔐 AUTHENTICATION STATE:');
-    console.log('  Identity:', identity ? '✅ Present' : '❌ None');
-    if (identity) {
-      console.log('  Principal:', identity.getPrincipal().toString());
-    }
-    console.log('  Login Status:', loginStatus);
-    console.log('');
-    console.log('🎭 ACTOR STATE:');
-    console.log('  Actor:', actor ? '✅ Present' : '❌ None');
-    console.log('  Actor Fetching:', actorFetching);
-    if (actor) {
-      console.log('  Actor has isCallerAdmin:', typeof actor.isCallerAdmin === 'function' ? '✅ Yes' : '❌ No');
-    }
-    console.log('');
-    console.log('👑 ADMIN CHECK STATE:');
-    console.log('  isAdmin value:', isAdmin);
-    console.log('  isAdmin type:', typeof isAdmin);
-    console.log('  isAdmin === true:', isAdmin === true);
-    console.log('  isAdmin === false:', isAdmin === false);
-    console.log('  Is Loading:', isAdminLoading);
-    console.log('  Is Fetched:', isFetched);
-    console.log('  Fetch Status:', fetchStatus);
-    console.log('  Is Error:', isAdminError);
-    if (adminError) {
-      console.log('  Error Details:', adminError);
-      console.log('  Error Message:', (adminError as any)?.message);
-      console.log('  Error Name:', (adminError as any)?.name);
-    }
-    console.log('');
-    console.log('🎯 DECISION TREE:');
-    console.log('  1. Has identity?', !!identity ? '✅' : '❌');
-    console.log('  2. Is loading?', (isAdminLoading || actorFetching) ? '⏳ Yes' : '✅ No');
-    console.log('  3. Has error?', isAdminError ? '❌ Yes' : '✅ No');
-    console.log('  4. Is fetched?', isFetched ? '✅ Yes' : '⏳ No');
-    console.log('  5. Is admin?', isAdmin === true ? '✅ Yes' : isAdmin === false ? '❌ No' : '❓ Unknown');
-    console.log('');
-    console.log('📊 RENDER DECISION:');
-    const willShowAccessDenied = isFetched && !isAdminLoading && !actorFetching && isAdmin === false;
-    const willShowLoading = isAdminLoading || actorFetching || !isFetched;
-    const willShowError = isAdminError;
-    const willShowDashboard = isFetched && !isAdminLoading && !actorFetching && isAdmin === true;
-    console.log('  Show Access Denied?', willShowAccessDenied ? '✅ YES' : '❌ No');
-    console.log('  Show Loading?', willShowLoading ? '✅ YES' : '❌ No');
-    console.log('  Show Error?', willShowError ? '✅ YES' : '❌ No');
-    console.log('  Show Dashboard?', willShowDashboard ? '✅ YES' : '❌ No');
-    console.log('════════════════════════════════════════════════════════════');
-  }, [identity, loginStatus, actor, actorFetching, isAdmin, isAdminLoading, isAdminError, adminError, isFetched, fetchStatus]);
+  // Debug function to manually test admin check
+  const handleDebugAdminCheck = async () => {
+    console.log('🐛 ========================================');
+    console.log('🐛 === MANUAL DEBUG ADMIN CHECK ===');
+    console.log('🐛 ========================================');
+    console.log('🐛 Timestamp:', new Date().toISOString());
+    
+    setDebugLoading(true);
+    setDebugResult(null);
 
-  // Log when isAdmin value changes
-  useEffect(() => {
-    console.log('🔄 isAdmin value changed to:', isAdmin, '(type:', typeof isAdmin, ')');
-  }, [isAdmin]);
+    try {
+      if (!actor) {
+        const msg = 'ERROR: No actor available';
+        console.error('🐛', msg);
+        setDebugResult(msg);
+        setDebugLoading(false);
+        return;
+      }
 
-  // Log when isFetched changes
-  useEffect(() => {
-    console.log('🔄 isFetched changed to:', isFetched);
-  }, [isFetched]);
+      if (!identity) {
+        const msg = 'ERROR: No identity available';
+        console.error('🐛', msg);
+        setDebugResult(msg);
+        setDebugLoading(false);
+        return;
+      }
 
+      const principal = identity.getPrincipal();
+      console.log('🐛 Current Principal:', principal.toString());
+      console.log('🐛 Is Anonymous:', principal.isAnonymous());
+      console.log('🐛 Calling actor.isCallerAdmin() directly...');
+
+      const startTime = Date.now();
+      const result = await actor.isCallerAdmin();
+      const endTime = Date.now();
+
+      console.log('🐛 ========================================');
+      console.log('🐛 === DEBUG RESULT ===');
+      console.log('🐛 ========================================');
+      console.log('🐛 Raw Result:', result);
+      console.log('🐛 Result Type:', typeof result);
+      console.log('🐛 Result === true:', result === true);
+      console.log('🐛 Result === false:', result === false);
+      console.log('🐛 Call Duration:', endTime - startTime, 'ms');
+      console.log('🐛 ========================================');
+
+      const resultMsg = `Result: ${result} (type: ${typeof result})`;
+      setDebugResult(resultMsg);
+      toast.success('Debug check completed - see console for details');
+    } catch (error: any) {
+      console.error('🐛 ========================================');
+      console.error('🐛 === DEBUG ERROR ===');
+      console.error('🐛 ========================================');
+      console.error('🐛 Error:', error);
+      console.error('🐛 Error Message:', error?.message);
+      console.error('🐛 Error Stack:', error?.stack);
+      console.error('🐛 ========================================');
+
+      const errorMsg = `ERROR: ${error?.message || error?.toString() || 'Unknown error'}`;
+      setDebugResult(errorMsg);
+      toast.error('Debug check failed - see console for details');
+    } finally {
+      setDebugLoading(false);
+    }
+  };
+
+  // Early return: No identity
   if (!identity) {
-    console.log('🖼️ RENDERING: Login prompt (no identity)');
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto text-center">
@@ -106,8 +109,8 @@ export default function Admin() {
     );
   }
 
-  if (isAdminLoading || actorFetching) {
-    console.log('🖼️ RENDERING: Loading state (isAdminLoading:', isAdminLoading, ', actorFetching:', actorFetching, ')');
+  // Early return: Loading states
+  if (isAdminLoading || !isFetched) {
     return (
       <div className="container mx-auto px-4 py-12 flex justify-center items-center min-h-[400px]">
         <div className="text-center">
@@ -118,8 +121,8 @@ export default function Admin() {
     );
   }
 
+  // Early return: Admin check error
   if (isAdminError) {
-    console.log('🖼️ RENDERING: Admin check error');
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
@@ -156,27 +159,12 @@ export default function Admin() {
     );
   }
 
-  // Only show access denied if we've actually fetched the admin status and it's false
-  if (isFetched && isAdmin === false) {
-    console.log('🖼️ RENDERING: Access denied (isAdmin is explicitly false, query completed)');
+  // Early return: Access denied (explicitly not admin)
+  if (isAdmin === false) {
     return <AccessDeniedScreen />;
   }
 
-  // If we haven't fetched yet, show loading
-  if (!isFetched) {
-    console.log('🖼️ RENDERING: Loading (not fetched yet, isFetched:', isFetched, ')');
-    return (
-      <div className="container mx-auto px-4 py-12 flex justify-center items-center min-h-[400px]">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Verifying admin privileges...</p>
-        </div>
-      </div>
-    );
-  }
-
-  console.log('🖼️ RENDERING: Admin dashboard (isAdmin:', isAdmin, ')');
-
+  // Main admin dashboard - only renders if isAdmin === true
   const handleDelete = async (productId: bigint, productName: string) => {
     if (confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
       try {
@@ -191,20 +179,61 @@ export default function Admin() {
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     setShowAddForm(false);
-    // Scroll to top to show the form
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleAddNew = () => {
     setShowAddForm(true);
     setEditingProduct(null);
-    // Scroll to top to show the form
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-6xl mx-auto">
+        {/* Debug Section */}
+        <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-400 dark:border-yellow-600 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <Bug className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">
+                Debug Admin Access
+              </h3>
+              <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-3">
+                Click the button below to manually test the admin check. Results will appear in the browser console and below.
+              </p>
+              <button
+                onClick={handleDebugAdminCheck}
+                disabled={debugLoading}
+                className="inline-flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {debugLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Testing...
+                  </>
+                ) : (
+                  <>
+                    <Bug className="h-4 w-4" />
+                    Debug Admin Check
+                  </>
+                )}
+              </button>
+              {debugResult && (
+                <div className="mt-3 p-3 bg-white dark:bg-gray-800 rounded border border-yellow-300 dark:border-yellow-700">
+                  <div className="text-sm font-mono">
+                    <strong>Debug Result:</strong>
+                    <pre className="mt-1 whitespace-pre-wrap text-xs">{debugResult}</pre>
+                  </div>
+                </div>
+              )}
+              <div className="mt-3 text-xs text-yellow-700 dark:text-yellow-300">
+                <strong>Current Principal:</strong> {identity.getPrincipal().toString()}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-display font-bold text-primary mb-2">

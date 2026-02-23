@@ -27,6 +27,7 @@ export default function Products() {
   const sweets = products?.filter((p) => p.category === Category.sweets) || [];
   const snacks = products?.filter((p) => p.category === Category.snacks) || [];
   const namkeen = products?.filter((p) => p.category === Category.namkeen) || [];
+  const beverages = products?.filter((p) => p.category === Category.beverages) || [];
 
   return (
     <div className="w-full">
@@ -37,7 +38,7 @@ export default function Products() {
             Our Products
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover our wide selection of authentic Indian sweets, snacks, and namkeen
+            Discover our wide selection of authentic Indian sweets, snacks, namkeen, and beverages
           </p>
         </div>
       </section>
@@ -67,7 +68,7 @@ export default function Products() {
       )}
 
       {/* Decorative Border */}
-      {(sweets.length > 0 && (snacks.length > 0 || namkeen.length > 0)) && (
+      {(sweets.length > 0 && (snacks.length > 0 || namkeen.length > 0 || beverages.length > 0)) && (
         <div className="container mx-auto px-4 py-6">
           <img
             src="/assets/generated/border-pattern.dim_800x100.png"
@@ -93,7 +94,7 @@ export default function Products() {
       )}
 
       {/* Decorative Border */}
-      {(snacks.length > 0 && namkeen.length > 0) && (
+      {(snacks.length > 0 && (namkeen.length > 0 || beverages.length > 0)) && (
         <div className="container mx-auto px-4 py-6">
           <img
             src="/assets/generated/border-pattern.dim_800x100.png"
@@ -118,6 +119,32 @@ export default function Products() {
         </section>
       )}
 
+      {/* Decorative Border */}
+      {(namkeen.length > 0 && beverages.length > 0) && (
+        <div className="container mx-auto px-4 py-6">
+          <img
+            src="/assets/generated/border-pattern.dim_800x100.png"
+            alt="Decorative border"
+            className="w-full max-w-2xl mx-auto h-auto opacity-60"
+          />
+        </div>
+      )}
+
+      {/* Beverages Section */}
+      {beverages.length > 0 && (
+        <section className="py-12">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-display font-bold text-blue-600 mb-2">Beverages</h2>
+            <p className="text-muted-foreground mb-8">Refreshing drinks to complement your treats</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {beverages.map((product) => (
+                <ProductCard key={product.id.toString()} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Empty State */}
       {!products || products.length === 0 && (
         <section className="py-12">
@@ -131,4 +158,3 @@ export default function Products() {
     </div>
   );
 }
-

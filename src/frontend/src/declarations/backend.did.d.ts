@@ -12,16 +12,21 @@ import type { Principal } from '@icp-sdk/core/principal';
 
 export type Category = { 'snacks' : null } |
   { 'namkeen' : null } |
+  { 'beverages' : null } |
   { 'sweets' : null };
 export interface Product {
   'id' : ProductId,
   'name' : string,
+  'unit' : Unit,
   'description' : string,
+  'photoUrl' : string,
   'available' : boolean,
   'category' : Category,
   'price' : bigint,
 }
 export type ProductId = bigint;
+export type Unit = { 'per_kg' : null } |
+  { 'single' : null };
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -29,13 +34,14 @@ export type UserRole = { 'admin' : null } |
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addProduct' : ActorMethod<
-    [string, Category, string, bigint, boolean],
+    [string, Category, string, bigint, boolean, Unit, string],
     ProductId
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'debugPrintProducts' : ActorMethod<[], undefined>,
   'deleteProduct' : ActorMethod<[ProductId], undefined>,
   'editProduct' : ActorMethod<
-    [ProductId, string, Category, string, bigint, boolean],
+    [ProductId, string, Category, string, bigint, boolean, Unit, string],
     undefined
   >,
   'getAllProducts' : ActorMethod<[], Array<Product>>,

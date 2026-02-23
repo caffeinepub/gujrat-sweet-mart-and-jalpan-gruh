@@ -1,12 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Fix admin authorization to resolve the "admin access required" error and allow authenticated users to access the admin panel.
+**Goal:** Add beverages category, unit type selection (per kg or single unit), and product photo upload functionality.
 
 **Planned changes:**
-- Debug and fix the `isCallerAdmin` method in the backend to correctly identify admin users
-- Add detailed logging in the backend to output caller principal and admin check results
-- Verify the `useAuth` hook correctly receives and displays admin status from the backend
-- Add console logging in the Admin page component to display authentication state and isAdmin result for debugging
+- Add 'beverages' as a fourth product category option in backend and frontend
+- Add unit type field to products with 'per_kg' and 'single' options
+- Add file upload functionality to ProductForm for product photos stored as base64
+- Display unit type alongside price on product cards (e.g., '₹150/kg' or '₹50/piece')
+- Display product photos on ProductCard components when available
 
-**User-visible outcome:** Authenticated users can successfully access the Admin page and manage products without seeing the "Access Denied" error.
+**User-visible outcome:** Admins can add beverages products, specify whether products are priced per kg or per unit, and upload product photos. Customers see product photos, pricing units, and the new beverages category on the Products page.

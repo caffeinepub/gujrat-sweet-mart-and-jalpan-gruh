@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-verify-that-the-useauth-hook-in-frontend-src-hooks-useauth-ts-correctly-receives-and-displays-the-admin-status-from-the-backend-iscalleradmin-query",
-      "featureTitle": "Verify that the useAuth hook in frontend/src/hooks/useAuth.ts correctly receives and displays the admin status from the backend isCallerAdmin query",
+      "featureId": "feature-add-beverages-as-a-category-option-in-the-productform-component-s-category-selection-dropdown-in-the-admin-panel",
+      "featureTitle": "Add 'beverages' as a category option in the ProductForm component's category selection dropdown in the admin panel",
       "files": [
-        "frontend/src/hooks/useAuth.ts"
+        "frontend/src/components/ProductForm.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -16,15 +16,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-20"
+        "REQ-43"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-console-logging-in-the-admin-page-component-frontend-src-pages-admin-tsx-to-display-the-authentication-state-isadmin-result-and-actor-availability-for-debugging-the-access-denied-issue",
-      "featureTitle": "Add console logging in the Admin page component (frontend/src/pages/Admin.tsx) to display the authentication state, isAdmin result, and actor availability for debugging the access denied issue",
+      "featureId": "feature-display-beverages-category-section-on-the-products-page-with-the-same-styling-and-layout-as-sweets-snacks-and-namkeen-sections",
+      "featureTitle": "Display beverages category section on the Products page with the same styling and layout as sweets, snacks, and namkeen sections",
       "files": [
-        "frontend/src/pages/Admin.tsx"
+        "frontend/src/pages/Products.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -35,7 +35,102 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-21"
+        "REQ-44"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-unit-type-selection-dropdown-in-the-productform-component-with-options-per-kg-and-single-unit-for-admins-to-specify-pricing-unit-when-adding-or-editing-products",
+      "featureTitle": "Add a unit type selection dropdown in the ProductForm component with options 'Per Kg' and 'Single Unit' for admins to specify pricing unit when adding or editing products",
+      "files": [
+        "frontend/src/components/ProductForm.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-46"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-the-unit-type-per-kg-or-single-unit-alongside-the-price-on-productcard-components-so-customers-can-see-the-pricing-basis-for-each-product",
+      "featureTitle": "Display the unit type (per kg or single unit) alongside the price on ProductCard components so customers can see the pricing basis for each product",
+      "files": [
+        "frontend/src/components/ProductCard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-47"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-file-upload-input-in-the-productform-component-that-allows-admins-to-select-and-upload-a-product-photo-image-file",
+      "featureTitle": "Add a file upload input in the ProductForm component that allows admins to select and upload a product photo image file",
+      "files": [
+        "frontend/src/components/ProductForm.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-49"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-convert-the-uploaded-product-photo-to-a-base64-data-url-and-save-it-in-the-photourl-field-when-creating-or-editing-a-product",
+      "featureTitle": "Convert the uploaded product photo to a base64 data URL and save it in the photoUrl field when creating or editing a product",
+      "files": [
+        "frontend/src/components/ProductForm.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-50"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-the-product-photo-on-productcard-components-when-a-photourl-exists-showing-the-image-above-or-beside-the-product-details",
+      "featureTitle": "Display the product photo on ProductCard components when a photoUrl exists, showing the image above or beside the product details",
+      "files": [
+        "frontend/src/components/ProductCard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-51"
       ],
       "confidence": "high"
     }

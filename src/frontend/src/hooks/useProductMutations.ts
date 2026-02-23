@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import { Category, ProductId } from '../backend';
+import { Category, ProductId, Unit } from '../backend';
 
 interface AddProductParams {
   name: string;
@@ -8,6 +8,8 @@ interface AddProductParams {
   description: string;
   price: bigint;
   available: boolean;
+  unit: Unit;
+  photoUrl: string;
 }
 
 interface EditProductParams {
@@ -17,6 +19,8 @@ interface EditProductParams {
   description: string;
   price: bigint;
   available: boolean;
+  unit: Unit;
+  photoUrl: string;
 }
 
 export function useAddProduct() {
@@ -31,7 +35,9 @@ export function useAddProduct() {
         params.category,
         params.description,
         params.price,
-        params.available
+        params.available,
+        params.unit,
+        params.photoUrl
       );
     },
     onSuccess: () => {
@@ -53,7 +59,9 @@ export function useEditProduct() {
         params.category,
         params.description,
         params.price,
-        params.available
+        params.available,
+        params.unit,
+        params.photoUrl
       );
     },
     onSuccess: () => {
@@ -76,4 +84,3 @@ export function useDeleteProduct() {
     },
   });
 }
-

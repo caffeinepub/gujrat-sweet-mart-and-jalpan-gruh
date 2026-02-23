@@ -11,8 +11,10 @@ import { IDL } from '@icp-sdk/core/candid';
 export const Category = IDL.Variant({
   'snacks' : IDL.Null,
   'namkeen' : IDL.Null,
+  'beverages' : IDL.Null,
   'sweets' : IDL.Null,
 });
+export const Unit = IDL.Variant({ 'per_kg' : IDL.Null, 'single' : IDL.Null });
 export const ProductId = IDL.Nat;
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
@@ -22,7 +24,9 @@ export const UserRole = IDL.Variant({
 export const Product = IDL.Record({
   'id' : ProductId,
   'name' : IDL.Text,
+  'unit' : Unit,
   'description' : IDL.Text,
+  'photoUrl' : IDL.Text,
   'available' : IDL.Bool,
   'category' : Category,
   'price' : IDL.Nat,
@@ -32,14 +36,24 @@ export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addProduct' : IDL.Func(
-      [IDL.Text, Category, IDL.Text, IDL.Nat, IDL.Bool],
+      [IDL.Text, Category, IDL.Text, IDL.Nat, IDL.Bool, Unit, IDL.Text],
       [ProductId],
       [],
     ),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'debugPrintProducts' : IDL.Func([], [], []),
   'deleteProduct' : IDL.Func([ProductId], [], []),
   'editProduct' : IDL.Func(
-      [ProductId, IDL.Text, Category, IDL.Text, IDL.Nat, IDL.Bool],
+      [
+        ProductId,
+        IDL.Text,
+        Category,
+        IDL.Text,
+        IDL.Nat,
+        IDL.Bool,
+        Unit,
+        IDL.Text,
+      ],
       [],
       [],
     ),
@@ -63,8 +77,10 @@ export const idlFactory = ({ IDL }) => {
   const Category = IDL.Variant({
     'snacks' : IDL.Null,
     'namkeen' : IDL.Null,
+    'beverages' : IDL.Null,
     'sweets' : IDL.Null,
   });
+  const Unit = IDL.Variant({ 'per_kg' : IDL.Null, 'single' : IDL.Null });
   const ProductId = IDL.Nat;
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
@@ -74,7 +90,9 @@ export const idlFactory = ({ IDL }) => {
   const Product = IDL.Record({
     'id' : ProductId,
     'name' : IDL.Text,
+    'unit' : Unit,
     'description' : IDL.Text,
+    'photoUrl' : IDL.Text,
     'available' : IDL.Bool,
     'category' : Category,
     'price' : IDL.Nat,
@@ -84,14 +102,24 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addProduct' : IDL.Func(
-        [IDL.Text, Category, IDL.Text, IDL.Nat, IDL.Bool],
+        [IDL.Text, Category, IDL.Text, IDL.Nat, IDL.Bool, Unit, IDL.Text],
         [ProductId],
         [],
       ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'debugPrintProducts' : IDL.Func([], [], []),
     'deleteProduct' : IDL.Func([ProductId], [], []),
     'editProduct' : IDL.Func(
-        [ProductId, IDL.Text, Category, IDL.Text, IDL.Nat, IDL.Bool],
+        [
+          ProductId,
+          IDL.Text,
+          Category,
+          IDL.Text,
+          IDL.Nat,
+          IDL.Bool,
+          Unit,
+          IDL.Text,
+        ],
         [],
         [],
       ),

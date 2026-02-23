@@ -1,38 +1,117 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix admin access authorization to resolve 'admin access required' error",
+  "title": "Add beverages category, unit selection, and product photo upload",
   "requirements": [
     {
-      "id": "REQ-20",
-      "summary": "Verify that the useAuth hook correctly receives and displays the admin status from the backend isCallerAdmin query",
+      "id": "REQ-43",
+      "summary": "Add 'beverages' as a category option in the ProductForm component's category selection dropdown",
       "acceptanceCriteria": [
-        "The useAuth hook successfully calls the backend isCallerAdmin method",
-        "The hook returns the correct admin status to consuming components",
-        "Error states are properly handled and logged"
+        "Category dropdown in ProductForm includes 'Beverages' option",
+        "Selecting beverages category saves correctly",
+        "Category label displays 'Beverages' consistently with other categories"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useAuth.ts",
+          "path": "frontend/src/components/ProductForm.tsx",
           "operation": "modify",
-          "description": "Add comprehensive error handling and console logging to track the isCallerAdmin query execution. Log the query state (loading, success, error), the returned admin status boolean, and any errors that occur. Add logging for actor availability to help diagnose connection issues. Ensure error states are properly captured and returned to consuming components."
+          "description": "Add 'beverages' as a fourth category option in the category select dropdown alongside sweets, snacks, and namkeen. Use the Category enum from backend.d.ts which already includes beverages."
         }
       ]
     },
     {
-      "id": "REQ-21",
-      "summary": "Add console logging in the Admin page component to display the authentication state, isAdmin result, and actor availability for debugging the access denied issue",
+      "id": "REQ-44",
+      "summary": "Display beverages category section on the Products page with consistent styling",
       "acceptanceCriteria": [
-        "Console logs show whether the user is authenticated",
-        "Console logs display the isAdmin boolean value",
-        "Console logs confirm actor availability",
-        "Logs help identify where the authorization flow is failing"
+        "Beverages section appears on Products page when beverages products exist",
+        "Section uses consistent styling with other category sections",
+        "Products are filtered and displayed correctly under beverages"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Admin.tsx",
+          "path": "frontend/src/pages/Products.tsx",
           "operation": "modify",
-          "description": "Add detailed console logging throughout the Admin component to debug the authorization flow. Log the authentication status from useInternetIdentity (identity presence and loginStatus), the isAdmin boolean result from useAuth, the actor availability state, and the loading states. Add useEffect hooks to log state changes as they occur. Include logging before conditional renders to show which branch (loading, access denied, or admin interface) is being displayed and why."
+          "description": "Add a beverages category section to the Products page following the same pattern as the existing sweets, snacks, and namkeen sections. Filter products by Category.beverages and display them in ProductCard components with appropriate heading and decorative borders."
+        }
+      ]
+    },
+    {
+      "id": "REQ-46",
+      "summary": "Add unit type selection dropdown in ProductForm for admins to specify pricing unit",
+      "acceptanceCriteria": [
+        "Unit type dropdown appears in ProductForm with 'Per Kg' and 'Single Unit' options",
+        "Selected unit type is saved when creating or editing products",
+        "Form validation ensures unit type is selected before submission"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductForm.tsx",
+          "operation": "modify",
+          "description": "Add a unit type select field to the ProductForm component with options for 'Per Kg' (Unit.per_kg) and 'Single Unit' (Unit.single) from the backend.d.ts Unit enum. Include form validation to ensure unit type is selected. Pass the selected unit value to both addProduct and editProduct mutations."
+        }
+      ]
+    },
+    {
+      "id": "REQ-47",
+      "summary": "Display unit type alongside price on ProductCard components",
+      "acceptanceCriteria": [
+        "Price display includes unit type indicator (e.g., '₹150/kg' or '₹50/piece')",
+        "Unit type display is consistent across all product cards",
+        "Unit type is clearly visible and legible"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Update the price display to include the unit type from the Product.unit field. Format as '₹{price}/kg' for Unit.per_kg and '₹{price}/piece' for Unit.single. Ensure the unit indicator is clearly visible and consistent with the existing price styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-49",
+      "summary": "Add file upload input in ProductForm for admins to upload product photos",
+      "acceptanceCriteria": [
+        "File input accepts common image formats (jpg, png, webp)",
+        "Selected image file is validated for type and size before upload",
+        "Upload UI shows selected filename or image preview"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductForm.tsx",
+          "operation": "modify",
+          "description": "Add a file input field to the ProductForm component that accepts image files (jpg, png, webp). Validate file type and size (e.g., max 5MB). Display the selected filename or a preview thumbnail when an image is selected. Store the selected file in component state for processing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-50",
+      "summary": "Convert uploaded product photo to base64 data URL and save in photoUrl field",
+      "acceptanceCriteria": [
+        "Image file is converted to base64 data URL before saving",
+        "Base64 string is stored in the product's photoUrl field",
+        "Upload handles errors gracefully with user feedback"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductForm.tsx",
+          "operation": "modify",
+          "description": "Implement file-to-base64 conversion logic using FileReader API. When the form is submitted, convert the selected image file to a base64 data URL string and pass it as the photoUrl parameter to addProduct or editProduct mutations. Handle conversion errors with appropriate error messages displayed via toast notifications."
+        }
+      ]
+    },
+    {
+      "id": "REQ-51",
+      "summary": "Display product photo on ProductCard components when photoUrl exists",
+      "acceptanceCriteria": [
+        "Product photo displays on ProductCard when photoUrl is present",
+        "Image has appropriate sizing and aspect ratio",
+        "Products without photos display gracefully with placeholder or no image section"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Add an image display section to ProductCard that renders the product photo when Product.photoUrl is present and not empty. Position the image above or beside product details with appropriate sizing and aspect ratio (e.g., object-cover with fixed height). For products without photos, omit the image section or show a subtle placeholder to maintain consistent card height."
         }
       ]
     }

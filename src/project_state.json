@@ -1,13 +1,18 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
-  "summary": "Website for an Indian sweets, snacks and namkeen shop with Indian theme and editable product database",
-  "architectural_notes": [],
+  "projectStateVersion": 21,
+  "summary": "Website for an Indian sweets, snacks and namkeen shop with Indian theme and editable product database. Admin access simplified to first-login-becomes-admin model.",
+  "architectural_notes": [
+    "Admin access simplified to first-login model instead of security key system",
+    "First authenticated principal automatically becomes permanent admin"
+  ],
   "known_issues": [
     "Admin panel feature was not actually implemented in the previous build despite being in the feature list",
-    "Admin page still displays 'Admin access required' message after authentication fix attempt in Version 4"
+    "Previous builds (Version 6-7) failed to properly implement security key authentication",
+    "Security key input field was not rendering despite multiple implementation attempts",
+    "Version 8 still displays 'Access Denied' for admin panel despite first-login-becomes-admin implementation"
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "existing_features": [
     {
       "id": "feature-create-a-frontend-homepage-for-gujrat-sweet-mart-and-jalpan-gruh-featuring-an-indian-themed-design-with-warm-colors-saffron-marigold-orange-deep-red-gold-accents-traditional-indian-patterns-or-motifs-and-typography-that-evokes-indian-culture",
@@ -144,6 +149,158 @@
         "REQ-21"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-security-key-input-field-to-the-admin-login-page-where-users-must-enter-a-valid-security-key-to-access-the-admin-panel",
+      "title": "Add a security key input field to the admin login page where users must enter a valid security key to access the admin panel",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-the-generated-security-key-to-the-user-in-a-secure-manner-after-generation-such-as-in-a-modal-or-dedicated-page-accessible-only-to-the-application-owner",
+      "title": "Display the generated security key to the user in a secure manner after generation, such as in a modal or dedicated page accessible only to the application owner",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-admin-authorization-logic-in-frontend-src-pages-admin-tsx-to-require-both-internet-identity-authentication-and-valid-security-key-entry-before-granting-admin-access",
+      "title": "Update the admin authorization logic in frontend/src/pages/Admin.tsx to require both Internet Identity authentication and valid security key entry before granting admin access",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-admin-page-component-frontend-src-pages-admin-tsx-to-ensure-the-securitykeyinput-component-renders-correctly-when-the-user-is-authenticated-but-has-not-yet-validated-a-security-key",
+      "title": "Debug and fix the Admin page component (frontend/src/pages/Admin.tsx) to ensure the SecurityKeyInput component renders correctly when the user is authenticated but has not yet validated a security key",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-that-the-usesecuritykey-hook-frontend-src-hooks-usesecuritykey-ts-correctly-manages-the-security-key-validation-state-and-does-not-block-the-securitykeyinput-component-from-rendering",
+      "title": "Verify that the useSecurityKey hook (frontend/src/hooks/useSecurityKey.ts) correctly manages the security key validation state and does not block the SecurityKeyInput component from rendering",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-console-logging-to-the-admin-page-component-to-output-the-authentication-state-security-key-validation-state-and-which-component-securitykeyinput-accessdeniedscreen-or-admin-panel-is-being-rendered",
+      "title": "Add console logging to the Admin page component to output the authentication state, security key validation state, and which component (SecurityKeyInput, AccessDeniedScreen, or admin panel) is being rendered",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-all-security-key-related-components-from-the-frontend-including-securitykeyinput-tsx-securitykeydisplay-tsx-and-the-usesecuritykey-hook",
+      "title": "Remove all security key related components from the frontend including SecurityKeyInput.tsx, SecurityKeyDisplay.tsx, and the useSecurityKey hook",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-admin-page-component-to-remove-security-key-validation-checks-and-only-verify-internet-identity-authentication-and-admin-status-before-rendering-the-admin-panel",
+      "title": "Update the Admin page component to remove security key validation checks and only verify Internet Identity authentication and admin status before rendering the admin panel",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-useauth-hook-to-remove-all-security-key-related-logic-and-only-query-the-backend-iscalleradmin-method",
+      "title": "Update the useAuth hook to remove all security key related logic and only query the backend isCallerAdmin method",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-loginbutton-component-to-remove-security-key-session-clearing-logic-on-logout",
+      "title": "Update the LoginButton component to remove security key session clearing logic on logout",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-detailed-console-logging-to-the-useauth-hook-in-frontend-src-hooks-useauth-ts-to-display-the-raw-response-from-the-backend-iscalleradmin-query-including-any-errors-or-null-values",
+      "title": "Add detailed console logging to the useAuth hook in frontend/src/hooks/useAuth.ts to display the raw response from the backend isCallerAdmin query, including any errors or null values",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-temporary-debug-button-on-the-admin-page-that-manually-calls-iscalleradmin-and-displays-the-result-in-an-alert-or-console-log-to-isolate-whether-the-issue-is-in-the-query-hook-or-the-backend-logic",
+      "title": "Add a temporary debug button on the Admin page that manually calls isCallerAdmin and displays the result in an alert or console log to isolate whether the issue is in the query hook or the backend logic",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-beverages-as-a-category-option-in-the-productform-component-s-category-selection-dropdown-in-the-admin-panel",
+      "title": "Add 'beverages' as a category option in the ProductForm component's category selection dropdown in the admin panel",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-beverages-category-section-on-the-products-page-with-the-same-styling-and-layout-as-sweets-snacks-and-namkeen-sections",
+      "title": "Display beverages category section on the Products page with the same styling and layout as sweets, snacks, and namkeen sections",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-unit-type-selection-dropdown-in-the-productform-component-with-options-per-kg-and-single-unit-for-admins-to-specify-pricing-unit-when-adding-or-editing-products",
+      "title": "Add a unit type selection dropdown in the ProductForm component with options 'Per Kg' and 'Single Unit' for admins to specify pricing unit when adding or editing products",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-the-unit-type-per-kg-or-single-unit-alongside-the-price-on-productcard-components-so-customers-can-see-the-pricing-basis-for-each-product",
+      "title": "Display the unit type (per kg or single unit) alongside the price on ProductCard components so customers can see the pricing basis for each product",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-file-upload-input-in-the-productform-component-that-allows-admins-to-select-and-upload-a-product-photo-image-file",
+      "title": "Add a file upload input in the ProductForm component that allows admins to select and upload a product photo image file",
+      "reqIds": [
+        "REQ-49"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-convert-the-uploaded-product-photo-to-a-base64-data-url-and-save-it-in-the-photourl-field-when-creating-or-editing-a-product",
+      "title": "Convert the uploaded product photo to a base64 data URL and save it in the photoUrl field when creating or editing a product",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-the-product-photo-on-productcard-components-when-a-photourl-exists-showing-the-image-above-or-beside-the-product-details",
+      "title": "Display the product photo on ProductCard components when a photoUrl exists, showing the image above or beside the product details",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -182,6 +339,106 @@
       "summary": "Add detailed logging in the backend isCallerAdmin method to output the caller principal and the admin check result for debugging purposes",
       "reqIds": [
         "REQ-19"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Remove all security key authentication components and logic from frontend and backend",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Implement first-login-becomes-admin system where the first user to authenticate with Internet Identity automatically becomes the principal admin",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Track the first principal to authenticate in the backend and grant permanent admin access",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Remove all security key validation logic from the backend including the securityKey field, validateSecurityKey method, and getSecurityKey method",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Implement backend logic to track the first principal that authenticates and automatically grant that principal permanent admin status",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Add comprehensive debug logging to the backend isCallerAdmin method in backend/main.mo to output the caller principal, whether the firstAdminPrincipal is set, whether they match, and the final admin check result",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Verify that the firstAdminPrincipal is being properly set in the backend when the first user authenticates, and add logging to confirm when this assignment occurs",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Verify that the backend actor is being called with the authenticated principal and not an anonymous principal by logging the actor's identity in the useActor hook in frontend/src/hooks/useActor.ts",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Add 'beverages' as a new product category option",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Add unit selection option for products (per kg or single unit)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Add product photo upload functionality in admin panel",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Add 'beverages' as a fourth product category option in the backend product data model alongside sweets, snacks, and namkeen",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Add a unit type field to the backend Product data model with two options: 'per_kg' for weight-based pricing and 'single' for individual unit pricing",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-33",
+      "summary": "Add a photoUrl field to the backend Product data model to store the uploaded product photo URL",
+      "reqIds": [
+        "REQ-48"
       ],
       "status": "pending"
     }
