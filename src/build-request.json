@@ -1,0 +1,70 @@
+{
+  "kind": "build_request",
+  "title": "Fix admin access denied error by correcting authorization logic",
+  "projectName": "Gujrat Sweet Mart",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-15",
+      "text": "Debug and fix the admin authorization logic in the Admin page component (frontend/src/pages/Admin.tsx) to resolve the 'Access Denied' error that prevents authenticated users from accessing the admin panel",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "it is saying that admin access denied"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Admin page renders the product management interface without showing 'Access Denied'",
+        "Console logs show successful authentication and admin check results",
+        "The useAuth hook correctly identifies admin status"
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "text": "Review and fix the backend isAdmin implementation in backend/main.mo to ensure it correctly identifies admin users based on caller principal",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The isAdmin method returns true for authorized admin principals",
+        "The method does not reject valid authenticated users",
+        "Admin status check works correctly with Internet Identity authentication"
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "text": "Add comprehensive error logging in the useAuth hook (frontend/src/hooks/useAuth.ts) to capture and display any errors from the admin check query",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Console logs show the exact error or response from the isAdmin backend call",
+        "The hook logs the caller principal being checked",
+        "Error states are properly handled and displayed"
+      ]
+    }
+  ],
+  "constraints": [
+    "Preserve the existing Internet Identity authentication flow",
+    "Do not modify the ProfileSetup modal functionality",
+    "Keep the AccessDeniedScreen component for legitimate access denial cases"
+  ],
+  "nonGoals": [
+    "Adding new admin features beyond fixing access",
+    "Changing the product management interface design",
+    "Modifying the authentication provider setup"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-23T13:35:32.772Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 3,
+    "implemented": 2,
+    "items": [
+      {
+        "id": "REQ-15",
+        "summary": "Debug and fix the admin authorization logic in the Admin page component (frontend/src/pages/Admin.tsx) to resolve the 'Access Denied' error that prevents authenticated users from accessing the admin panel",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Admin.tsx",
+          "frontend/src/hooks/useAuth.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Admin.tsx",
+          "frontend/src/hooks/useAuth.ts"
+        ]
+      },
+      {
+        "id": "REQ-16",
+        "summary": "Review and fix the backend isAdmin implementation in backend/main.mo to ensure it correctly identifies admin users based on caller principal",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-17",
+        "summary": "Add comprehensive error logging in the useAuth hook (frontend/src/hooks/useAuth.ts) to capture and display any errors from the admin check query",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useAuth.ts",
+          "frontend/src/pages/Admin.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useAuth.ts",
+          "frontend/src/pages/Admin.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/hooks/useAuth.ts",
+    "frontend/src/pages/Admin.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

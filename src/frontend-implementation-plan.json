@@ -1,0 +1,49 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Fix admin access denied error by correcting authorization logic",
+  "requirements": [
+    {
+      "id": "REQ-15",
+      "summary": "Debug and fix the admin authorization logic in the Admin page component to resolve the 'Access Denied' error that prevents authenticated users from accessing the admin panel",
+      "acceptanceCriteria": [
+        "The Admin page renders the product management interface without showing 'Access Denied'",
+        "Console logs show successful authentication and admin check results",
+        "The useAuth hook correctly identifies admin status"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/Admin.tsx",
+          "operation": "modify",
+          "description": "Review and fix the authorization check logic in the Admin page component. Ensure the component properly waits for both authentication state and admin status check to complete before rendering AccessDeniedScreen. Verify that the isAdmin check from useAuth is being used correctly and that loading states are properly handled to prevent premature access denial. Add or update console logging to display the current authentication state, identity principal, and admin check result for debugging purposes."
+        },
+        {
+          "path": "frontend/src/hooks/useAuth.ts",
+          "operation": "modify",
+          "description": "Fix the useAuth hook implementation to correctly check admin status using the backend's isCallerAdmin method. Ensure the hook properly handles the query lifecycle including loading, error, and success states. Verify the hook correctly returns the admin boolean value from the backend call. Use the authorization component's guidance to properly integrate with the backend interface method isCallerAdmin() that returns Promise<boolean>."
+        }
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "summary": "Add comprehensive error logging in the useAuth hook to capture and display any errors from the admin check query",
+      "acceptanceCriteria": [
+        "Console logs show the exact error or response from the isAdmin backend call",
+        "The hook logs the caller principal being checked",
+        "Error states are properly handled and displayed"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useAuth.ts",
+          "operation": "modify",
+          "description": "Add comprehensive console logging throughout the useAuth hook to capture the complete flow of the admin check. Log when the query starts, the caller principal being checked (obtained from identity.getPrincipal()), the raw response from the backend isCallerAdmin call, any errors that occur during the query, and the final resolved admin status. Include timestamps and clear labels for each log entry to aid in debugging. Ensure error objects are logged with full details including error messages and stack traces where available."
+        },
+        {
+          "path": "frontend/src/pages/Admin.tsx",
+          "operation": "modify",
+          "description": "Enhance debug logging in the Admin page to include the complete state of authentication checks including identity object details, the result of the isAdmin check from useAuth, loading states for both actor and auth queries, and any error states. Log the progression through the authorization decision tree to clearly show why AccessDeniedScreen is or isn't being displayed. Use structured logging with clear labels to make debugging easier."
+        }
+      ]
+    }
+  ]
+}
