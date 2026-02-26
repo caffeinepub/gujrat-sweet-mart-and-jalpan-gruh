@@ -1,0 +1,91 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-in-the-admin-orders-management-panel-display-a-clear-visual-indicator-e-g-a-badge-on-each-order-showing-whether-the-payment-has-been-received-paid-or-is-still-pending-unpaid-this-should-be-visible-at-a-glance-when-the-admin-views-the-orders-list",
+      "featureTitle": "In the Admin Orders Management panel, display a clear visual indicator (e.g., a badge) on each order showing whether the payment has been received ('Paid') or is still pending ('Unpaid'). This should be visible at a glance when the admin views the orders list.",
+      "files": [
+        "frontend/src/components/OrdersManagement.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-the-estimated-delivery-time-display-from-all-customer-facing-pages-myorders-orderconfirmation-paymentsuccess-customers-should-not-see-any-delivery-time-estimate-unless-the-admin-has-explicitly-set-it-after-dispatch",
+      "featureTitle": "Remove the estimated delivery time display from all customer-facing pages (MyOrders, OrderConfirmation, PaymentSuccess). Customers should not see any delivery time estimate unless the admin has explicitly set it after dispatch.",
+      "files": [
+        "frontend/src/pages/MyOrders.tsx",
+        "frontend/src/pages/OrderConfirmation.tsx",
+        "frontend/src/pages/PaymentSuccess.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-the-admin-orders-management-panel-add-a-delivery-time-input-form-for-each-order-that-has-been-dispatched-status-is-shipped-outfordelivery-or-delivered-the-form-should-include-a-numeric-input-and-a-unit-selector-minutes-hours-days-and-a-set-delivery-time-button-that-calls-the-backend-setdeliverytime-function-if-a-delivery-time-is-already-set-display-the-current-value-and-allow-the-admin-to-update-it",
+      "featureTitle": "In the Admin Orders Management panel, add a delivery time input form for each order that has been dispatched (status is shipped, outForDelivery, or delivered). The form should include a numeric input and a unit selector (minutes, hours, days), and a 'Set Delivery Time' button that calls the backend setDeliveryTime function. If a delivery time is already set, display the current value and allow the admin to update it.",
+      "files": [
+        "frontend/src/components/OrdersManagement.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-react-query-mutation-hook-usesetdeliverytime-in-the-frontend-hooks-layer-that-calls-the-backend-setdeliverytime-function-and-update-the-useorders-hook-to-include-the-deliverytime-field-when-fetching-orders",
+      "featureTitle": "Add a React Query mutation hook useSetDeliveryTime in the frontend hooks layer that calls the backend setDeliveryTime function, and update the useOrders hook to include the deliveryTime field when fetching orders.",
+      "files": [
+        "frontend/src/hooks/useOrders.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

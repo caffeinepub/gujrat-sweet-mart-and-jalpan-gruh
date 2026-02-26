@@ -1,0 +1,39 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-26T11:45:13.141Z",
+  "summary": "The diff implements most of the required features across backend and frontend. REQ-1 through REQ-6 are largely addressed: paymentStatus field added to order model, PaymentStatusBadge shown in admin panel, deliveryTime field and setDeliveryTime backend function added, customer-facing pages updated to hide/show admin-set delivery time, admin DeliveryTimeInput component added, and useSetDeliveryTime hook created. One notable gap is that the backend's getStripeSessionStatus / payment verification flow marking orders as 'paid' is not visible in the diff (backend/main.mo is truncated), and the PaymentSuccess page does not appear to call any order-update function that marks paymentStatus as 'paid'. Additionally, the migration.mo adds a 'refunded' payment status value not specified in the requirements.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "When Stripe payment verification succeeds, the corresponding order's paymentStatus is updated to 'paid' in the backend.",
+      "reason": "The PaymentSuccess.tsx only calls actor.getStripeSessionStatus() and does not call any function to update the order's paymentStatus to 'paid'. The backend/main.mo is truncated so the Stripe verification handler's order update logic cannot be confirmed.",
+      "evidence": [
+        "frontend/src/pages/PaymentSuccess.tsx",
+        "backend/main.mo"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "A 'refunded' payment status value is added to the order data model and displayed as a 'Refunded' badge in the admin panel.",
+      "reason": "The build request only specifies 'pending', 'paid', and 'failed' as valid paymentStatus values. The 'refunded' status was not requested.",
+      "evidence": [
+        "backend/migration.mo",
+        "frontend/src/components/OrdersManagement.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.72,
+  "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/components/OrdersManagement.tsx",
+    "frontend/src/hooks/useOrders.ts",
+    "frontend/src/pages/MyOrders.tsx",
+    "frontend/src/pages/OrderConfirmation.tsx",
+    "frontend/src/pages/PaymentSuccess.tsx",
+    "project_state.json"
+  ]
+}

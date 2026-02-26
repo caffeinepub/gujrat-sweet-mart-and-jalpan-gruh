@@ -1,0 +1,143 @@
+{
+  "kind": "build_request",
+  "title": "Online Payment Notification System & Admin-Controlled Delivery Time After Dispatch",
+  "projectName": "Gujrat Sweet Mart",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add a payment status field to the order data model in the backend. When a Stripe payment session is successfully verified, mark the order's payment status as 'paid'. Expose this field in the order retrieval functions so the admin panel can read it.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "online payment is done business can know that payment is received"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Order records include a paymentStatus field with possible values: 'pending', 'paid', 'failed'.",
+        "When Stripe payment verification succeeds (existing PaymentSuccess flow), the corresponding order's paymentStatus is updated to 'paid' in the backend.",
+        "The admin orders retrieval function returns the paymentStatus field for each order."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "In the Admin Orders Management panel, display a clear visual indicator (e.g., a badge) on each order showing whether the payment has been received ('Paid') or is still pending ('Unpaid'). This should be visible at a glance when the admin views the orders list.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "business can know that payment is received"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each order row in the admin OrdersManagement component shows a payment status badge.",
+        "Orders with paymentStatus 'paid' show a green 'Paid' badge.",
+        "Orders with paymentStatus 'pending' or 'failed' show a distinct badge (e.g., yellow 'Unpaid' or red 'Failed').",
+        "Cash on Delivery orders are marked appropriately (e.g., 'COD') and not shown as paid until fulfilled."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add a delivery time field to the order data model in the backend. This field should store a numeric value and a unit (minutes, hours, or days). Add a backend function callable only by admin to set the delivery time on a specific order. This function should only succeed after the order has been dispatched (i.e., order status is 'shipped' or 'outForDelivery' or 'delivered').",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "delete the estimated delivery time display it can only be set by the admin after dispatch",
+          "it should be in minutes,hours and days"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Order records include an optional deliveryTime field containing a numeric value and a unit type (minutes | hours | days).",
+        "A new admin-only function setDeliveryTime(orderId, value, unit) exists in the backend actor.",
+        "Calling setDeliveryTime returns an error if the caller is not admin.",
+        "Calling setDeliveryTime returns an error if the order status is still 'orderPlaced' (not yet dispatched).",
+        "On success, the delivery time is persisted on the order record."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Remove the estimated delivery time display from all customer-facing pages (MyOrders, OrderConfirmation, PaymentSuccess). Customers should not see any delivery time estimate unless the admin has explicitly set it after dispatch.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "delete the estimated delivery time display",
+          "it can only be set by the admin after dispatch"
+        ]
+      },
+      "acceptanceCriteria": [
+        "No hardcoded or auto-calculated estimated delivery time is shown on the MyOrders page.",
+        "No estimated delivery time is shown on the OrderConfirmation page.",
+        "The PaymentSuccess page does not display any delivery time estimate.",
+        "If the admin has set a delivery time on a dispatched order, that value IS shown to the customer in MyOrders and OrderConfirmation with the correct unit label (minutes / hours / days).",
+        "If no delivery time has been set by admin, the delivery time section is hidden entirely from the customer view."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "In the Admin Orders Management panel, add a delivery time input form for each order that has been dispatched (status is shipped, outForDelivery, or delivered). The form should include a numeric input and a unit selector (minutes, hours, days), and a 'Set Delivery Time' button that calls the backend setDeliveryTime function. If a delivery time is already set, display the current value and allow the admin to update it.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "it can only be set by the admin after dispatch",
+          "it should be in minutes,hours and days"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Dispatched orders in the admin OrdersManagement component show a delivery time input section.",
+        "The input section contains a numeric field and a dropdown/select with options: Minutes, Hours, Days.",
+        "Clicking 'Set Delivery Time' calls the backend and shows a success or error toast notification.",
+        "If delivery time is already set on an order, the current value and unit are pre-filled in the inputs.",
+        "Orders with status 'orderPlaced' (not yet dispatched) do not show the delivery time input."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Add a React Query mutation hook useSetDeliveryTime in the frontend hooks layer that calls the backend setDeliveryTime function, and update the useOrders hook to include the deliveryTime field when fetching orders.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "it can only be set by the admin after dispatch"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A useSetDeliveryTime mutation hook exists and calls the actor's setDeliveryTime method.",
+        "On success, the hook invalidates the relevant orders queries.",
+        "The useOrders hooks (getUserOrders and getAllOrders) return deliveryTime data when present in the order records."
+      ]
+    }
+  ],
+  "constraints": [
+    "All Motoko logic must remain in the single backend/main.mo actor file.",
+    "The setDeliveryTime function must enforce admin-only access using the existing role-based access control pattern.",
+    "Do not modify any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui.",
+    "Delivery time can only be set on orders that have been dispatched (status: shipped, outForDelivery, or delivered)."
+  ],
+  "nonGoals": [
+    "Automatic push notifications or email alerts to the business owner.",
+    "Real-time order update streaming.",
+    "Customer ability to set or suggest delivery time.",
+    "Changing the existing order status workflow beyond adding the delivery time field.",
+    "Any changes to the Stripe payment flow itself beyond marking orders as paid."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

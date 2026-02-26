@@ -1,0 +1,86 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Online Payment Notification System & Admin-Controlled Delivery Time After Dispatch",
+  "requirements": [
+    {
+      "id": "REQ-2",
+      "summary": "Display payment status badge in Admin Orders Management panel",
+      "acceptanceCriteria": [
+        "Each order row in the admin OrdersManagement component shows a payment status badge.",
+        "Orders with paymentStatus 'paid' show a green 'Paid' badge.",
+        "Orders with paymentStatus 'pending' or 'failed' show a distinct badge (e.g., yellow 'Unpaid' or red 'Failed').",
+        "Cash on Delivery orders are marked appropriately (e.g., 'COD') and not shown as paid until fulfilled."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/OrdersManagement.tsx",
+          "operation": "modify",
+          "description": "Add payment status badge display logic for each order. Show a green 'Paid' badge when paymentStatus is 'paid', a yellow 'Unpaid' badge for 'pending', and a red 'Failed' badge for 'failed'. For COD orders, display 'COD' badge with appropriate styling. Place the badge next to the order status dropdown for easy visibility. Use Tailwind classes for badge styling (e.g., bg-green-100 text-green-800 for paid)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Remove estimated delivery time from customer-facing pages unless admin has set it after dispatch",
+      "acceptanceCriteria": [
+        "No hardcoded or auto-calculated estimated delivery time is shown on the MyOrders page.",
+        "No estimated delivery time is shown on the OrderConfirmation page.",
+        "The PaymentSuccess page does not display any delivery time estimate.",
+        "If the admin has set a delivery time on a dispatched order, that value IS shown to the customer in MyOrders and OrderConfirmation with the correct unit label (minutes / hours / days).",
+        "If no delivery time has been set by admin, the delivery time section is hidden entirely from the customer view."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/MyOrders.tsx",
+          "operation": "modify",
+          "description": "Remove any hardcoded or calculated estimated delivery time display. Add conditional rendering to show delivery time only when order.deliveryTime is present and the order status is shipped, outForDelivery, or delivered. Display the deliveryTime value with the correct unit label (minutes, hours, or days). If deliveryTime is not set, hide the delivery time section entirely."
+        },
+        {
+          "path": "frontend/src/pages/OrderConfirmation.tsx",
+          "operation": "modify",
+          "description": "Remove any hardcoded or calculated estimated delivery time display. Add conditional rendering to show delivery time only when order.deliveryTime exists and the order has been dispatched. Display the deliveryTime.value with the appropriate unit from deliveryTime.unit (minutes, hours, or days). Hide the delivery time section completely if deliveryTime is not present on the order."
+        },
+        {
+          "path": "frontend/src/pages/PaymentSuccess.tsx",
+          "operation": "modify",
+          "description": "Remove any estimated delivery time display. Do not show delivery time information on this page, as delivery time can only be set by admin after dispatch. Keep the order confirmation details without any time estimates."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Add delivery time input form in Admin Orders Management for dispatched orders",
+      "acceptanceCriteria": [
+        "Dispatched orders in the admin OrdersManagement component show a delivery time input section.",
+        "The input section contains a numeric field and a dropdown/select with options: Minutes, Hours, Days.",
+        "Clicking 'Set Delivery Time' calls the backend and shows a success or error toast notification.",
+        "If delivery time is already set on an order, the current value and unit are pre-filled in the inputs.",
+        "Orders with status 'orderPlaced' (not yet dispatched) do not show the delivery time input."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/OrdersManagement.tsx",
+          "operation": "modify",
+          "description": "Add a delivery time input section for each order where status is 'shipped', 'outForDelivery', or 'delivered'. Include a numeric input field for the delivery time value and a select dropdown with options for Minutes, Hours, and Days (matching the TimeUnit enum from the backend interface). Add a 'Set Delivery Time' button that triggers the useSetDeliveryTime mutation. Pre-fill the inputs with existing deliveryTime.value and deliveryTime.unit if already set. Show toast notifications on success or error using the existing toast pattern. Hide the delivery time input for orders with status 'orderPlaced' or 'cancelled'."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Add useSetDeliveryTime mutation hook and update useOrders to include deliveryTime field",
+      "acceptanceCriteria": [
+        "A useSetDeliveryTime mutation hook exists and calls the actor's setDeliveryTime method.",
+        "On success, the hook invalidates the relevant orders queries.",
+        "The useOrders hooks (getUserOrders and getAllOrders) return deliveryTime data when present in the order records."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useOrders.ts",
+          "operation": "modify",
+          "description": "Add a new useSetDeliveryTime mutation hook that accepts orderId, value, and unit (TimeUnit) as parameters and calls actor.setDeliveryTime(orderId, value, unit). On success, invalidate both 'userOrders' and 'allOrders' query keys to refresh the order lists. The existing useGetUserOrders and useGetAllOrders hooks already return the full Order type from the backend, which includes the optional deliveryTime field, so no changes are needed to those query hooks."
+        }
+      ]
+    }
+  ]
+}

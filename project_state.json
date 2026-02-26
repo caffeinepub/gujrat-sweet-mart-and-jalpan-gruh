@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "E-commerce platform with online payment notification system for businesses and admin-controlled delivery time tracking (in minutes, hours, and days) set only after dispatch.",
+  "architectural_notes": [
+    "Delivery time is admin-only input, set post-dispatch, displayed in minutes/hours/days units",
+    "Payment notification must trigger business-side alert/update when online payment is confirmed"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-in-the-admin-orders-management-panel-display-a-clear-visual-indicator-e-g-a-badge-on-each-order-showing-whether-the-payment-has-been-received-paid-or-is-still-pending-unpaid-this-should-be-visible-at-a-glance-when-the-admin-views-the-orders-list",
+      "title": "In the Admin Orders Management panel, display a clear visual indicator (e.g., a badge) on each order showing whether the payment has been received ('Paid') or is still pending ('Unpaid'). This should be visible at a glance when the admin views the orders list.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-estimated-delivery-time-display-from-all-customer-facing-pages-myorders-orderconfirmation-paymentsuccess-customers-should-not-see-any-delivery-time-estimate-unless-the-admin-has-explicitly-set-it-after-dispatch",
+      "title": "Remove the estimated delivery time display from all customer-facing pages (MyOrders, OrderConfirmation, PaymentSuccess). Customers should not see any delivery time estimate unless the admin has explicitly set it after dispatch.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-admin-orders-management-panel-add-a-delivery-time-input-form-for-each-order-that-has-been-dispatched-status-is-shipped-outfordelivery-or-delivered-the-form-should-include-a-numeric-input-and-a-unit-selector-minutes-hours-days-and-a-set-delivery-time-button-that-calls-the-backend-setdeliverytime-function-if-a-delivery-time-is-already-set-display-the-current-value-and-allow-the-admin-to-update-it",
+      "title": "In the Admin Orders Management panel, add a delivery time input form for each order that has been dispatched (status is shipped, outForDelivery, or delivered). The form should include a numeric input and a unit selector (minutes, hours, days), and a 'Set Delivery Time' button that calls the backend setDeliveryTime function. If a delivery time is already set, display the current value and allow the admin to update it.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-react-query-mutation-hook-usesetdeliverytime-in-the-frontend-hooks-layer-that-calls-the-backend-setdeliverytime-function-and-update-the-useorders-hook-to-include-the-deliverytime-field-when-fetching-orders",
+      "title": "Add a React Query mutation hook useSetDeliveryTime in the frontend hooks layer that calls the backend setDeliveryTime function, and update the useOrders hook to include the deliveryTime field when fetching orders.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Payment received notification system so business knows when online payment is completed",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Remove estimated delivery time display from customer-facing view; only admin can set it after dispatch, in minutes/hours/days",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Add a payment status field to the order data model in the backend. When a Stripe payment session is successfully verified, mark the order's payment status as 'paid'. Expose this field in the order retrieval functions so the admin panel can read it.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add a delivery time field to the order data model in the backend. This field should store a numeric value and a unit (minutes, hours, or days). Add a backend function callable only by admin to set the delivery time on a specific order. This function should only succeed after the order has been dispatched (i.e., order status is 'shipped' or 'outForDelivery' or 'delivered').",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Gujrat Sweet Mart",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
