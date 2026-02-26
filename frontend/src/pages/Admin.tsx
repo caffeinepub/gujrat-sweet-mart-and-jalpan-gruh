@@ -6,9 +6,12 @@ import { useDeleteProduct } from '../hooks/useProductMutations';
 import ProductForm from '../components/ProductForm';
 import OrdersManagement from '../components/OrdersManagement';
 import StripePaymentSetup from '../components/StripePaymentSetup';
+import UpiPaymentSetup from '../components/UpiPaymentSetup';
+import DeliveryStaffManagement from '../components/DeliveryStaffManagement';
+import DeliveryApprovalManagement from '../components/DeliveryApprovalManagement';
 import AccessDeniedScreen from '../components/AccessDeniedScreen';
 import { Product, Unit } from '../backend';
-import { Loader2, Plus, Pencil, Trash2, Package, ShoppingBag } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, Package, ShoppingBag, QrCode, Truck, UserCheck } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import {
@@ -96,14 +99,26 @@ export default function Admin() {
       <StripePaymentSetup />
 
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
-          <TabsTrigger value="products" className="flex items-center gap-2">
+        <TabsList className="grid w-full max-w-3xl grid-cols-5 mb-8">
+          <TabsTrigger value="products" className="flex items-center gap-1.5 text-xs sm:text-sm">
             <Package className="h-4 w-4" />
-            Products
+            <span className="hidden sm:inline">Products</span>
           </TabsTrigger>
-          <TabsTrigger value="orders" className="flex items-center gap-2">
+          <TabsTrigger value="orders" className="flex items-center gap-1.5 text-xs sm:text-sm">
             <ShoppingBag className="h-4 w-4" />
-            Orders
+            <span className="hidden sm:inline">Orders</span>
+          </TabsTrigger>
+          <TabsTrigger value="upi" className="flex items-center gap-1.5 text-xs sm:text-sm">
+            <QrCode className="h-4 w-4" />
+            <span className="hidden sm:inline">UPI Setup</span>
+          </TabsTrigger>
+          <TabsTrigger value="delivery" className="flex items-center gap-1.5 text-xs sm:text-sm">
+            <Truck className="h-4 w-4" />
+            <span className="hidden sm:inline">Delivery Staff</span>
+          </TabsTrigger>
+          <TabsTrigger value="approvals" className="flex items-center gap-1.5 text-xs sm:text-sm">
+            <UserCheck className="h-4 w-4" />
+            <span className="hidden sm:inline">Approvals</span>
           </TabsTrigger>
         </TabsList>
 
@@ -184,6 +199,24 @@ export default function Admin() {
         <TabsContent value="orders">
           <OrdersManagement />
         </TabsContent>
+
+        <TabsContent value="upi">
+          <UpiPaymentSetup />
+        </TabsContent>
+
+        <TabsContent value="delivery">
+          <DeliveryStaffManagement />
+        </TabsContent>
+
+        <TabsContent value="approvals">
+          <div className="mb-4">
+            <h2 className="text-2xl font-display font-bold mb-1">Delivery Approvals</h2>
+            <p className="text-muted-foreground text-sm">
+              Review and approve or reject delivery access requests from users.
+            </p>
+          </div>
+          <DeliveryApprovalManagement />
+        </TabsContent>
       </Tabs>
 
       <AlertDialog open={!!deleteConfirmProduct} onOpenChange={() => setDeleteConfirmProduct(null)}>
@@ -196,8 +229,15 @@ export default function Admin() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-              Delete
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteProduct.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                'Delete'
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

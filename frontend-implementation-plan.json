@@ -1,84 +1,88 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Online Payment Notification System & Admin-Controlled Delivery Time After Dispatch",
+  "title": "User Profile System with Principal ID and Admin Approval for Delivery Access",
   "requirements": [
     {
-      "id": "REQ-2",
-      "summary": "Display payment status badge in Admin Orders Management panel",
+      "id": "REQ-3",
+      "summary": "Update delivery dashboard access gate to verify both delivery role and approved delivery status, showing appropriate messages for pending or rejected users",
       "acceptanceCriteria": [
-        "Each order row in the admin OrdersManagement component shows a payment status badge.",
-        "Orders with paymentStatus 'paid' show a green 'Paid' badge.",
-        "Orders with paymentStatus 'pending' or 'failed' show a distinct badge (e.g., yellow 'Unpaid' or red 'Failed').",
-        "Cash on Delivery orders are marked appropriately (e.g., 'COD') and not shown as paid until fulfilled."
+        "Delivery dashboard is only accessible when both delivery role is assigned AND deliveryApprovalStatus is #approved",
+        "Pending users see a 'pending approval' message instead of the dashboard",
+        "Rejected users see a 'rejected' message instead of the dashboard"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/OrdersManagement.tsx",
+          "path": "frontend/src/pages/Delivery.tsx",
           "operation": "modify",
-          "description": "Add payment status badge display logic for each order. Show a green 'Paid' badge when paymentStatus is 'paid', a yellow 'Unpaid' badge for 'pending', and a red 'Failed' badge for 'failed'. For COD orders, display 'COD' badge with appropriate styling. Place the badge next to the order status dropdown for easy visibility. Use Tailwind classes for badge styling (e.g., bg-green-100 text-green-800 for paid)."
+          "description": "Add deliveryApprovalStatus check alongside the existing delivery role check. Fetch the user's profile using useMyProfile hook and verify that deliveryApprovalStatus is 'approved'. If status is 'pending', render a message: 'Your account is pending admin approval for delivery access.' If 'rejected', show: 'Your delivery access request has been rejected. Please contact the admin.' Only render the active orders list when both role check and approval status check pass."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Remove estimated delivery time from customer-facing pages unless admin has set it after dispatch",
+      "summary": "Build a Profile page accessible to all authenticated users for viewing and editing profile details, displaying Principal ID, showing delivery approval status, and requesting delivery access",
       "acceptanceCriteria": [
-        "No hardcoded or auto-calculated estimated delivery time is shown on the MyOrders page.",
-        "No estimated delivery time is shown on the OrderConfirmation page.",
-        "The PaymentSuccess page does not display any delivery time estimate.",
-        "If the admin has set a delivery time on a dispatched order, that value IS shown to the customer in MyOrders and OrderConfirmation with the correct unit label (minutes / hours / days).",
-        "If no delivery time has been set by admin, the delivery time section is hidden entirely from the customer view."
+        "Profile page shows name, contact number, email as editable fields",
+        "Principal ID is displayed as a read-only field with a copy-to-clipboard button",
+        "Delivery approval status is shown (pending / approved / rejected) if applicable",
+        "'Request Delivery Access' button is visible and submits the profile for admin review",
+        "Profile page is accessible from the header navigation for logged-in users"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/MyOrders.tsx",
-          "operation": "modify",
-          "description": "Remove any hardcoded or calculated estimated delivery time display. Add conditional rendering to show delivery time only when order.deliveryTime is present and the order status is shipped, outForDelivery, or delivered. Display the deliveryTime value with the correct unit label (minutes, hours, or days). If deliveryTime is not set, hide the delivery time section entirely."
+          "path": "frontend/src/pages/Profile.tsx",
+          "operation": "create",
+          "description": "Create a new Profile page component that fetches the user's profile using useMyProfile hook. Display fullName, contactNumber, and email as editable form fields. Show principalId as a read-only text field with a copy-to-clipboard button. If deliveryApprovalStatus exists, display it as a badge (pending/approved/rejected). Include a 'Request Delivery Access' button that calls requestApproval() from the backend when the user wants to request delivery access. Use a form with save functionality that calls saveCallerUserProfile mutation from useMyProfile hook. Show toast notifications on save success or error."
         },
         {
-          "path": "frontend/src/pages/OrderConfirmation.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Remove any hardcoded or calculated estimated delivery time display. Add conditional rendering to show delivery time only when order.deliveryTime exists and the order has been dispatched. Display the deliveryTime.value with the appropriate unit from deliveryTime.unit (minutes, hours, or days). Hide the delivery time section completely if deliveryTime is not present on the order."
-        },
-        {
-          "path": "frontend/src/pages/PaymentSuccess.tsx",
-          "operation": "modify",
-          "description": "Remove any estimated delivery time display. Do not show delivery time information on this page, as delivery time can only be set by admin after dispatch. Keep the order confirmation details without any time estimates."
+          "description": "Add a new route for '/profile' that renders the Profile page component. In the header navigation section, add a 'Profile' link visible only to authenticated users (alongside the existing Delivery link). Place the Profile link before the Delivery link in the navigation order."
         }
       ]
     },
     {
       "id": "REQ-5",
-      "summary": "Add delivery time input form in Admin Orders Management for dispatched orders",
+      "summary": "Add a 'Delivery Approvals' tab in the Admin panel for managing pending delivery access requests with approve/reject actions",
       "acceptanceCriteria": [
-        "Dispatched orders in the admin OrdersManagement component show a delivery time input section.",
-        "The input section contains a numeric field and a dropdown/select with options: Minutes, Hours, Days.",
-        "Clicking 'Set Delivery Time' calls the backend and shows a success or error toast notification.",
-        "If delivery time is already set on an order, the current value and unit are pre-filled in the inputs.",
-        "Orders with status 'orderPlaced' (not yet dispatched) do not show the delivery time input."
+        "Admin panel has a new 'Delivery Approvals' tab",
+        "Tab lists all pending profiles with name, email, contact number, and Principal ID",
+        "Approve button calls approveDeliveryPrincipal and shows a success toast",
+        "Reject button calls rejectDeliveryPrincipal and shows a success toast",
+        "List refreshes after an approve or reject action"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/OrdersManagement.tsx",
+          "path": "frontend/src/components/DeliveryApprovalManagement.tsx",
+          "operation": "create",
+          "description": "Create a new admin component that uses usePendingDeliveryProfiles hook to fetch all profiles with deliveryApprovalStatus = 'pending'. Display each profile in a table or card list showing fullName, email, contactNumber, and principalId. Provide 'Approve' and 'Reject' buttons for each entry. The Approve button should call useApproveDeliveryPrincipal mutation passing the user's principal, and the Reject button should call useRejectDeliveryPrincipal mutation. Show toast notifications on success or error. The list should automatically refresh after mutations complete via React Query cache invalidation."
+        },
+        {
+          "path": "frontend/src/pages/Admin.tsx",
           "operation": "modify",
-          "description": "Add a delivery time input section for each order where status is 'shipped', 'outForDelivery', or 'delivered'. Include a numeric input field for the delivery time value and a select dropdown with options for Minutes, Hours, and Days (matching the TimeUnit enum from the backend interface). Add a 'Set Delivery Time' button that triggers the useSetDeliveryTime mutation. Pre-fill the inputs with existing deliveryTime.value and deliveryTime.unit if already set. Show toast notifications on success or error using the existing toast pattern. Hide the delivery time input for orders with status 'orderPlaced' or 'cancelled'."
+          "description": "Add a new tab labeled 'Delivery Approvals' to the existing tabbed interface. Import and render the DeliveryApprovalManagement component when this tab is active. Place the new tab after the 'Delivery Staff' tab in the tab order."
         }
       ]
     },
     {
       "id": "REQ-6",
-      "summary": "Add useSetDeliveryTime mutation hook and update useOrders to include deliveryTime field",
+      "summary": "Add React Query hooks for fetching user profile, pending delivery profiles, and approving/rejecting delivery access requests",
       "acceptanceCriteria": [
-        "A useSetDeliveryTime mutation hook exists and calls the actor's setDeliveryTime method.",
-        "On success, the hook invalidates the relevant orders queries.",
-        "The useOrders hooks (getUserOrders and getAllOrders) return deliveryTime data when present in the order records."
+        "`useMyProfile` returns the full profile including principalId and deliveryApprovalStatus",
+        "`usePendingDeliveryProfiles` returns list of pending profiles",
+        "`useApproveDeliveryPrincipal` and `useRejectDeliveryPrincipal` mutations invalidate the pending profiles query on success"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useOrders.ts",
-          "operation": "modify",
-          "description": "Add a new useSetDeliveryTime mutation hook that accepts orderId, value, and unit (TimeUnit) as parameters and calls actor.setDeliveryTime(orderId, value, unit). On success, invalidate both 'userOrders' and 'allOrders' query keys to refresh the order lists. The existing useGetUserOrders and useGetAllOrders hooks already return the full Order type from the backend, which includes the optional deliveryTime field, so no changes are needed to those query hooks."
+          "path": "frontend/src/hooks/useMyProfile.ts",
+          "operation": "create",
+          "description": "Create a custom hook that provides both query and mutation for the current user's full profile. Implement useMyProfile query hook that calls actor.getMyProfile() and returns UserProfile | null with principalId and deliveryApprovalStatus fields. Follow the pattern from useUserProfile.ts but rename to useMyProfile. Also export a useSaveMyProfile mutation hook that calls actor.saveCallerUserProfile(fullName, contactNumber, email) and invalidates the 'myProfile' query key on success. Include proper loading state composition from actor and query states similar to useUserProfile pattern."
+        },
+        {
+          "path": "frontend/src/hooks/useDeliveryApprovals.ts",
+          "operation": "create",
+          "description": "Create hooks for delivery approval management. Export usePendingDeliveryProfiles query hook that calls actor.getAllPendingDeliveryProfiles() and returns an array of UserProfile objects with queryKey ['pendingDeliveryProfiles']. Export useApproveDeliveryPrincipal mutation hook that accepts a Principal parameter and calls actor.approveDeliveryPrincipal(principal), invalidating ['pendingDeliveryProfiles'] on success and showing a success toast. Export useRejectDeliveryPrincipal mutation hook that accepts a Principal parameter and calls actor.rejectDeliveryPrincipal(principal), invalidating ['pendingDeliveryProfiles'] on success and showing a success toast. All hooks should be enabled only when actor is available."
         }
       ]
     }

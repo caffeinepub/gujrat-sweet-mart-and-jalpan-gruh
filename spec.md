@@ -1,16 +1,15 @@
 # Specification
 
 ## Summary
-**Goal:** Add an online payment status indicator for admins and replace the hardcoded estimated delivery time with an admin-controlled delivery time that can only be set after an order is dispatched.
+**Goal:** Add a user profile system with Principal ID display, delivery access requests, and admin approval workflow for the Gujrat Sweet Mart app.
 
 **Planned changes:**
-- Add a `paymentStatus` field (`pending`, `paid`, `failed`) to the order data model in the backend; mark orders as `paid` when Stripe payment verification succeeds.
-- Display a payment status badge (green "Paid", yellow "Unpaid", red "Failed", or "COD") on each order row in the Admin Orders Management panel.
-- Add an optional `deliveryTime` field (numeric value + unit: minutes/hours/days) to the order data model in the backend.
-- Add an admin-only `setDeliveryTime(orderId, value, unit)` backend function that only succeeds when the order has been dispatched (status: shipped, outForDelivery, or delivered).
-- Remove all hardcoded/auto-calculated estimated delivery time displays from MyOrders, OrderConfirmation, and PaymentSuccess pages.
-- Show the admin-set delivery time to customers in MyOrders and OrderConfirmation only when it has been explicitly set; hide the section entirely otherwise.
-- Add a delivery time input form (numeric field + unit selector + "Set Delivery Time" button) in the Admin Orders Management panel for dispatched orders; pre-fill current values if already set.
-- Add a `useSetDeliveryTime` mutation hook and update `useOrders` hooks to include `deliveryTime` data.
+- Extend the backend user profile model to include full name, contact number, email, Principal ID, and a `deliveryApprovalStatus` field (`pending`, `approved`, `rejected`); new profiles default to `pending`
+- Add backend functions: `getMyProfile()`, `getAllPendingDeliveryProfiles()` (admin-only), `approveDeliveryPrincipal()` (admin-only, also grants delivery role), and `rejectDeliveryPrincipal()` (admin-only)
+- Add a Profile page accessible to all logged-in users showing editable name, contact number, and email fields; read-only Principal ID with copy-to-clipboard; current delivery approval status; and a "Request Delivery Access" button
+- Update the delivery dashboard access gate to require both the delivery role and `deliveryApprovalStatus = approved`; show appropriate messages for pending and rejected users
+- Add a "Delivery Approvals" tab in the Admin panel listing pending profiles with Approve/Reject buttons and success toasts
+- Add React Query hooks: `useMyProfile`, `usePendingDeliveryProfiles`, `useApproveDeliveryPrincipal`, and `useRejectDeliveryPrincipal`
+- Add a Profile link in the header navigation for logged-in users
 
-**User-visible outcome:** Admins can instantly see whether payment has been received for each order, and can set a specific delivery time (in minutes, hours, or days) on dispatched orders. Customers only see delivery time information once the admin has explicitly set it; no estimated times are shown automatically.
+**User-visible outcome:** Users can view and edit their profile, see their Principal ID, and request delivery access. Admins can review pending delivery access requests and approve or reject them from a new Admin panel tab. Approved users gain access to the delivery dashboard automatically.

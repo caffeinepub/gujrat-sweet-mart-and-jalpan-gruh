@@ -119,3 +119,19 @@ export function useSetDeliveryTime() {
     },
   });
 }
+
+export function useMarkOrderAsPaid() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (orderId: bigint) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.markOrderAsPaid(orderId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['allOrders'] });
+    },
+  });
+}

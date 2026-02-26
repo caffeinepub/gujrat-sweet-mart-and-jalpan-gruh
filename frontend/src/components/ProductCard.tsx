@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAddToCart } from '../hooks/useCart';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { toast } from 'sonner';
-import { ShoppingCart, Loader2 } from 'lucide-react';
+import { ShoppingCart, Loader2, Ban } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -31,6 +31,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const isPerKg = product.unit === Unit.per_kg;
   const isBeverage = product.category === Category.beverages;
+  const isUnavailable = !product.available;
 
   const calculateTotal = () => {
     if (isPerKg) {
@@ -40,6 +41,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   const handleAddToCart = async () => {
+    if (isUnavailable) return;
+
     if (!identity) {
       toast.error('Please login to add items to cart');
       return;
@@ -59,14 +62,27 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className={`bg-gradient-to-br ${categoryColors[product.category]} border-2 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all`}>
-      <div className="aspect-video bg-white/50 flex items-center justify-center p-4">
+    <div className={`relative bg-gradient-to-br ${categoryColors[product.category]} border-2 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all ${isUnavailable ? 'opacity-60' : ''}`}>
+      {/* Unavailable overlay badge */}
+      {isUnavailable && (
+        <div className="absolute top-2 right-2 z-10 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow">
+          <Ban className="h-3 w-3" />
+          Unavailable
+        </div>
+      )}
+
+      <div className="aspect-video bg-white/50 flex items-center justify-center p-4 relative">
         {product.photoUrl ? (
-          <img src={product.photoUrl} alt={product.name} className="max-h-full max-w-full object-contain" />
+          <img
+            src={product.photoUrl}
+            alt={product.name}
+            className={`max-h-full max-w-full object-contain ${isUnavailable ? 'grayscale' : ''}`}
+          />
         ) : (
           <div className="text-muted-foreground text-sm">No image</div>
         )}
       </div>
+
       <div className="p-4">
         <h3 className={`font-display font-bold text-lg mb-1 ${categoryTextColors[product.category]}`}>
           {product.name}
@@ -90,12 +106,13 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {[250, 500, 1000, 2000].map((weight) => (
                   <button
                     key={weight}
-                    onClick={() => setSelectedWeight(weight)}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    onClick={() => !isUnavailable && setSelectedWeight(weight)}
+                    disabled={isUnavailable}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed ${
                       selectedWeight === weight
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-white/50 hover:bg-white/80'
-                    }`}
+                    } ${isUnavailable ? 'opacity-50' : ''}`}
                   >
                     {weight >= 1000 ? `${weight / 1000} kg` : `${weight} gms`}
                   </button>
@@ -107,15 +124,17 @@ export default function ProductCard({ product }: ProductCardProps) {
               <label className="text-sm font-medium mb-2 block">Quantity:</label>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setSelectedQuantity(Math.max(1, selectedQuantity - 1))}
-                  className="w-8 h-8 rounded-md bg-white/50 hover:bg-white/80 font-bold"
+                  onClick={() => !isUnavailable && setSelectedQuantity(Math.max(1, selectedQuantity - 1))}
+                  disabled={isUnavailable}
+                  className="w-8 h-8 rounded-md bg-white/50 hover:bg-white/80 font-bold disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   -
                 </button>
                 <span className="w-12 text-center font-semibold">{selectedQuantity}</span>
                 <button
-                  onClick={() => setSelectedQuantity(Math.min(10, selectedQuantity + 1))}
-                  className="w-8 h-8 rounded-md bg-white/50 hover:bg-white/80 font-bold"
+                  onClick={() => !isUnavailable && setSelectedQuantity(Math.min(10, selectedQuantity + 1))}
+                  disabled={isUnavailable}
+                  className="w-8 h-8 rounded-md bg-white/50 hover:bg-white/80 font-bold disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   +
                 </button>
@@ -131,13 +150,18 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             <button
               onClick={handleAddToCart}
-              disabled={addToCart.isPending || !identity}
-              className="w-full bg-primary text-primary-foreground py-2 rounded-md font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              disabled={addToCart.isPending || !identity || isUnavailable}
+              className="w-full py-2 rounded-md font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {addToCart.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Adding...
+                </>
+              ) : isUnavailable ? (
+                <>
+                  <Ban className="h-4 w-4" />
+                  Unavailable
                 </>
               ) : (
                 <>

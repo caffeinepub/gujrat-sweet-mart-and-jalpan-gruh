@@ -1,105 +1,70 @@
 import Map "mo:core/Map";
-import Nat "mo:core/Nat";
-import Time "mo:core/Time";
-import List "mo:core/List";
+import Principal "mo:core/Principal";
 
 module {
-  type ProductId = Nat;
-
-  type Category = {
-    #sweets;
-    #snacks;
-    #namkeen;
-    #beverages;
-  };
-
-  type Unit = {
-    #per_kg;
-    #single;
-  };
-
-  type Product = {
-    id : ProductId;
+  type OldUserProfile = {
     name : Text;
-    category : Category;
-    description : Text;
-    price : Nat;
-    available : Bool;
-    unit : Unit;
-    photoUrl : Text;
   };
 
-  type CartItem = {
-    productId : ProductId;
-    quantity : Nat;
-    totalPrice : Nat;
+  type NewUserProfile = {
+    fullName : Text;
+    contactNumber : Text;
+    email : Text;
+    principalId : Principal.Principal;
+    deliveryApprovalStatus : { #pending; #approved; #rejected };
   };
 
-  type CustomerProfile = {
-    principal : Principal;
-    name : Text;
-    phone : Text;
-    address : Text;
+  type Actor = {
+    products : Map.Map<Nat, {
+      id : Nat;
+      name : Text;
+      category : {
+        #sweets;
+        #snacks;
+        #namkeen;
+        #beverages;
+      };
+      description : Text;
+      price : Nat;
+      available : Bool;
+      unit : { #per_kg; #single };
+      photoUrl : Text;
+    }>;
+    userProfiles : Map.Map<Principal.Principal, OldUserProfile>;
   };
 
-  type OldOrder = {
-    orderId : Nat;
-    customerPrincipal : Principal;
-    name : Text;
-    phone : Text;
-    address : Text;
-    items : [CartItem];
-    paymentMethod : { #cashOnDelivery; #online };
-    status : { #orderPlaced; #shipped; #outForDelivery; #delivered; #cancelled };
-    timestamp : Time.Time;
-  };
-
-  type NewOrder = {
-    orderId : Nat;
-    customerPrincipal : Principal;
-    name : Text;
-    phone : Text;
-    address : Text;
-    items : [CartItem];
-    paymentMethod : { #cashOnDelivery; #online };
-    status : { #orderPlaced; #shipped; #outForDelivery; #delivered; #cancelled };
-    paymentStatus : { #pending; #paid; #refunded; #failed };
-    timestamp : Time.Time;
-    deliveryTime : ?{
-      value : Nat;
-      unit : { #minutes; #hours; #days };
-    };
-  };
-
-  type OldActor = {
-    products : Map.Map<ProductId, Product>;
-    shoppingCarts : Map.Map<Principal, List.List<CartItem>>;
-    customerProfiles : Map.Map<Principal, CustomerProfile>;
-    orders : Map.Map<Nat, OldOrder>;
-    nextOrderId : Nat;
-  };
-
-  type NewActor = {
-    products : Map.Map<ProductId, Product>;
-    shoppingCarts : Map.Map<Principal, List.List<CartItem>>;
-    customerProfiles : Map.Map<Principal, CustomerProfile>;
-    orders : Map.Map<Nat, NewOrder>;
-    nextOrderId : Nat;
-  };
-
-  public func run(old : OldActor) : NewActor {
-    let newOrders = old.orders.map<Nat, OldOrder, NewOrder>(
-      func(_id, oldOrder) {
+  public func run(old : Actor) : {
+    products : Map.Map<Nat, {
+      id : Nat;
+      name : Text;
+      category : {
+        #sweets;
+        #snacks;
+        #namkeen;
+        #beverages;
+      };
+      description : Text;
+      price : Nat;
+      available : Bool;
+      unit : { #per_kg; #single };
+      photoUrl : Text;
+    }>;
+    userProfiles : Map.Map<Principal.Principal, NewUserProfile>;
+  } {
+    let newUserProfiles = old.userProfiles.map<Principal.Principal, OldUserProfile, NewUserProfile>(
+      func(principal, oldProfile) {
         {
-          oldOrder with
-          paymentStatus = #pending;
-          deliveryTime = null;
+          fullName = oldProfile.name;
+          contactNumber = "";
+          email = "";
+          principalId = principal;
+          deliveryApprovalStatus = #pending;
         };
       }
     );
     {
       old with
-      orders = newOrders;
+      userProfiles = newUserProfiles;
     };
   };
 };

@@ -7,10 +7,16 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface CartItem {
-    productId: ProductId;
-    quantity: bigint;
-    totalPrice: bigint;
+export class ExternalBlob {
+    getBytes(): Promise<Uint8Array<ArrayBuffer>>;
+    getDirectURL(): string;
+    static fromURL(url: string): ExternalBlob;
+    static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
+    withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
+}
+export interface UpiConfig {
+    upiId: string;
+    qrCode: ExternalBlob;
 }
 export interface TransformationOutput {
     status: bigint;
@@ -18,6 +24,26 @@ export interface TransformationOutput {
     headers: Array<http_header>;
 }
 export type Time = bigint;
+export interface TransformationInput {
+    context: Uint8Array;
+    response: http_request_result;
+}
+export type StripeSessionStatus = {
+    __kind__: "completed";
+    completed: {
+        userPrincipal?: string;
+        response: string;
+    };
+} | {
+    __kind__: "failed";
+    failed: {
+        error: string;
+    };
+};
+export interface StripeConfiguration {
+    allowedCountries: Array<string>;
+    secretKey: string;
+}
 export interface CustomerProfile {
     principal: Principal;
     name: string;
@@ -46,6 +72,10 @@ export interface http_request_result {
     body: Uint8Array;
     headers: Array<http_header>;
 }
+export interface UserApprovalInfo {
+    status: ApprovalStatus;
+    principal: Principal;
+}
 export interface DeliveryTime {
     value: bigint;
     unit: TimeUnit;
@@ -57,27 +87,19 @@ export interface ShoppingItem {
     priceInCents: bigint;
     productDescription: string;
 }
-export interface TransformationInput {
-    context: Uint8Array;
-    response: http_request_result;
-}
-export type StripeSessionStatus = {
-    __kind__: "completed";
-    completed: {
-        userPrincipal?: string;
-        response: string;
-    };
-} | {
-    __kind__: "failed";
-    failed: {
-        error: string;
-    };
-};
-export interface StripeConfiguration {
-    allowedCountries: Array<string>;
-    secretKey: string;
+export interface CartItem {
+    productId: ProductId;
+    quantity: bigint;
+    totalPrice: bigint;
 }
 export type ProductId = bigint;
+export interface UserProfile {
+    fullName: string;
+    email: string;
+    contactNumber: string;
+    principalId: Principal;
+    deliveryApprovalStatus: DeliveryApprovalStatus;
+}
 export interface Product {
     id: ProductId;
     name: string;
@@ -88,14 +110,16 @@ export interface Product {
     category: Category;
     price: bigint;
 }
-export interface UserProfile {
-    name: string;
-}
 export enum Category {
     snacks = "snacks",
     namkeen = "namkeen",
     beverages = "beverages",
     sweets = "sweets"
+}
+export enum DeliveryApprovalStatus {
+    pending = "pending",
+    approved = "approved",
+    rejected = "rejected"
 }
 export enum OrderStatus {
     shipped = "shipped",
@@ -131,31 +155,46 @@ export enum Variant_cashOnDelivery_online {
 export interface backendInterface {
     addProduct(name: string, category: Category, description: string, price: bigint, available: boolean, unit: Unit, photoUrl: string): Promise<ProductId>;
     addToCart(productId: ProductId, quantity: bigint): Promise<void>;
+    approveDeliveryPrincipal(principal: Principal): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    assignDeliveryRole(deliveryPerson: Principal): Promise<void>;
     cancelOrder(orderId: bigint): Promise<void>;
     clearCart(): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     createOrder(name: string, phone: string, address: string, paymentMethod: Variant_cashOnDelivery_online): Promise<bigint>;
     deleteProduct(productId: ProductId): Promise<void>;
     editProduct(productId: ProductId, name: string, category: Category, description: string, price: bigint, available: boolean, unit: Unit, photoUrl: string): Promise<void>;
+    getActiveOrdersForDelivery(): Promise<Array<Order>>;
     getAllOrders(): Promise<Array<Order>>;
+    getAllPendingDeliveryProfiles(): Promise<Array<UserProfile>>;
     getAllProducts(): Promise<Array<Product>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCustomerProfile(): Promise<CustomerProfile | null>;
+    getMyProfile(): Promise<UserProfile | null>;
     getOrders(): Promise<Array<Order>>;
     getProduct(productId: ProductId): Promise<Product | null>;
     getProductsByCategory(category: Category): Promise<Array<Product>>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
+    getUpiConfig(): Promise<UpiConfig | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    isCallerApproved(): Promise<boolean>;
+    isDeliveryPerson(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
-    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    listApprovals(): Promise<Array<UserApprovalInfo>>;
+    markOrderAsPaid(orderId: bigint): Promise<void>;
+    rejectDeliveryPrincipal(principal: Principal): Promise<void>;
+    requestApproval(): Promise<void>;
+    saveCallerUserProfile(fullName: string, contactNumber: string, email: string): Promise<void>;
     saveCustomerProfile(name: string, phone: string, address: string): Promise<void>;
+    setApproval(user: Principal, status: ApprovalStatus): Promise<void>;
     setDeliveryTime(orderId: bigint, value: bigint, unit: TimeUnit): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
+    setUpiConfig(config: UpiConfig): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateOrderStatus(orderId: bigint, newStatus: OrderStatus): Promise<void>;
+    updateOrderStatusByDeliveryPerson(orderId: bigint, newStatus: OrderStatus): Promise<void>;
     updatePaymentStatus(orderId: bigint, newStatus: PaymentStatus): Promise<void>;
 }

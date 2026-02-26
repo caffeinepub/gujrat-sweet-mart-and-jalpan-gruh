@@ -2,6 +2,7 @@ import { createRouter, createRoute, createRootRoute, RouterProvider, Outlet, Lin
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useGetCallerUserProfile } from './hooks/useUserProfile';
 import { useIsCallerAdmin } from './hooks/useAuth';
+import { useIsDeliveryPerson } from './hooks/useDeliveryRole';
 import { useGetCart } from './hooks/useCart';
 import Home from './pages/Home';
 import Products from './pages/Products';
@@ -12,18 +13,20 @@ import OrderConfirmation from './pages/OrderConfirmation';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailure from './pages/PaymentFailure';
 import MyOrders from './pages/MyOrders';
+import Delivery from './pages/Delivery';
+import Profile from './pages/Profile';
 import LoginButton from './components/LoginButton';
 import ProfileSetup from './components/ProfileSetup';
-import { Menu, X, Shield, ShoppingCart, ClipboardList } from 'lucide-react';
+import { Menu, X, Shield, ShoppingCart, ClipboardList, Truck, UserCircle } from 'lucide-react';
 import { useState } from 'react';
 
 function Layout() {
   const { identity } = useInternetIdentity();
   const { data: isAdmin } = useIsCallerAdmin();
+  const { data: isDeliveryPerson } = useIsDeliveryPerson();
   const { data: cartItems } = useGetCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const showAdminLink = !!identity;
   const cartItemCount = cartItems?.length || 0;
 
   return (
@@ -63,7 +66,27 @@ function Layout() {
                   My Orders
                 </Link>
               )}
-              {showAdminLink && (
+              {identity && (
+                <Link
+                  to="/profile"
+                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  activeProps={{ className: 'text-primary' }}
+                >
+                  <UserCircle className="h-4 w-4" />
+                  Profile
+                </Link>
+              )}
+              {identity && isDeliveryPerson && (
+                <Link
+                  to="/delivery"
+                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  activeProps={{ className: 'text-primary' }}
+                >
+                  <Truck className="h-4 w-4" />
+                  Delivery
+                </Link>
+              )}
+              {identity && isAdmin && (
                 <Link
                   to="/admin"
                   className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
@@ -129,10 +152,32 @@ function Layout() {
                   My Orders
                 </Link>
               )}
-              {showAdminLink && (
+              {identity && (
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
+                  activeProps={{ className: 'text-primary' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <UserCircle className="h-4 w-4" />
+                  Profile
+                </Link>
+              )}
+              {identity && isDeliveryPerson && (
+                <Link
+                  to="/delivery"
+                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
+                  activeProps={{ className: 'text-primary' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Truck className="h-4 w-4" />
+                  Delivery
+                </Link>
+              )}
+              {identity && isAdmin && (
                 <Link
                   to="/admin"
-                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
                   activeProps={{ className: 'text-primary' }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -278,6 +323,18 @@ const myOrdersRoute = createRoute({
   component: MyOrders,
 });
 
+const deliveryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/delivery',
+  component: Delivery,
+});
+
+const profileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/profile',
+  component: Profile,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   productsRoute,
@@ -288,6 +345,8 @@ const routeTree = rootRoute.addChildren([
   paymentSuccessRoute,
   paymentFailureRoute,
   myOrdersRoute,
+  deliveryRoute,
+  profileRoute,
 ]);
 
 const router = createRouter({ routeTree });

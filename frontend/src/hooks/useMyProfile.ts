@@ -2,14 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { UserProfile } from '../backend';
 
-export function useGetCallerUserProfile() {
+export function useMyProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
   const query = useQuery<UserProfile | null>({
-    queryKey: ['currentUserProfile'],
+    queryKey: ['myProfile'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
-      return actor.getCallerUserProfile();
+      return actor.getMyProfile();
     },
     enabled: !!actor && !actorFetching,
     retry: false,
@@ -22,7 +22,7 @@ export function useGetCallerUserProfile() {
   };
 }
 
-export function useSaveCallerUserProfile() {
+export function useSaveMyProfile() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
@@ -33,15 +33,15 @@ export function useSaveCallerUserProfile() {
       email,
     }: {
       fullName: string;
-      contactNumber?: string;
-      email?: string;
+      contactNumber: string;
+      email: string;
     }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.saveCallerUserProfile(fullName, contactNumber ?? '', email ?? '');
+      return actor.saveCallerUserProfile(fullName, contactNumber, email);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
       queryClient.invalidateQueries({ queryKey: ['myProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
     },
   });
 }

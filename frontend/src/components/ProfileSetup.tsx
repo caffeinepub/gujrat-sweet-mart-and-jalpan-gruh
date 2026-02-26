@@ -23,7 +23,7 @@ export default function ProfileSetup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
-      await saveProfileMutation.mutateAsync({ name: name.trim() });
+      await saveProfileMutation.mutateAsync({ fullName: name.trim() });
       setIsOpen(false);
     }
   };
@@ -66,4 +66,3 @@ export default function ProfileSetup() {
     </div>
   );
 }
-

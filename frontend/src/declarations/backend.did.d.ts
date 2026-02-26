@@ -10,6 +10,9 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export type ApprovalStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
 export interface CartItem {
   'productId' : ProductId,
   'quantity' : bigint,
@@ -25,7 +28,11 @@ export interface CustomerProfile {
   'address' : string,
   'phone' : string,
 }
+export type DeliveryApprovalStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
 export interface DeliveryTime { 'value' : bigint, 'unit' : TimeUnit }
+export type ExternalBlob = Uint8Array;
 export interface Order {
   'status' : OrderStatus,
   'paymentStatus' : PaymentStatus,
@@ -90,10 +97,32 @@ export interface TransformationOutput {
 }
 export type Unit = { 'per_kg' : null } |
   { 'single' : null };
-export interface UserProfile { 'name' : string }
+export interface UpiConfig { 'upiId' : string, 'qrCode' : ExternalBlob }
+export interface UserApprovalInfo {
+  'status' : ApprovalStatus,
+  'principal' : Principal,
+}
+export interface UserProfile {
+  'fullName' : string,
+  'email' : string,
+  'contactNumber' : string,
+  'principalId' : Principal,
+  'deliveryApprovalStatus' : DeliveryApprovalStatus,
+}
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface http_header { 'value' : string, 'name' : string }
 export interface http_request_result {
   'status' : bigint,
@@ -101,13 +130,30 @@ export interface http_request_result {
   'headers' : Array<http_header>,
 }
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addProduct' : ActorMethod<
     [string, Category, string, bigint, boolean, Unit, string],
     ProductId
   >,
   'addToCart' : ActorMethod<[ProductId, bigint], undefined>,
+  'approveDeliveryPrincipal' : ActorMethod<[Principal], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'assignDeliveryRole' : ActorMethod<[Principal], undefined>,
   'cancelOrder' : ActorMethod<[bigint], undefined>,
   'clearCart' : ActorMethod<[], undefined>,
   'createCheckoutSession' : ActorMethod<
@@ -123,25 +169,41 @@ export interface _SERVICE {
     [ProductId, string, Category, string, bigint, boolean, Unit, string],
     undefined
   >,
+  'getActiveOrdersForDelivery' : ActorMethod<[], Array<Order>>,
   'getAllOrders' : ActorMethod<[], Array<Order>>,
+  'getAllPendingDeliveryProfiles' : ActorMethod<[], Array<UserProfile>>,
   'getAllProducts' : ActorMethod<[], Array<Product>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getCustomerProfile' : ActorMethod<[], [] | [CustomerProfile]>,
+  'getMyProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getOrders' : ActorMethod<[], Array<Order>>,
   'getProduct' : ActorMethod<[ProductId], [] | [Product]>,
   'getProductsByCategory' : ActorMethod<[Category], Array<Product>>,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
+  'getUpiConfig' : ActorMethod<[], [] | [UpiConfig]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'isCallerApproved' : ActorMethod<[], boolean>,
+  'isDeliveryPerson' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
-  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'listApprovals' : ActorMethod<[], Array<UserApprovalInfo>>,
+  'markOrderAsPaid' : ActorMethod<[bigint], undefined>,
+  'rejectDeliveryPrincipal' : ActorMethod<[Principal], undefined>,
+  'requestApproval' : ActorMethod<[], undefined>,
+  'saveCallerUserProfile' : ActorMethod<[string, string, string], undefined>,
   'saveCustomerProfile' : ActorMethod<[string, string, string], undefined>,
+  'setApproval' : ActorMethod<[Principal, ApprovalStatus], undefined>,
   'setDeliveryTime' : ActorMethod<[bigint, bigint, TimeUnit], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
+  'setUpiConfig' : ActorMethod<[UpiConfig], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateOrderStatus' : ActorMethod<[bigint, OrderStatus], undefined>,
+  'updateOrderStatusByDeliveryPerson' : ActorMethod<
+    [bigint, OrderStatus],
+    undefined
+  >,
   'updatePaymentStatus' : ActorMethod<[bigint, PaymentStatus], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

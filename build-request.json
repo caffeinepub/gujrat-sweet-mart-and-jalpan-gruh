@@ -1,140 +1,132 @@
 {
   "kind": "build_request",
-  "title": "Online Payment Notification System & Admin-Controlled Delivery Time After Dispatch",
+  "title": "User Profile System with Principal ID and Admin Approval for Delivery Access",
   "projectName": "Gujrat Sweet Mart",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add a payment status field to the order data model in the backend. When a Stripe payment session is successfully verified, mark the order's payment status as 'paid'. Expose this field in the order retrieval functions so the admin panel can read it.",
+      "text": "Extend the backend user profile data model to include: full name, contact number, email address, and the user's Principal ID. Add a new field `deliveryApprovalStatus` with values: `#pending`, `#approved`, `#rejected`. When a user saves their profile for the first time, set `deliveryApprovalStatus` to `#pending` by default.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-last"
         ],
         "quotes": [
-          "online payment is done business can know that payment is received"
+          "every person have a profile and his details like contact number and email and etc. is mentioned there and also principal id also should be mentioned there"
         ]
       },
       "acceptanceCriteria": [
-        "Order records include a paymentStatus field with possible values: 'pending', 'paid', 'failed'.",
-        "When Stripe payment verification succeeds (existing PaymentSuccess flow), the corresponding order's paymentStatus is updated to 'paid' in the backend.",
-        "The admin orders retrieval function returns the paymentStatus field for each order."
+        "Profile record stores: name, contactNumber, email, principalId (as Text), deliveryApprovalStatus",
+        "New profiles are created with deliveryApprovalStatus = #pending",
+        "Existing profiles are migrated gracefully without data loss"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "In the Admin Orders Management panel, display a clear visual indicator (e.g., a badge) on each order showing whether the payment has been received ('Paid') or is still pending ('Unpaid'). This should be visible at a glance when the admin views the orders list.",
-      "target": "frontend",
+      "text": "Add backend functions: `getMyProfile()` returning the caller's full profile including their Principal ID and approval status; `getAllPendingDeliveryProfiles()` (admin-only) returning all profiles with `deliveryApprovalStatus = #pending`; `approveDeliveryPrincipal(principal: Principal)` (admin-only) that sets the user's `deliveryApprovalStatus` to `#approved` and also grants them the delivery role; `rejectDeliveryPrincipal(principal: Principal)` (admin-only) that sets the status to `#rejected`.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-last"
         ],
         "quotes": [
-          "business can know that payment is received"
+          "admin should approve the principal first and then that principal id will be authorised for delivery dashboard"
         ]
       },
       "acceptanceCriteria": [
-        "Each order row in the admin OrdersManagement component shows a payment status badge.",
-        "Orders with paymentStatus 'paid' show a green 'Paid' badge.",
-        "Orders with paymentStatus 'pending' or 'failed' show a distinct badge (e.g., yellow 'Unpaid' or red 'Failed').",
-        "Cash on Delivery orders are marked appropriately (e.g., 'COD') and not shown as paid until fulfilled."
+        "`getMyProfile()` returns the caller's profile with principalId and deliveryApprovalStatus",
+        "`getAllPendingDeliveryProfiles()` is accessible only to admin and returns pending profiles",
+        "`approveDeliveryPrincipal()` sets status to #approved and grants the delivery role in one operation",
+        "`rejectDeliveryPrincipal()` sets status to #rejected",
+        "Non-admin callers to admin-only functions receive an authorization error"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Add a delivery time field to the order data model in the backend. This field should store a numeric value and a unit (minutes, hours, or days). Add a backend function callable only by admin to set the delivery time on a specific order. This function should only succeed after the order has been dispatched (i.e., order status is 'shipped' or 'outForDelivery' or 'delivered').",
-      "target": "backend",
+      "text": "Update the delivery dashboard access gate on the frontend: instead of only checking the delivery role, also verify that the user's `deliveryApprovalStatus` is `#approved`. If the user's profile has `#pending` status, show a clear message: 'Your account is pending admin approval for delivery access.' If status is `#rejected`, show: 'Your delivery access request has been rejected. Please contact the admin.'",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-last"
         ],
         "quotes": [
-          "delete the estimated delivery time display it can only be set by the admin after dispatch",
-          "it should be in minutes,hours and days"
+          "admin should approve the principal first and then that principal id will be authorised for delivery dashboard"
         ]
       },
       "acceptanceCriteria": [
-        "Order records include an optional deliveryTime field containing a numeric value and a unit type (minutes | hours | days).",
-        "A new admin-only function setDeliveryTime(orderId, value, unit) exists in the backend actor.",
-        "Calling setDeliveryTime returns an error if the caller is not admin.",
-        "Calling setDeliveryTime returns an error if the order status is still 'orderPlaced' (not yet dispatched).",
-        "On success, the delivery time is persisted on the order record."
+        "Delivery dashboard is only accessible when both delivery role is assigned AND deliveryApprovalStatus is #approved",
+        "Pending users see a 'pending approval' message instead of the dashboard",
+        "Rejected users see a 'rejected' message instead of the dashboard"
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Remove the estimated delivery time display from all customer-facing pages (MyOrders, OrderConfirmation, PaymentSuccess). Customers should not see any delivery time estimate unless the admin has explicitly set it after dispatch.",
+      "text": "Build a Profile page (or modal) accessible to all authenticated users. The page must display and allow editing of: full name, contact number, email address. It must also display (read-only) the user's Principal ID. Show the current delivery approval status if the user has requested delivery access. Add a 'Request Delivery Access' button that submits the profile for admin approval (sets status to #pending) if not already submitted.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-last"
         ],
         "quotes": [
-          "delete the estimated delivery time display",
-          "it can only be set by the admin after dispatch"
+          "every person have a profile and his details like contact number and email and etc. is mentioned there and also principal id also should be mentioned there"
         ]
       },
       "acceptanceCriteria": [
-        "No hardcoded or auto-calculated estimated delivery time is shown on the MyOrders page.",
-        "No estimated delivery time is shown on the OrderConfirmation page.",
-        "The PaymentSuccess page does not display any delivery time estimate.",
-        "If the admin has set a delivery time on a dispatched order, that value IS shown to the customer in MyOrders and OrderConfirmation with the correct unit label (minutes / hours / days).",
-        "If no delivery time has been set by admin, the delivery time section is hidden entirely from the customer view."
+        "Profile page shows name, contact number, email as editable fields",
+        "Principal ID is displayed as a read-only field with a copy-to-clipboard button",
+        "Delivery approval status is shown (pending / approved / rejected) if applicable",
+        "'Request Delivery Access' button is visible and submits the profile for admin review",
+        "Profile page is accessible from the header navigation for logged-in users"
       ]
     },
     {
       "id": "REQ-5",
-      "text": "In the Admin Orders Management panel, add a delivery time input form for each order that has been dispatched (status is shipped, outForDelivery, or delivered). The form should include a numeric input and a unit selector (minutes, hours, days), and a 'Set Delivery Time' button that calls the backend setDeliveryTime function. If a delivery time is already set, display the current value and allow the admin to update it.",
+      "text": "Add a 'Delivery Approvals' tab in the Admin panel. This tab lists all user profiles with `deliveryApprovalStatus = #pending`, displaying each user's name, email, contact number, and Principal ID. Provide 'Approve' and 'Reject' action buttons per entry. Upon approval, the user gains the delivery role automatically. Show a success toast on approve/reject actions.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-last"
         ],
         "quotes": [
-          "it can only be set by the admin after dispatch",
-          "it should be in minutes,hours and days"
+          "admin should approve the principal first and then that principal id will be authorised for delivery dashboard"
         ]
       },
       "acceptanceCriteria": [
-        "Dispatched orders in the admin OrdersManagement component show a delivery time input section.",
-        "The input section contains a numeric field and a dropdown/select with options: Minutes, Hours, Days.",
-        "Clicking 'Set Delivery Time' calls the backend and shows a success or error toast notification.",
-        "If delivery time is already set on an order, the current value and unit are pre-filled in the inputs.",
-        "Orders with status 'orderPlaced' (not yet dispatched) do not show the delivery time input."
+        "Admin panel has a new 'Delivery Approvals' tab",
+        "Tab lists all pending profiles with name, email, contact number, and Principal ID",
+        "Approve button calls approveDeliveryPrincipal and shows a success toast",
+        "Reject button calls rejectDeliveryPrincipal and shows a success toast",
+        "List refreshes after an approve or reject action"
       ]
     },
     {
       "id": "REQ-6",
-      "text": "Add a React Query mutation hook useSetDeliveryTime in the frontend hooks layer that calls the backend setDeliveryTime function, and update the useOrders hook to include the deliveryTime field when fetching orders.",
+      "text": "Add React Query hooks: `useMyProfile` for fetching and saving the current user's full profile (name, contact, email); `usePendingDeliveryProfiles` for fetching pending delivery approval requests (admin only); `useApproveDeliveryPrincipal` and `useRejectDeliveryPrincipal` mutation hooks for admin approval/rejection actions.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "it can only be set by the admin after dispatch"
+          "msg-last"
         ]
       },
       "acceptanceCriteria": [
-        "A useSetDeliveryTime mutation hook exists and calls the actor's setDeliveryTime method.",
-        "On success, the hook invalidates the relevant orders queries.",
-        "The useOrders hooks (getUserOrders and getAllOrders) return deliveryTime data when present in the order records."
+        "`useMyProfile` returns the full profile including principalId and deliveryApprovalStatus",
+        "`usePendingDeliveryProfiles` returns list of pending profiles",
+        "`useApproveDeliveryPrincipal` and `useRejectDeliveryPrincipal` mutations invalidate the pending profiles query on success"
       ]
     }
   ],
   "constraints": [
-    "All Motoko logic must remain in the single backend/main.mo actor file.",
-    "The setDeliveryTime function must enforce admin-only access using the existing role-based access control pattern.",
-    "Do not modify any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui.",
-    "Delivery time can only be set on orders that have been dispatched (status: shipped, outForDelivery, or delivered)."
+    "All Motoko logic must remain in the single backend/main.mo actor",
+    "Do not modify files listed in frontend.immutablePaths",
+    "Existing profile data (name, phone, address) must be preserved during migration",
+    "Delivery role assignment must continue to work via the existing DeliveryStaffManagement component as well"
   ],
   "nonGoals": [
-    "Automatic push notifications or email alerts to the business owner.",
-    "Real-time order update streaming.",
-    "Customer ability to set or suggest delivery time.",
-    "Changing the existing order status workflow beyond adding the delivery time field.",
-    "Any changes to the Stripe payment flow itself beyond marking orders as paid."
+    "Email verification or OTP flows",
+    "Third-party identity providers",
+    "Automated approval without admin action",
+    "Changing the existing order management or product management features"
   ],
   "imageRequirements": {
     "required": [],

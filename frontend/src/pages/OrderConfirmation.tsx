@@ -1,10 +1,13 @@
 import { useGetOrders } from '../hooks/useOrders';
 import { useGetAllProducts } from '../hooks/useProducts';
+import { useGetUpiConfig } from '../hooks/useUpiConfig';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { TimeUnit } from '../backend';
+import { TimeUnit, Variant_cashOnDelivery_online } from '../backend';
 import { Link, useParams } from '@tanstack/react-router';
 import { Button } from '../components/ui/button';
-import { CheckCircle, Clock, Home, Package, Loader2 } from 'lucide-react';
+import { CheckCircle, Clock, Home, Package, Loader2, Copy, Check, QrCode } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 function formatDeliveryTime(value: bigint, unit: TimeUnit): string {
   const num = Number(value);
@@ -25,6 +28,19 @@ export default function OrderConfirmation() {
   const { identity } = useInternetIdentity();
   const { data: orders, isLoading } = useGetOrders();
   const { data: products } = useGetAllProducts();
+  const { data: upiConfig } = useGetUpiConfig();
+  const [upiIdCopied, setUpiIdCopied] = useState(false);
+
+  const handleCopyUpiId = async (upiId: string) => {
+    try {
+      await navigator.clipboard.writeText(upiId);
+      setUpiIdCopied(true);
+      toast.success('UPI ID copied to clipboard!');
+      setTimeout(() => setUpiIdCopied(false), 2000);
+    } catch {
+      toast.error('Failed to copy UPI ID');
+    }
+  };
 
   if (!identity) {
     return (
@@ -65,6 +81,10 @@ export default function OrderConfirmation() {
     );
   }
 
+  const isUpiOrder = order.paymentMethod === Variant_cashOnDelivery_online.online &&
+    order.paymentStatus === 'pending';
+  const grandTotal = order.items.reduce((sum, item) => sum + Number(item.totalPrice), 0);
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-3xl mx-auto">
@@ -100,7 +120,7 @@ export default function OrderConfirmation() {
             <div>
               <h3 className="font-semibold mb-2">Payment Method</h3>
               <p className="text-sm">
-                {order.paymentMethod === 'cashOnDelivery' ? 'Cash on Delivery' : 'Online Payment'}
+                {order.paymentMethod === 'cashOnDelivery' ? 'Cash on Delivery' : 'Online Payment (UPI/Card)'}
               </p>
               {order.deliveryTime && (
                 <div className="mt-4 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -113,6 +133,66 @@ export default function OrderConfirmation() {
               )}
             </div>
           </div>
+
+          {/* UPI Payment Details Section - shown for pending online orders */}
+          {isUpiOrder && (
+            <div className="mb-6 border-2 border-primary/20 rounded-lg p-5 bg-primary/5">
+              <div className="flex items-center gap-2 mb-4">
+                <QrCode className="h-5 w-5 text-primary" />
+                <h3 className="font-semibold text-primary">Complete Your UPI Payment</h3>
+              </div>
+
+              {upiConfig ? (
+                <div className="space-y-4">
+                  {/* QR Code */}
+                  <div className="flex flex-col sm:flex-row gap-5 items-start">
+                    <div className="border-2 border-primary/20 rounded-xl p-2 bg-white shadow-sm flex-shrink-0">
+                      <img
+                        src={upiConfig.qrCode.getDirectURL()}
+                        alt="UPI QR Code"
+                        className="w-36 h-36 object-contain"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
+                          UPI ID
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <code className="flex-1 font-mono text-sm font-semibold bg-background border border-border rounded px-3 py-2 select-all">
+                            {upiConfig.upiId}
+                          </code>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCopyUpiId(upiConfig.upiId)}
+                            className="flex-shrink-0"
+                          >
+                            {upiIdCopied ? (
+                              <Check className="h-4 w-4 text-green-600" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="bg-background border border-border rounded-lg p-3 text-center">
+                        <p className="text-xs text-muted-foreground mb-0.5">Amount to Pay</p>
+                        <p className="text-2xl font-display font-bold text-primary">₹{grandTotal}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Scan the QR code or use the UPI ID above to complete your payment. Your order is confirmed and will be processed once payment is received.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  UPI details unavailable. Please contact support to complete your payment.
+                </p>
+              )}
+            </div>
+          )}
 
           <div>
             <h3 className="font-semibold mb-3">Order Items</h3>
@@ -131,7 +211,7 @@ export default function OrderConfirmation() {
             </div>
             <div className="flex justify-between font-bold text-xl mt-4 pt-4 border-t">
               <span>Total:</span>
-              <span>₹{order.items.reduce((sum, item) => sum + Number(item.totalPrice), 0)}</span>
+              <span>₹{grandTotal}</span>
             </div>
           </div>
         </div>
