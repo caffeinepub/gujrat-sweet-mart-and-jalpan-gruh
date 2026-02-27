@@ -5,6 +5,7 @@ import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { TimeUnit, Variant_cashOnDelivery_online } from '../backend';
 import { Link, useParams } from '@tanstack/react-router';
 import { Button } from '../components/ui/button';
+import BackButton from '../components/BackButton';
 import { CheckCircle, Clock, Home, Package, Loader2, Copy, Check, QrCode } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -88,6 +89,10 @@ export default function OrderConfirmation() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-3xl mx-auto">
+        <div className="mb-6">
+          <BackButton />
+        </div>
+
         <div className="text-center mb-8">
           <CheckCircle className="h-20 w-20 text-green-600 mx-auto mb-4" />
           <h1 className="text-4xl font-display font-bold text-primary mb-2">Order Confirmed!</h1>

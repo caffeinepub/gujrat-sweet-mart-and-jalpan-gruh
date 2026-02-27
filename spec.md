@@ -1,15 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Add a user profile system with Principal ID display, delivery access requests, and admin approval workflow for the Gujrat Sweet Mart app.
+**Goal:** Add a back navigation button to relevant pages in the Gujarat Sweet Mart app.
 
 **Planned changes:**
-- Extend the backend user profile model to include full name, contact number, email, Principal ID, and a `deliveryApprovalStatus` field (`pending`, `approved`, `rejected`); new profiles default to `pending`
-- Add backend functions: `getMyProfile()`, `getAllPendingDeliveryProfiles()` (admin-only), `approveDeliveryPrincipal()` (admin-only, also grants delivery role), and `rejectDeliveryPrincipal()` (admin-only)
-- Add a Profile page accessible to all logged-in users showing editable name, contact number, and email fields; read-only Principal ID with copy-to-clipboard; current delivery approval status; and a "Request Delivery Access" button
-- Update the delivery dashboard access gate to require both the delivery role and `deliveryApprovalStatus = approved`; show appropriate messages for pending and rejected users
-- Add a "Delivery Approvals" tab in the Admin panel listing pending profiles with Approve/Reject buttons and success toasts
-- Add React Query hooks: `useMyProfile`, `usePendingDeliveryProfiles`, `useApproveDeliveryPrincipal`, and `useRejectDeliveryPrincipal`
-- Add a Profile link in the header navigation for logged-in users
+- Add a back button at the top-left of the content area on the Products, Cart, Checkout, Order Confirmation, My Orders, Profile, Payment Failure, and Payment Success pages.
+- The back button navigates to the previous page in browser history.
+- The button is styled using the existing saffron/marigold/deep-red color palette to match the warm Indian-themed design.
+- The back button is not shown on the Home page.
 
-**User-visible outcome:** Users can view and edit their profile, see their Principal ID, and request delivery access. Admins can review pending delivery access requests and approve or reject them from a new Admin panel tab. Approved users gain access to the delivery dashboard automatically.
+**User-visible outcome:** Users can navigate back to the previous page from all major pages (except Home) using a consistently styled back button at the top-left of the content area.

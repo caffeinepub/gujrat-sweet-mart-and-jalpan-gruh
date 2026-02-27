@@ -1,43 +1,16 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Food delivery app on the Internet Computer with delivery boy role management. Building a user profile system with Principal ID, contact info, and admin approval flow for authorizing delivery dashboard access.",
-  "architectural_notes": [
-    "User profiles stored on-chain with Principal ID, contact number, email, and approval status",
-    "Admin role can approve/reject Principal IDs; only approved principals can access delivery dashboard"
-  ],
+  "summary": "New project",
+  "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-the-delivery-dashboard-access-gate-on-the-frontend-instead-of-only-checking-the-delivery-role-also-verify-that-the-user-s-deliveryapprovalstatus-is-approved-if-the-user-s-profile-has-pending-status-show-a-clear-message-your-account-is-pending-admin-approval-for-delivery-access-if-status-is-rejected-show-your-delivery-access-request-has-been-rejected-please-contact-the-admin",
-      "title": "Update the delivery dashboard access gate on the frontend: instead of only checking the delivery role, also verify that the user's `deliveryApprovalStatus` is `#approved`. If the user's profile has `#pending` status, show a clear message: 'Your account is pending admin approval for delivery access.' If status is `#rejected`, show: 'Your delivery access request has been rejected. Please contact the admin.'",
+      "id": "feature-add-a-back-button-to-relevant-pages-products-cart-checkout-order-confirmation-my-orders-profile-payment-failure-payment-success-that-navigates-the-user-to-the-previous-page-in-history-the-button-should-be-visually-consistent-with-the-app-s-warm-indian-themed-design-placed-at-the-top-left-of-the-page-content-area-and-should-not-appear-on-the-home-page",
+      "title": "Add a back button to relevant pages (Products, Cart, Checkout, Order Confirmation, My Orders, Profile, Payment Failure, Payment Success) that navigates the user to the previous page in history. The button should be visually consistent with the app's warm Indian-themed design, placed at the top-left of the page content area, and should not appear on the Home page.",
       "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-a-profile-page-or-modal-accessible-to-all-authenticated-users-the-page-must-display-and-allow-editing-of-full-name-contact-number-email-address-it-must-also-display-read-only-the-user-s-principal-id-show-the-current-delivery-approval-status-if-the-user-has-requested-delivery-access-add-a-request-delivery-access-button-that-submits-the-profile-for-admin-approval-sets-status-to-pending-if-not-already-submitted",
-      "title": "Build a Profile page (or modal) accessible to all authenticated users. The page must display and allow editing of: full name, contact number, email address. It must also display (read-only) the user's Principal ID. Show the current delivery approval status if the user has requested delivery access. Add a 'Request Delivery Access' button that submits the profile for admin approval (sets status to #pending) if not already submitted.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-delivery-approvals-tab-in-the-admin-panel-this-tab-lists-all-user-profiles-with-deliveryapprovalstatus-pending-displaying-each-user-s-name-email-contact-number-and-principal-id-provide-approve-and-reject-action-buttons-per-entry-upon-approval-the-user-gains-the-delivery-role-automatically-show-a-success-toast-on-approve-reject-actions",
-      "title": "Add a 'Delivery Approvals' tab in the Admin panel. This tab lists all user profiles with `deliveryApprovalStatus = #pending`, displaying each user's name, email, contact number, and Principal ID. Provide 'Approve' and 'Reject' action buttons per entry. Upon approval, the user gains the delivery role automatically. Show a success toast on approve/reject actions.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-react-query-hooks-usemyprofile-for-fetching-and-saving-the-current-user-s-full-profile-name-contact-email-usependingdeliveryprofiles-for-fetching-pending-delivery-approval-requests-admin-only-useapprovedeliveryprincipal-and-userejectdeliveryprincipal-mutation-hooks-for-admin-approval-rejection-actions",
-      "title": "Add React Query hooks: `useMyProfile` for fetching and saving the current user's full profile (name, contact, email); `usePendingDeliveryProfiles` for fetching pending delivery approval requests (admin only); `useApproveDeliveryPrincipal` and `useRejectDeliveryPrincipal` mutation hooks for admin approval/rejection actions.",
-      "reqIds": [
-        "REQ-6"
+        "REQ-1"
       ],
       "version": 1
     }
@@ -45,35 +18,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "User profile system with contact number, email, and other details including Principal ID display",
+      "summary": "Add a back button for navigation",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Admin approval flow: admin must approve a user's Principal ID before they are authorized to access the delivery dashboard",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Extend the backend user profile data model to include: full name, contact number, email address, and the user's Principal ID. Add a new field `deliveryApprovalStatus` with values: `#pending`, `#approved`, `#rejected`. When a user saves their profile for the first time, set `deliveryApprovalStatus` to `#pending` by default.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Add backend functions: `getMyProfile()` returning the caller's full profile including their Principal ID and approval status; `getAllPendingDeliveryProfiles()` (admin-only) returning all profiles with `deliveryApprovalStatus = #pending`; `approveDeliveryPrincipal(principal: Principal)` (admin-only) that sets the user's `deliveryApprovalStatus` to `#approved` and also grants them the delivery role; `rejectDeliveryPrincipal(principal: Principal)` (admin-only) that sets the status to `#rejected`.",
-      "reqIds": [
-        "REQ-2"
-      ],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "Gujrat Sweet Mart",
+  "projectName": "Gujarat Sweet Mart",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

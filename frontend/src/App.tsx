@@ -236,11 +236,43 @@ function Layout() {
             </div>
             <div>
               <h4 className="font-semibold mb-2">Categories</h4>
-              <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>Sweets</li>
-                <li>Snacks</li>
-                <li>Namkeen</li>
-                <li>Beverages</li>
+              <ul className="space-y-1 text-sm">
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: 'sweets' }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Sweets
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: 'snacks' }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Snacks
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: 'namkeen' }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Namkeen
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: 'beverages' }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Beverages
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
@@ -278,6 +310,9 @@ const indexRoute = createRoute({
 const productsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/products',
+  validateSearch: (search: Record<string, unknown>): { category?: string } => ({
+    category: typeof search.category === 'string' ? search.category : undefined,
+  }),
   component: Products,
 });
 

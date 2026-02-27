@@ -2,33 +2,17 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-delivery-dashboard-access-gate-on-the-frontend-instead-of-only-checking-the-delivery-role-also-verify-that-the-user-s-deliveryapprovalstatus-is-approved-if-the-user-s-profile-has-pending-status-show-a-clear-message-your-account-is-pending-admin-approval-for-delivery-access-if-status-is-rejected-show-your-delivery-access-request-has-been-rejected-please-contact-the-admin",
-      "featureTitle": "Update the delivery dashboard access gate on the frontend: instead of only checking the delivery role, also verify that the user's `deliveryApprovalStatus` is `#approved`. If the user's profile has `#pending` status, show a clear message: 'Your account is pending admin approval for delivery access.' If status is `#rejected`, show: 'Your delivery access request has been rejected. Please contact the admin.'",
+      "featureId": "feature-add-a-back-button-to-relevant-pages-products-cart-checkout-order-confirmation-my-orders-profile-payment-failure-payment-success-that-navigates-the-user-to-the-previous-page-in-history-the-button-should-be-visually-consistent-with-the-app-s-warm-indian-themed-design-placed-at-the-top-left-of-the-page-content-area-and-should-not-appear-on-the-home-page",
+      "featureTitle": "Add a back button to relevant pages (Products, Cart, Checkout, Order Confirmation, My Orders, Profile, Payment Failure, Payment Success) that navigates the user to the previous page in history. The button should be visually consistent with the app's warm Indian-themed design, placed at the top-left of the page content area, and should not appear on the Home page.",
       "files": [
-        "frontend/src/pages/Delivery.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "stripe@3.0.0",
-        "http-outcalls@3.0.0",
-        "blob-storage@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-build-a-profile-page-or-modal-accessible-to-all-authenticated-users-the-page-must-display-and-allow-editing-of-full-name-contact-number-email-address-it-must-also-display-read-only-the-user-s-principal-id-show-the-current-delivery-approval-status-if-the-user-has-requested-delivery-access-add-a-request-delivery-access-button-that-submits-the-profile-for-admin-approval-sets-status-to-pending-if-not-already-submitted",
-      "featureTitle": "Build a Profile page (or modal) accessible to all authenticated users. The page must display and allow editing of: full name, contact number, email address. It must also display (read-only) the user's Principal ID. Show the current delivery approval status if the user has requested delivery access. Add a 'Request Delivery Access' button that submits the profile for admin approval (sets status to #pending) if not already submitted.",
-      "files": [
-        "frontend/src/App.tsx",
+        "frontend/src/components/BackButton.tsx",
+        "frontend/src/pages/Cart.tsx",
+        "frontend/src/pages/Checkout.tsx",
+        "frontend/src/pages/MyOrders.tsx",
+        "frontend/src/pages/OrderConfirmation.tsx",
+        "frontend/src/pages/PaymentFailure.tsx",
+        "frontend/src/pages/PaymentSuccess.tsx",
+        "frontend/src/pages/Products.tsx",
         "frontend/src/pages/Profile.tsx"
       ],
       "components": [
@@ -44,55 +28,7 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-4"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-delivery-approvals-tab-in-the-admin-panel-this-tab-lists-all-user-profiles-with-deliveryapprovalstatus-pending-displaying-each-user-s-name-email-contact-number-and-principal-id-provide-approve-and-reject-action-buttons-per-entry-upon-approval-the-user-gains-the-delivery-role-automatically-show-a-success-toast-on-approve-reject-actions",
-      "featureTitle": "Add a 'Delivery Approvals' tab in the Admin panel. This tab lists all user profiles with `deliveryApprovalStatus = #pending`, displaying each user's name, email, contact number, and Principal ID. Provide 'Approve' and 'Reject' action buttons per entry. Upon approval, the user gains the delivery role automatically. Show a success toast on approve/reject actions.",
-      "files": [
-        "frontend/src/components/DeliveryApprovalManagement.tsx",
-        "frontend/src/pages/Admin.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "stripe@3.0.0",
-        "http-outcalls@3.0.0",
-        "blob-storage@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-react-query-hooks-usemyprofile-for-fetching-and-saving-the-current-user-s-full-profile-name-contact-email-usependingdeliveryprofiles-for-fetching-pending-delivery-approval-requests-admin-only-useapprovedeliveryprincipal-and-userejectdeliveryprincipal-mutation-hooks-for-admin-approval-rejection-actions",
-      "featureTitle": "Add React Query hooks: `useMyProfile` for fetching and saving the current user's full profile (name, contact, email); `usePendingDeliveryProfiles` for fetching pending delivery approval requests (admin only); `useApproveDeliveryPrincipal` and `useRejectDeliveryPrincipal` mutation hooks for admin approval/rejection actions.",
-      "files": [
-        "frontend/src/hooks/useDeliveryApprovals.ts",
-        "frontend/src/hooks/useMyProfile.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "stripe@3.0.0",
-        "http-outcalls@3.0.0",
-        "blob-storage@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
+        "REQ-1"
       ],
       "confidence": "high"
     }

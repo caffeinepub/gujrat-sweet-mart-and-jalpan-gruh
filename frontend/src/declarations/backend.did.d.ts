@@ -33,6 +33,12 @@ export type DeliveryApprovalStatus = { 'pending' : null } |
   { 'rejected' : null };
 export interface DeliveryTime { 'value' : bigint, 'unit' : TimeUnit }
 export type ExternalBlob = Uint8Array;
+export interface HomepageConfig {
+  'hours' : string,
+  'logo' : ExternalBlob,
+  'address' : string,
+  'phone' : string,
+}
 export interface Order {
   'status' : OrderStatus,
   'paymentStatus' : PaymentStatus,
@@ -177,6 +183,7 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getCustomerProfile' : ActorMethod<[], [] | [CustomerProfile]>,
+  'getHomepageConfig' : ActorMethod<[], [] | [HomepageConfig]>,
   'getMyProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getOrders' : ActorMethod<[], Array<Order>>,
   'getProduct' : ActorMethod<[ProductId], [] | [Product]>,
@@ -199,6 +206,7 @@ export interface _SERVICE {
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'setUpiConfig' : ActorMethod<[UpiConfig], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
+  'updateHomepageConfig' : ActorMethod<[HomepageConfig], undefined>,
   'updateOrderStatus' : ActorMethod<[bigint, OrderStatus], undefined>,
   'updateOrderStatusByDeliveryPerson' : ActorMethod<
     [bigint, OrderStatus],

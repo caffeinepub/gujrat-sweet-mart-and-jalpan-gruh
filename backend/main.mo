@@ -11,10 +11,11 @@ import MixinStorage "blob-storage/Mixin";
 import Iter "mo:core/Iter";
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
-import Migration "migration";
+
 import UserApproval "user-approval/approval";
 
-(with migration = Migration.run)
+
+
 actor {
   include MixinStorage();
 
@@ -669,6 +670,27 @@ actor {
       Runtime.trap("Unauthorized: Only admins can perform this action");
     };
     UserApproval.listApprovals(approvalState);
+  };
+
+  // Homepage config
+  public type HomepageConfig = {
+    logo : Storage.ExternalBlob;
+    address : Text;
+    hours : Text;
+    phone : Text;
+  };
+
+  var homepageConfig : ?HomepageConfig = null;
+
+  public shared ({ caller }) func updateHomepageConfig(config : HomepageConfig) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update homepage config");
+    };
+    homepageConfig := ?config;
+  };
+
+  public query ({ caller }) func getHomepageConfig() : async ?HomepageConfig {
+    homepageConfig;
   };
 
   // State maps from migration, must be kept at bottom

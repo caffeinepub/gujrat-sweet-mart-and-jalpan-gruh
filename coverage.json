@@ -1,102 +1,57 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T14:56:47.618Z",
+  "generatedAt": "2026-02-27T03:53:58.130Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 6,
-    "implemented": 4,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Extend the backend user profile data model to include: full name, contact number, email address, and the user's Principal ID. Add a new field `deliveryApprovalStatus` with values: `#pending`, `#approved`, `#rejected`. When a user saves their profile for the first time, set `deliveryApprovalStatus` to `#pending` by default.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-2",
-        "summary": "Add backend functions: `getMyProfile()` returning the caller's full profile including their Principal ID and approval status; `getAllPendingDeliveryProfiles()` (admin-only) returning all profiles with `deliveryApprovalStatus = #pending`; `approveDeliveryPrincipal(principal: Principal)` (admin-only) that sets the user's `deliveryApprovalStatus` to `#approved` and also grants them the delivery role; `rejectDeliveryPrincipal(principal: Principal)` (admin-only) that sets the status to `#rejected`.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Update the delivery dashboard access gate on the frontend: instead of only checking the delivery role, also verify that the user's `deliveryApprovalStatus` is `#approved`. If the user's profile has `#pending` status, show a clear message: 'Your account is pending admin approval for delivery access.' If status is `#rejected`, show: 'Your delivery access request has been rejected. Please contact the admin.'",
+        "summary": "Add a back button to relevant pages (Products, Cart, Checkout, Order Confirmation, My Orders, Profile, Payment Failure, Payment Success) that navigates the user to the previous page in history. The button should be visually consistent with the app's warm Indian-themed design, placed at the top-left of the page content area, and should not appear on the Home page.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/Delivery.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Delivery.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Build a Profile page (or modal) accessible to all authenticated users. The page must display and allow editing of: full name, contact number, email address. It must also display (read-only) the user's Principal ID. Show the current delivery approval status if the user has requested delivery access. Add a 'Request Delivery Access' button that submits the profile for admin approval (sets status to #pending) if not already submitted.",
-        "status": "implemented",
-        "plannedFiles": [
+          "frontend/src/components/BackButton.tsx",
+          "frontend/src/pages/Products.tsx",
+          "frontend/src/pages/Cart.tsx",
+          "frontend/src/pages/Checkout.tsx",
+          "frontend/src/pages/OrderConfirmation.tsx",
+          "frontend/src/pages/MyOrders.tsx",
           "frontend/src/pages/Profile.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/pages/PaymentFailure.tsx",
+          "frontend/src/pages/PaymentSuccess.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/components/BackButton.tsx",
+          "frontend/src/pages/Products.tsx",
+          "frontend/src/pages/Cart.tsx",
+          "frontend/src/pages/Checkout.tsx",
+          "frontend/src/pages/OrderConfirmation.tsx",
+          "frontend/src/pages/MyOrders.tsx",
           "frontend/src/pages/Profile.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-5",
-        "summary": "Add a 'Delivery Approvals' tab in the Admin panel. This tab lists all user profiles with `deliveryApprovalStatus = #pending`, displaying each user's name, email, contact number, and Principal ID. Provide 'Approve' and 'Reject' action buttons per entry. Upon approval, the user gains the delivery role automatically. Show a success toast on approve/reject actions.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/DeliveryApprovalManagement.tsx",
-          "frontend/src/pages/Admin.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/DeliveryApprovalManagement.tsx",
-          "frontend/src/pages/Admin.tsx"
-        ]
-      },
-      {
-        "id": "REQ-6",
-        "summary": "Add React Query hooks: `useMyProfile` for fetching and saving the current user's full profile (name, contact, email); `usePendingDeliveryProfiles` for fetching pending delivery approval requests (admin only); `useApproveDeliveryPrincipal` and `useRejectDeliveryPrincipal` mutation hooks for admin approval/rejection actions.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useMyProfile.ts",
-          "frontend/src/hooks/useDeliveryApprovals.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useMyProfile.ts",
-          "frontend/src/hooks/useDeliveryApprovals.ts"
+          "frontend/src/pages/PaymentFailure.tsx",
+          "frontend/src/pages/PaymentSuccess.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
-    "backend/user-approval/approval.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/DeliveryApprovalManagement.tsx",
-    "frontend/src/components/ProfileSetup.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useDeliveryApprovals.ts",
-    "frontend/src/hooks/useMyProfile.ts",
-    "frontend/src/hooks/useUserProfile.ts",
-    "frontend/src/pages/Admin.tsx",
-    "frontend/src/pages/Delivery.tsx",
+    "frontend/src/components/BackButton.tsx",
+    "frontend/src/pages/Cart.tsx",
+    "frontend/src/pages/Checkout.tsx",
+    "frontend/src/pages/MyOrders.tsx",
+    "frontend/src/pages/OrderConfirmation.tsx",
+    "frontend/src/pages/PaymentFailure.tsx",
+    "frontend/src/pages/PaymentSuccess.tsx",
+    "frontend/src/pages/Products.tsx",
     "frontend/src/pages/Profile.tsx",
     "project_state.json",
     "scratch/component-selection.json",

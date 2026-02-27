@@ -24,6 +24,12 @@ export interface TransformationOutput {
     headers: Array<http_header>;
 }
 export type Time = bigint;
+export interface HomepageConfig {
+    hours: string;
+    logo: ExternalBlob;
+    address: string;
+    phone: string;
+}
 export interface TransformationInput {
     context: Uint8Array;
     response: http_request_result;
@@ -87,12 +93,12 @@ export interface ShoppingItem {
     priceInCents: bigint;
     productDescription: string;
 }
+export type ProductId = bigint;
 export interface CartItem {
     productId: ProductId;
     quantity: bigint;
     totalPrice: bigint;
 }
-export type ProductId = bigint;
 export interface UserProfile {
     fullName: string;
     email: string;
@@ -172,6 +178,7 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCustomerProfile(): Promise<CustomerProfile | null>;
+    getHomepageConfig(): Promise<HomepageConfig | null>;
     getMyProfile(): Promise<UserProfile | null>;
     getOrders(): Promise<Array<Order>>;
     getProduct(productId: ProductId): Promise<Product | null>;
@@ -194,6 +201,7 @@ export interface backendInterface {
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     setUpiConfig(config: UpiConfig): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
+    updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateOrderStatus(orderId: bigint, newStatus: OrderStatus): Promise<void>;
     updateOrderStatusByDeliveryPerson(orderId: bigint, newStatus: OrderStatus): Promise<void>;
     updatePaymentStatus(orderId: bigint, newStatus: PaymentStatus): Promise<void>;

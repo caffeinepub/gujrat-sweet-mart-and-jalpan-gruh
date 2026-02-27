@@ -4,6 +4,7 @@ import { useGetOrders, useCancelOrder } from '../hooks/useOrders';
 import { useGetAllProducts } from '../hooks/useProducts';
 import { OrderStatus, TimeUnit } from '../backend';
 import OrderTrackingTimeline from '../components/OrderTrackingTimeline';
+import BackButton from '../components/BackButton';
 import { Link } from '@tanstack/react-router';
 import { Button } from '../components/ui/button';
 import {
@@ -134,6 +135,9 @@ export default function MyOrders() {
 
   return (
     <div className="container mx-auto px-4 py-12">
+      <div className="mb-6">
+        <BackButton />
+      </div>
       <h1 className="text-4xl font-display font-bold text-primary mb-8">My Orders</h1>
 
       <div className="space-y-8">
@@ -223,36 +227,27 @@ export default function MyOrders() {
                 </div>
 
                 {/* Delivery Info */}
-                <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <h4 className="font-semibold mb-1 text-sm uppercase tracking-wide text-muted-foreground">
-                      Delivery Address
-                    </h4>
-                    <p className="font-medium">{order.name}</p>
-                    <p className="text-muted-foreground">{order.phone}</p>
-                    <p className="text-muted-foreground">{order.address}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-1 text-sm uppercase tracking-wide text-muted-foreground">
-                      Payment Method
-                    </h4>
-                    <p className="font-medium">
-                      {order.paymentMethod === 'cashOnDelivery' ? 'Cash on Delivery' : 'Online Payment'}
-                    </p>
+                <div>
+                  <h4 className="font-semibold mb-2 text-sm uppercase tracking-wide text-muted-foreground">
+                    Delivery Address
+                  </h4>
+                  <div className="text-sm space-y-1 text-muted-foreground">
+                    <p><span className="font-medium text-foreground">{order.name}</span></p>
+                    <p>{order.phone}</p>
+                    <p>{order.address}</p>
                   </div>
                 </div>
 
                 {/* Cancel Button */}
                 {canCancelOrder(order.status) && (
-                  <div className="pt-2 border-t border-primary/10">
+                  <div className="pt-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+                      className="text-destructive border-destructive/30 hover:bg-destructive/10"
                       onClick={() => setCancelConfirmOrderId(order.orderId)}
-                      disabled={cancelOrder.isPending}
                     >
-                      <XCircle className="h-4 w-4 mr-2" />
+                      <XCircle className="mr-2 h-4 w-4" />
                       Cancel Order
                     </Button>
                   </div>
@@ -278,19 +273,15 @@ export default function MyOrders() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={cancelOrder.isPending}>Keep Order</AlertDialogCancel>
+            <AlertDialogCancel>Keep Order</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelConfirm}
-              disabled={cancelOrder.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {cancelOrder.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Cancelling...
-                </>
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                'Yes, Cancel Order'
+                'Cancel Order'
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

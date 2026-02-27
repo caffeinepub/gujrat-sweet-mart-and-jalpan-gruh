@@ -4,6 +4,7 @@ import { useMarkOrderAsPaid } from '../hooks/useOrders';
 import { Link } from '@tanstack/react-router';
 import { Button } from '../components/ui/button';
 import { CheckCircle, Home, Loader2, AlertCircle } from 'lucide-react';
+import BackButton from '../components/BackButton';
 
 export default function PaymentSuccess() {
   const { actor } = useActor();
@@ -75,10 +76,55 @@ export default function PaymentSuccess() {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto text-center">
-          <AlertCircle className="h-20 w-20 text-destructive mx-auto mb-6" />
-          <h1 className="text-3xl font-display font-bold text-destructive mb-4">Payment Verification Failed</h1>
-          <p className="text-muted-foreground mb-8">{error}</p>
+        <div className="max-w-2xl mx-auto">
+          <div className="mb-6">
+            <BackButton />
+          </div>
+          <div className="text-center">
+            <AlertCircle className="h-20 w-20 text-destructive mx-auto mb-6" />
+            <h1 className="text-3xl font-display font-bold text-destructive mb-4">Payment Verification Failed</h1>
+            <p className="text-muted-foreground mb-8">{error}</p>
+            <div className="flex gap-4 justify-center">
+              <Link to="/">
+                <Button variant="outline" size="lg">
+                  <Home className="mr-2 h-5 w-5" />
+                  Go Home
+                </Button>
+              </Link>
+              <Link to="/my-orders">
+                <Button size="lg">View My Orders</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-6">
+          <BackButton />
+        </div>
+        <div className="text-center">
+          <CheckCircle className="h-20 w-20 text-green-600 mx-auto mb-6" />
+          <h1 className="text-4xl font-display font-bold text-primary mb-4">Payment Done!</h1>
+          <p className="text-lg text-muted-foreground mb-8">
+            Your payment has been confirmed successfully. Your order has been placed and will be delivered soon.
+          </p>
+          <div className="bg-card border-2 border-green-200 rounded-lg p-6 mb-8">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <span className="font-semibold text-green-700">Payment Status: Payment Done</span>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              You will receive a confirmation shortly. Thank you for shopping with us!
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Track your order in <strong>My Orders</strong> to see delivery updates.
+            </p>
+          </div>
           <div className="flex gap-4 justify-center">
             <Link to="/">
               <Button variant="outline" size="lg">
@@ -90,41 +136,6 @@ export default function PaymentSuccess() {
               <Button size="lg">View My Orders</Button>
             </Link>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-2xl mx-auto text-center">
-        <CheckCircle className="h-20 w-20 text-green-600 mx-auto mb-6" />
-        <h1 className="text-4xl font-display font-bold text-primary mb-4">Payment Done!</h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          Your payment has been confirmed successfully. Your order has been placed and will be delivered soon.
-        </p>
-        <div className="bg-card border-2 border-green-200 rounded-lg p-6 mb-8">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            <span className="font-semibold text-green-700">Payment Status: Payment Done</span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            You will receive a confirmation shortly. Thank you for shopping with us!
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Track your order in <strong>My Orders</strong> to see delivery updates.
-          </p>
-        </div>
-        <div className="flex gap-4 justify-center">
-          <Link to="/">
-            <Button variant="outline" size="lg">
-              <Home className="mr-2 h-5 w-5" />
-              Go Home
-            </Button>
-          </Link>
-          <Link to="/my-orders">
-            <Button size="lg">View My Orders</Button>
-          </Link>
         </div>
       </div>
     </div>

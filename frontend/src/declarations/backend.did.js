@@ -111,6 +111,13 @@ export const CustomerProfile = IDL.Record({
   'address' : IDL.Text,
   'phone' : IDL.Text,
 });
+export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const HomepageConfig = IDL.Record({
+  'hours' : IDL.Text,
+  'logo' : ExternalBlob,
+  'address' : IDL.Text,
+  'phone' : IDL.Text,
+});
 export const StripeSessionStatus = IDL.Variant({
   'completed' : IDL.Record({
     'userPrincipal' : IDL.Opt(IDL.Text),
@@ -118,7 +125,6 @@ export const StripeSessionStatus = IDL.Variant({
   }),
   'failed' : IDL.Record({ 'error' : IDL.Text }),
 });
-export const ExternalBlob = IDL.Vec(IDL.Nat8);
 export const UpiConfig = IDL.Record({
   'upiId' : IDL.Text,
   'qrCode' : ExternalBlob,
@@ -236,6 +242,7 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
   'getCustomerProfile' : IDL.Func([], [IDL.Opt(CustomerProfile)], ['query']),
+  'getHomepageConfig' : IDL.Func([], [IDL.Opt(HomepageConfig)], ['query']),
   'getMyProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
   'getProduct' : IDL.Func([ProductId], [IDL.Opt(Product)], ['query']),
@@ -266,6 +273,7 @@ export const idlService = IDL.Service({
       [TransformationOutput],
       ['query'],
     ),
+  'updateHomepageConfig' : IDL.Func([HomepageConfig], [], []),
   'updateOrderStatus' : IDL.Func([IDL.Nat, OrderStatus], [], []),
   'updateOrderStatusByDeliveryPerson' : IDL.Func(
       [IDL.Nat, OrderStatus],
@@ -378,6 +386,13 @@ export const idlFactory = ({ IDL }) => {
     'address' : IDL.Text,
     'phone' : IDL.Text,
   });
+  const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const HomepageConfig = IDL.Record({
+    'hours' : IDL.Text,
+    'logo' : ExternalBlob,
+    'address' : IDL.Text,
+    'phone' : IDL.Text,
+  });
   const StripeSessionStatus = IDL.Variant({
     'completed' : IDL.Record({
       'userPrincipal' : IDL.Opt(IDL.Text),
@@ -385,7 +400,6 @@ export const idlFactory = ({ IDL }) => {
     }),
     'failed' : IDL.Record({ 'error' : IDL.Text }),
   });
-  const ExternalBlob = IDL.Vec(IDL.Nat8);
   const UpiConfig = IDL.Record({ 'upiId' : IDL.Text, 'qrCode' : ExternalBlob });
   const ApprovalStatus = IDL.Variant({
     'pending' : IDL.Null,
@@ -497,6 +511,7 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
     'getCustomerProfile' : IDL.Func([], [IDL.Opt(CustomerProfile)], ['query']),
+    'getHomepageConfig' : IDL.Func([], [IDL.Opt(HomepageConfig)], ['query']),
     'getMyProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
     'getProduct' : IDL.Func([ProductId], [IDL.Opt(Product)], ['query']),
@@ -531,6 +546,7 @@ export const idlFactory = ({ IDL }) => {
         [TransformationOutput],
         ['query'],
       ),
+    'updateHomepageConfig' : IDL.Func([HomepageConfig], [], []),
     'updateOrderStatus' : IDL.Func([IDL.Nat, OrderStatus], [], []),
     'updateOrderStatusByDeliveryPerson' : IDL.Func(
         [IDL.Nat, OrderStatus],

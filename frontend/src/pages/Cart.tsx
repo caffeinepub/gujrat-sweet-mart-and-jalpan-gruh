@@ -3,6 +3,7 @@ import { useGetAllProducts } from '../hooks/useProducts';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { Link, useNavigate } from '@tanstack/react-router';
 import CartItem from '../components/CartItem';
+import BackButton from '../components/BackButton';
 import { Loader2, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Button } from '../components/ui/button';
 
@@ -57,6 +58,9 @@ export default function Cart() {
 
   return (
     <div className="container mx-auto px-4 py-12">
+      <div className="mb-6">
+        <BackButton />
+      </div>
       <h1 className="text-4xl font-display font-bold text-primary mb-8">Your Cart</h1>
 
       <div className="grid lg:grid-cols-3 gap-8">

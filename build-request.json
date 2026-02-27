@@ -1,132 +1,33 @@
 {
   "kind": "build_request",
-  "title": "User Profile System with Principal ID and Admin Approval for Delivery Access",
-  "projectName": "Gujrat Sweet Mart",
+  "title": "Add back navigation button",
+  "projectName": "Gujarat Sweet Mart",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Extend the backend user profile data model to include: full name, contact number, email address, and the user's Principal ID. Add a new field `deliveryApprovalStatus` with values: `#pending`, `#approved`, `#rejected`. When a user saves their profile for the first time, set `deliveryApprovalStatus` to `#pending` by default.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "every person have a profile and his details like contact number and email and etc. is mentioned there and also principal id also should be mentioned there"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Profile record stores: name, contactNumber, email, principalId (as Text), deliveryApprovalStatus",
-        "New profiles are created with deliveryApprovalStatus = #pending",
-        "Existing profiles are migrated gracefully without data loss"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Add backend functions: `getMyProfile()` returning the caller's full profile including their Principal ID and approval status; `getAllPendingDeliveryProfiles()` (admin-only) returning all profiles with `deliveryApprovalStatus = #pending`; `approveDeliveryPrincipal(principal: Principal)` (admin-only) that sets the user's `deliveryApprovalStatus` to `#approved` and also grants them the delivery role; `rejectDeliveryPrincipal(principal: Principal)` (admin-only) that sets the status to `#rejected`.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "admin should approve the principal first and then that principal id will be authorised for delivery dashboard"
-        ]
-      },
-      "acceptanceCriteria": [
-        "`getMyProfile()` returns the caller's profile with principalId and deliveryApprovalStatus",
-        "`getAllPendingDeliveryProfiles()` is accessible only to admin and returns pending profiles",
-        "`approveDeliveryPrincipal()` sets status to #approved and grants the delivery role in one operation",
-        "`rejectDeliveryPrincipal()` sets status to #rejected",
-        "Non-admin callers to admin-only functions receive an authorization error"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Update the delivery dashboard access gate on the frontend: instead of only checking the delivery role, also verify that the user's `deliveryApprovalStatus` is `#approved`. If the user's profile has `#pending` status, show a clear message: 'Your account is pending admin approval for delivery access.' If status is `#rejected`, show: 'Your delivery access request has been rejected. Please contact the admin.'",
+      "text": "Add a back button to relevant pages (Products, Cart, Checkout, Order Confirmation, My Orders, Profile, Payment Failure, Payment Success) that navigates the user to the previous page in history. The button should be visually consistent with the app's warm Indian-themed design, placed at the top-left of the page content area, and should not appear on the Home page.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-4"
         ],
         "quotes": [
-          "admin should approve the principal first and then that principal id will be authorised for delivery dashboard"
+          "and also a back button"
         ]
       },
       "acceptanceCriteria": [
-        "Delivery dashboard is only accessible when both delivery role is assigned AND deliveryApprovalStatus is #approved",
-        "Pending users see a 'pending approval' message instead of the dashboard",
-        "Rejected users see a 'rejected' message instead of the dashboard"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Build a Profile page (or modal) accessible to all authenticated users. The page must display and allow editing of: full name, contact number, email address. It must also display (read-only) the user's Principal ID. Show the current delivery approval status if the user has requested delivery access. Add a 'Request Delivery Access' button that submits the profile for admin approval (sets status to #pending) if not already submitted.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "every person have a profile and his details like contact number and email and etc. is mentioned there and also principal id also should be mentioned there"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Profile page shows name, contact number, email as editable fields",
-        "Principal ID is displayed as a read-only field with a copy-to-clipboard button",
-        "Delivery approval status is shown (pending / approved / rejected) if applicable",
-        "'Request Delivery Access' button is visible and submits the profile for admin review",
-        "Profile page is accessible from the header navigation for logged-in users"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Add a 'Delivery Approvals' tab in the Admin panel. This tab lists all user profiles with `deliveryApprovalStatus = #pending`, displaying each user's name, email, contact number, and Principal ID. Provide 'Approve' and 'Reject' action buttons per entry. Upon approval, the user gains the delivery role automatically. Show a success toast on approve/reject actions.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "admin should approve the principal first and then that principal id will be authorised for delivery dashboard"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Admin panel has a new 'Delivery Approvals' tab",
-        "Tab lists all pending profiles with name, email, contact number, and Principal ID",
-        "Approve button calls approveDeliveryPrincipal and shows a success toast",
-        "Reject button calls rejectDeliveryPrincipal and shows a success toast",
-        "List refreshes after an approve or reject action"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Add React Query hooks: `useMyProfile` for fetching and saving the current user's full profile (name, contact, email); `usePendingDeliveryProfiles` for fetching pending delivery approval requests (admin only); `useApproveDeliveryPrincipal` and `useRejectDeliveryPrincipal` mutation hooks for admin approval/rejection actions.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ]
-      },
-      "acceptanceCriteria": [
-        "`useMyProfile` returns the full profile including principalId and deliveryApprovalStatus",
-        "`usePendingDeliveryProfiles` returns list of pending profiles",
-        "`useApproveDeliveryPrincipal` and `useRejectDeliveryPrincipal` mutations invalidate the pending profiles query on success"
+        "A back button is visible at the top-left of the content area on Products, Cart, Checkout, Order Confirmation, My Orders, Profile, Payment Failure, and Payment Success pages.",
+        "Clicking the back button navigates the user to the previous page in browser history.",
+        "The back button is not shown on the Home page.",
+        "The button styling uses the existing saffron/marigold/deep-red color palette and is visually consistent with the rest of the app."
       ]
     }
   ],
-  "constraints": [
-    "All Motoko logic must remain in the single backend/main.mo actor",
-    "Do not modify files listed in frontend.immutablePaths",
-    "Existing profile data (name, phone, address) must be preserved during migration",
-    "Delivery role assignment must continue to work via the existing DeliveryStaffManagement component as well"
-  ],
+  "constraints": [],
   "nonGoals": [
-    "Email verification or OTP flows",
-    "Third-party identity providers",
-    "Automated approval without admin action",
-    "Changing the existing order management or product management features"
+    "Adding a back button to the Admin or Delivery dashboard pages.",
+    "Changing any navigation header or footer layout."
   ],
   "imageRequirements": {
     "required": [],

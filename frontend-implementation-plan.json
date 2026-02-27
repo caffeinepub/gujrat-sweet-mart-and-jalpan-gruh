@@ -1,88 +1,62 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "User Profile System with Principal ID and Admin Approval for Delivery Access",
+  "title": "Add back navigation button",
   "requirements": [
     {
-      "id": "REQ-3",
-      "summary": "Update delivery dashboard access gate to verify both delivery role and approved delivery status, showing appropriate messages for pending or rejected users",
+      "id": "REQ-1",
+      "summary": "Add a back button component to relevant pages that navigates to the previous page in browser history, styled with the app's warm Indian-themed design palette",
       "acceptanceCriteria": [
-        "Delivery dashboard is only accessible when both delivery role is assigned AND deliveryApprovalStatus is #approved",
-        "Pending users see a 'pending approval' message instead of the dashboard",
-        "Rejected users see a 'rejected' message instead of the dashboard"
+        "A back button is visible at the top-left of the content area on Products, Cart, Checkout, Order Confirmation, My Orders, Profile, Payment Failure, and Payment Success pages.",
+        "Clicking the back button navigates the user to the previous page in browser history.",
+        "The back button is not shown on the Home page.",
+        "The button styling uses the existing saffron/marigold/deep-red color palette and is visually consistent with the rest of the app."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Delivery.tsx",
+          "path": "frontend/src/components/BackButton.tsx",
+          "operation": "create",
+          "description": "Create a reusable BackButton component that uses window.history.back() for navigation. Style the button using the warm Indian-themed color palette (saffron/marigold/deep-red) defined in frontend/src/index.css. Include an arrow-left icon and ensure the button is responsive and accessible. Position the button with appropriate margins/padding to sit naturally at the top-left of page content."
+        },
+        {
+          "path": "frontend/src/pages/Products.tsx",
           "operation": "modify",
-          "description": "Add deliveryApprovalStatus check alongside the existing delivery role check. Fetch the user's profile using useMyProfile hook and verify that deliveryApprovalStatus is 'approved'. If status is 'pending', render a message: 'Your account is pending admin approval for delivery access.' If 'rejected', show: 'Your delivery access request has been rejected. Please contact the admin.' Only render the active orders list when both role check and approval status check pass."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Build a Profile page accessible to all authenticated users for viewing and editing profile details, displaying Principal ID, showing delivery approval status, and requesting delivery access",
-      "acceptanceCriteria": [
-        "Profile page shows name, contact number, email as editable fields",
-        "Principal ID is displayed as a read-only field with a copy-to-clipboard button",
-        "Delivery approval status is shown (pending / approved / rejected) if applicable",
-        "'Request Delivery Access' button is visible and submits the profile for admin review",
-        "Profile page is accessible from the header navigation for logged-in users"
-      ],
-      "file_operations": [
+          "description": "Import and render the BackButton component at the top of the page content area, above the search bar and category sections. Ensure the button is positioned at the top-left with appropriate spacing."
+        },
+        {
+          "path": "frontend/src/pages/Cart.tsx",
+          "operation": "modify",
+          "description": "Import and render the BackButton component at the top of the cart page content area, above the cart items list. Position it consistently at the top-left with the same spacing used on other pages."
+        },
+        {
+          "path": "frontend/src/pages/Checkout.tsx",
+          "operation": "modify",
+          "description": "Import and render the BackButton component at the top of the checkout form, before the customer information section. Maintain consistent top-left positioning and spacing."
+        },
+        {
+          "path": "frontend/src/pages/OrderConfirmation.tsx",
+          "operation": "modify",
+          "description": "Import and render the BackButton component at the top of the order confirmation page, above the order details heading. Use the same positioning pattern as other pages."
+        },
+        {
+          "path": "frontend/src/pages/MyOrders.tsx",
+          "operation": "modify",
+          "description": "Import and render the BackButton component at the top of the orders list page, before the page heading. Ensure consistent placement at the top-left."
+        },
         {
           "path": "frontend/src/pages/Profile.tsx",
-          "operation": "create",
-          "description": "Create a new Profile page component that fetches the user's profile using useMyProfile hook. Display fullName, contactNumber, and email as editable form fields. Show principalId as a read-only text field with a copy-to-clipboard button. If deliveryApprovalStatus exists, display it as a badge (pending/approved/rejected). Include a 'Request Delivery Access' button that calls requestApproval() from the backend when the user wants to request delivery access. Use a form with save functionality that calls saveCallerUserProfile mutation from useMyProfile hook. Show toast notifications on save success or error."
-        },
-        {
-          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add a new route for '/profile' that renders the Profile page component. In the header navigation section, add a 'Profile' link visible only to authenticated users (alongside the existing Delivery link). Place the Profile link before the Delivery link in the navigation order."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Add a 'Delivery Approvals' tab in the Admin panel for managing pending delivery access requests with approve/reject actions",
-      "acceptanceCriteria": [
-        "Admin panel has a new 'Delivery Approvals' tab",
-        "Tab lists all pending profiles with name, email, contact number, and Principal ID",
-        "Approve button calls approveDeliveryPrincipal and shows a success toast",
-        "Reject button calls rejectDeliveryPrincipal and shows a success toast",
-        "List refreshes after an approve or reject action"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/DeliveryApprovalManagement.tsx",
-          "operation": "create",
-          "description": "Create a new admin component that uses usePendingDeliveryProfiles hook to fetch all profiles with deliveryApprovalStatus = 'pending'. Display each profile in a table or card list showing fullName, email, contactNumber, and principalId. Provide 'Approve' and 'Reject' buttons for each entry. The Approve button should call useApproveDeliveryPrincipal mutation passing the user's principal, and the Reject button should call useRejectDeliveryPrincipal mutation. Show toast notifications on success or error. The list should automatically refresh after mutations complete via React Query cache invalidation."
+          "description": "Import and render the BackButton component at the top of the profile page, above the profile information section. Maintain the same top-left positioning pattern."
         },
         {
-          "path": "frontend/src/pages/Admin.tsx",
+          "path": "frontend/src/pages/PaymentFailure.tsx",
           "operation": "modify",
-          "description": "Add a new tab labeled 'Delivery Approvals' to the existing tabbed interface. Import and render the DeliveryApprovalManagement component when this tab is active. Place the new tab after the 'Delivery Staff' tab in the tab order."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Add React Query hooks for fetching user profile, pending delivery profiles, and approving/rejecting delivery access requests",
-      "acceptanceCriteria": [
-        "`useMyProfile` returns the full profile including principalId and deliveryApprovalStatus",
-        "`usePendingDeliveryProfiles` returns list of pending profiles",
-        "`useApproveDeliveryPrincipal` and `useRejectDeliveryPrincipal` mutations invalidate the pending profiles query on success"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useMyProfile.ts",
-          "operation": "create",
-          "description": "Create a custom hook that provides both query and mutation for the current user's full profile. Implement useMyProfile query hook that calls actor.getMyProfile() and returns UserProfile | null with principalId and deliveryApprovalStatus fields. Follow the pattern from useUserProfile.ts but rename to useMyProfile. Also export a useSaveMyProfile mutation hook that calls actor.saveCallerUserProfile(fullName, contactNumber, email) and invalidates the 'myProfile' query key on success. Include proper loading state composition from actor and query states similar to useUserProfile pattern."
+          "description": "Import and render the BackButton component at the top of the payment failure page, above the failure message. Position it consistently at the top-left."
         },
         {
-          "path": "frontend/src/hooks/useDeliveryApprovals.ts",
-          "operation": "create",
-          "description": "Create hooks for delivery approval management. Export usePendingDeliveryProfiles query hook that calls actor.getAllPendingDeliveryProfiles() and returns an array of UserProfile objects with queryKey ['pendingDeliveryProfiles']. Export useApproveDeliveryPrincipal mutation hook that accepts a Principal parameter and calls actor.approveDeliveryPrincipal(principal), invalidating ['pendingDeliveryProfiles'] on success and showing a success toast. Export useRejectDeliveryPrincipal mutation hook that accepts a Principal parameter and calls actor.rejectDeliveryPrincipal(principal), invalidating ['pendingDeliveryProfiles'] on success and showing a success toast. All hooks should be enabled only when actor is available."
+          "path": "frontend/src/pages/PaymentSuccess.tsx",
+          "operation": "modify",
+          "description": "Import and render the BackButton component at the top of the payment success page, above the success message and order details. Use the same positioning as other pages."
         }
       ]
     }

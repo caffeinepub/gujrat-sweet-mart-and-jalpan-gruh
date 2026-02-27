@@ -20,6 +20,7 @@ import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Separator } from '../components/ui/separator';
+import BackButton from '../components/BackButton';
 import { toast } from 'sonner';
 
 function DeliveryStatusBadge({ status }: { status: DeliveryApprovalStatus }) {
@@ -123,6 +124,9 @@ export default function Profile() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-2xl">
+      <div className="mb-6">
+        <BackButton />
+      </div>
       <h1 className="text-4xl font-display font-bold text-primary mb-8">My Profile</h1>
 
       {/* Principal ID Card */}

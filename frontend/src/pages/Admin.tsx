@@ -9,9 +9,10 @@ import StripePaymentSetup from '../components/StripePaymentSetup';
 import UpiPaymentSetup from '../components/UpiPaymentSetup';
 import DeliveryStaffManagement from '../components/DeliveryStaffManagement';
 import DeliveryApprovalManagement from '../components/DeliveryApprovalManagement';
+import HomepageConfigForm from '../components/HomepageConfigForm';
 import AccessDeniedScreen from '../components/AccessDeniedScreen';
 import { Product, Unit } from '../backend';
-import { Loader2, Plus, Pencil, Trash2, Package, ShoppingBag, QrCode, Truck, UserCheck } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, Package, ShoppingBag, QrCode, Truck, UserCheck, Home } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import {
@@ -99,7 +100,7 @@ export default function Admin() {
       <StripePaymentSetup />
 
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid w-full max-w-3xl grid-cols-5 mb-8">
+        <TabsList className="grid w-full max-w-4xl grid-cols-6 mb-8">
           <TabsTrigger value="products" className="flex items-center gap-1.5 text-xs sm:text-sm">
             <Package className="h-4 w-4" />
             <span className="hidden sm:inline">Products</span>
@@ -119,6 +120,10 @@ export default function Admin() {
           <TabsTrigger value="approvals" className="flex items-center gap-1.5 text-xs sm:text-sm">
             <UserCheck className="h-4 w-4" />
             <span className="hidden sm:inline">Approvals</span>
+          </TabsTrigger>
+          <TabsTrigger value="homepage" className="flex items-center gap-1.5 text-xs sm:text-sm">
+            <Home className="h-4 w-4" />
+            <span className="hidden sm:inline">Homepage</span>
           </TabsTrigger>
         </TabsList>
 
@@ -216,6 +221,16 @@ export default function Admin() {
             </p>
           </div>
           <DeliveryApprovalManagement />
+        </TabsContent>
+
+        <TabsContent value="homepage">
+          <div className="mb-4">
+            <h2 className="text-2xl font-display font-bold mb-1">Homepage Settings</h2>
+            <p className="text-muted-foreground text-sm">
+              Update the homepage logo/banner image and business information shown to customers.
+            </p>
+          </div>
+          <HomepageConfigForm />
         </TabsContent>
       </Tabs>
 
