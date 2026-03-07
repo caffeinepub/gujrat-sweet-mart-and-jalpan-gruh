@@ -10,10 +10,60 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export type ApprovalStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
+export interface CartItem {
+  'productId' : ProductId,
+  'quantity' : bigint,
+  'totalPrice' : bigint,
+}
 export type Category = { 'snacks' : null } |
+  { 'cookies' : null } |
   { 'namkeen' : null } |
+  { 'accompaniments' : null } |
   { 'beverages' : null } |
   { 'sweets' : null };
+export interface CustomerProfile {
+  'principal' : Principal,
+  'name' : string,
+  'address' : string,
+  'phone' : string,
+}
+export type DeliveryApprovalStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
+export interface DeliveryTime { 'value' : bigint, 'unit' : TimeUnit }
+export type ExternalBlob = Uint8Array;
+export interface HomepageConfig {
+  'hours' : string,
+  'logo' : ExternalBlob,
+  'address' : string,
+  'phone' : string,
+}
+export interface Order {
+  'status' : OrderStatus,
+  'paymentStatus' : PaymentStatus,
+  'paymentMethod' : { 'cashOnDelivery' : null } |
+    { 'online' : null },
+  'customerPrincipal' : Principal,
+  'name' : string,
+  'deliveryTime' : [] | [DeliveryTime],
+  'orderId' : bigint,
+  'address' : string,
+  'timestamp' : Time,
+  'phone' : string,
+  'items' : Array<CartItem>,
+}
+export type OrderStatus = { 'shipped' : null } |
+  { 'cancelled' : null } |
+  { 'outForDelivery' : null } |
+  { 'orderPlaced' : null } |
+  { 'delivered' : null };
+export type PaymentStatus = { 'pending' : null } |
+  { 'paid' : null } |
+  { 'refunded' : null } |
+  { 'failed' : null };
 export interface Product {
   'id' : ProductId,
   'name' : string,
@@ -25,33 +75,146 @@ export interface Product {
   'price' : bigint,
 }
 export type ProductId = bigint;
+export interface ShoppingItem {
+  'productName' : string,
+  'currency' : string,
+  'quantity' : bigint,
+  'priceInCents' : bigint,
+  'productDescription' : string,
+}
+export interface StripeConfiguration {
+  'allowedCountries' : Array<string>,
+  'secretKey' : string,
+}
+export type StripeSessionStatus = {
+    'completed' : { 'userPrincipal' : [] | [string], 'response' : string }
+  } |
+  { 'failed' : { 'error' : string } };
+export type Time = bigint;
+export type TimeUnit = { 'hours' : null } |
+  { 'days' : null } |
+  { 'minutes' : null };
+export interface TransformationInput {
+  'context' : Uint8Array,
+  'response' : http_request_result,
+}
+export interface TransformationOutput {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
 export type Unit = { 'per_kg' : null } |
   { 'single' : null };
-export interface UserProfile { 'name' : string }
+export interface UpiConfig { 'upiId' : string, 'qrCode' : ExternalBlob }
+export interface UserApprovalInfo {
+  'status' : ApprovalStatus,
+  'principal' : Principal,
+}
+export interface UserProfile {
+  'fullName' : string,
+  'email' : string,
+  'contactNumber' : string,
+  'principalId' : Principal,
+  'deliveryApprovalStatus' : DeliveryApprovalStatus,
+}
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
+export interface http_header { 'value' : string, 'name' : string }
+export interface http_request_result {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addProduct' : ActorMethod<
     [string, Category, string, bigint, boolean, Unit, string],
     ProductId
   >,
+  'addToCart' : ActorMethod<[ProductId, bigint], undefined>,
+  'approveDeliveryPrincipal' : ActorMethod<[Principal], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'debugPrintProducts' : ActorMethod<[], undefined>,
+  'assignDeliveryRole' : ActorMethod<[Principal], undefined>,
+  'cancelOrder' : ActorMethod<[bigint], undefined>,
+  'clearCart' : ActorMethod<[], undefined>,
+  'createCheckoutSession' : ActorMethod<
+    [Array<ShoppingItem>, string, string],
+    string
+  >,
+  'createOrder' : ActorMethod<
+    [string, string, string, { 'cashOnDelivery' : null } | { 'online' : null }],
+    bigint
+  >,
   'deleteProduct' : ActorMethod<[ProductId], undefined>,
   'editProduct' : ActorMethod<
     [ProductId, string, Category, string, bigint, boolean, Unit, string],
     undefined
   >,
+  'getActiveOrdersForDelivery' : ActorMethod<[], Array<Order>>,
+  'getAllOrders' : ActorMethod<[], Array<Order>>,
+  'getAllPendingDeliveryProfiles' : ActorMethod<[], Array<UserProfile>>,
   'getAllProducts' : ActorMethod<[], Array<Product>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getCart' : ActorMethod<[], Array<CartItem>>,
+  'getCustomerProfile' : ActorMethod<[], [] | [CustomerProfile]>,
+  'getHomepageConfig' : ActorMethod<[], [] | [HomepageConfig]>,
+  'getMyProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getOrders' : ActorMethod<[], Array<Order>>,
   'getProduct' : ActorMethod<[ProductId], [] | [Product]>,
   'getProductsByCategory' : ActorMethod<[Category], Array<Product>>,
+  'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
+  'getUpiConfig' : ActorMethod<[], [] | [UpiConfig]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'isCallerApproved' : ActorMethod<[], boolean>,
+  'isDeliveryPerson' : ActorMethod<[], boolean>,
+  'isStripeConfigured' : ActorMethod<[], boolean>,
+  'listApprovals' : ActorMethod<[], Array<UserApprovalInfo>>,
+  'markOrderAsPaid' : ActorMethod<[bigint], undefined>,
+  'rejectDeliveryPrincipal' : ActorMethod<[Principal], undefined>,
+  'requestApproval' : ActorMethod<[], undefined>,
+  'saveCallerUserProfile' : ActorMethod<[string, string, string], undefined>,
+  'saveCustomerProfile' : ActorMethod<[string, string, string], undefined>,
+  'setApproval' : ActorMethod<[Principal, ApprovalStatus], undefined>,
+  'setDeliveryTime' : ActorMethod<[bigint, bigint, TimeUnit], undefined>,
+  'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
+  'setUpiConfig' : ActorMethod<[UpiConfig], undefined>,
+  'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
+  'updateHomepageConfig' : ActorMethod<[HomepageConfig], undefined>,
+  'updateOrderStatus' : ActorMethod<[bigint, OrderStatus], undefined>,
+  'updateOrderStatusByDeliveryPerson' : ActorMethod<
+    [bigint, OrderStatus],
+    undefined
+  >,
+  'updatePaymentStatus' : ActorMethod<[bigint, PaymentStatus], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

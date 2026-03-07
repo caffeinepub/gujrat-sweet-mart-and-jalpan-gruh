@@ -1,22 +1,48 @@
-import { createRouter, createRoute, createRootRoute, RouterProvider, Outlet, Link } from '@tanstack/react-router';
-import { useInternetIdentity } from './hooks/useInternetIdentity';
-import { useGetCallerUserProfile } from './hooks/useUserProfile';
-import { useIsCallerAdmin } from './hooks/useAuth';
-import Home from './pages/Home';
-import Products from './pages/Products';
-import Admin from './pages/Admin';
-import LoginButton from './components/LoginButton';
-import ProfileSetup from './components/ProfileSetup';
-import { Menu, X, Shield } from 'lucide-react';
-import { useState } from 'react';
+import {
+  Link,
+  Outlet,
+  RouterProvider,
+  createRootRoute,
+  createRoute,
+  createRouter,
+} from "@tanstack/react-router";
+import {
+  ClipboardList,
+  Menu,
+  Shield,
+  ShoppingCart,
+  Truck,
+  UserCircle,
+  X,
+} from "lucide-react";
+import { useState } from "react";
+import LoginButton from "./components/LoginButton";
+import ProfileSetup from "./components/ProfileSetup";
+import { useIsCallerAdmin } from "./hooks/useAuth";
+import { useGetCart } from "./hooks/useCart";
+import { useIsDeliveryPerson } from "./hooks/useDeliveryRole";
+import { useInternetIdentity } from "./hooks/useInternetIdentity";
+import { useGetCallerUserProfile } from "./hooks/useUserProfile";
+import Admin from "./pages/Admin";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Delivery from "./pages/Delivery";
+import Home from "./pages/Home";
+import MyOrders from "./pages/MyOrders";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import PaymentFailure from "./pages/PaymentFailure";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import Products from "./pages/Products";
+import Profile from "./pages/Profile";
 
 function Layout() {
   const { identity } = useInternetIdentity();
   const { data: isAdmin } = useIsCallerAdmin();
+  const { data: isDeliveryPerson } = useIsDeliveryPerson();
+  const { data: cartItems } = useGetCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Show admin link if user is authenticated (they'll see appropriate message if not admin)
-  const showAdminLink = !!identity;
+  const cartItemCount = cartItems?.length || 0;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -34,25 +60,69 @@ function Layout() {
               <Link
                 to="/"
                 className="text-foreground hover:text-primary transition-colors font-medium"
-                activeProps={{ className: 'text-primary' }}
+                activeProps={{ className: "text-primary" }}
               >
                 Home
               </Link>
               <Link
                 to="/products"
                 className="text-foreground hover:text-primary transition-colors font-medium"
-                activeProps={{ className: 'text-primary' }}
+                activeProps={{ className: "text-primary" }}
               >
                 Products
               </Link>
-              {showAdminLink && (
+              {identity && (
+                <Link
+                  to="/my-orders"
+                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  activeProps={{ className: "text-primary" }}
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  My Orders
+                </Link>
+              )}
+              {identity && (
+                <Link
+                  to="/profile"
+                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  activeProps={{ className: "text-primary" }}
+                >
+                  <UserCircle className="h-4 w-4" />
+                  Profile
+                </Link>
+              )}
+              {identity && isDeliveryPerson && (
+                <Link
+                  to="/delivery"
+                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  activeProps={{ className: "text-primary" }}
+                >
+                  <Truck className="h-4 w-4" />
+                  Delivery
+                </Link>
+              )}
+              {identity && isAdmin && (
                 <Link
                   to="/admin"
                   className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
-                  activeProps={{ className: 'text-primary' }}
+                  activeProps={{ className: "text-primary" }}
                 >
                   <Shield className="h-4 w-4" />
                   Admin
+                </Link>
+              )}
+              {identity && (
+                <Link
+                  to="/cart"
+                  className="relative text-foreground hover:text-primary transition-colors"
+                  activeProps={{ className: "text-primary" }}
+                >
+                  <ShoppingCart className="h-6 w-6" />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartItemCount}
+                    </span>
+                  )}
                 </Link>
               )}
               <LoginButton />
@@ -60,10 +130,15 @@ function Layout() {
 
             {/* Mobile Menu Button */}
             <button
+              type="button"
               className="md:hidden p-2"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
 
@@ -73,7 +148,7 @@ function Layout() {
               <Link
                 to="/"
                 className="block text-foreground hover:text-primary transition-colors font-medium"
-                activeProps={{ className: 'text-primary' }}
+                activeProps={{ className: "text-primary" }}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
@@ -81,20 +156,64 @@ function Layout() {
               <Link
                 to="/products"
                 className="block text-foreground hover:text-primary transition-colors font-medium"
-                activeProps={{ className: 'text-primary' }}
+                activeProps={{ className: "text-primary" }}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Products
               </Link>
-              {showAdminLink && (
+              {identity && (
+                <Link
+                  to="/my-orders"
+                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
+                  activeProps={{ className: "text-primary" }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  My Orders
+                </Link>
+              )}
+              {identity && (
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
+                  activeProps={{ className: "text-primary" }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <UserCircle className="h-4 w-4" />
+                  Profile
+                </Link>
+              )}
+              {identity && isDeliveryPerson && (
+                <Link
+                  to="/delivery"
+                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
+                  activeProps={{ className: "text-primary" }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Truck className="h-4 w-4" />
+                  Delivery
+                </Link>
+              )}
+              {identity && isAdmin && (
                 <Link
                   to="/admin"
-                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
-                  activeProps={{ className: 'text-primary' }}
+                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
+                  activeProps={{ className: "text-primary" }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Shield className="h-4 w-4" />
                   Admin
+                </Link>
+              )}
+              {identity && (
+                <Link
+                  to="/cart"
+                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
+                  activeProps={{ className: "text-primary" }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  Cart {cartItemCount > 0 && `(${cartItemCount})`}
                 </Link>
               )}
               <div className="pt-2">
@@ -124,12 +243,18 @@ function Layout() {
               <h4 className="font-semibold mb-2">Quick Links</h4>
               <ul className="space-y-1 text-sm">
                 <li>
-                  <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
+                  <Link
+                    to="/"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
                     Home
                   </Link>
                 </li>
                 <li>
-                  <Link to="/products" className="text-muted-foreground hover:text-primary transition-colors">
+                  <Link
+                    to="/products"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
                     Products
                   </Link>
                 </li>
@@ -137,16 +262,67 @@ function Layout() {
             </div>
             <div>
               <h4 className="font-semibold mb-2">Categories</h4>
-              <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>Sweets</li>
-                <li>Snacks</li>
-                <li>Namkeen</li>
+              <ul className="space-y-1 text-sm">
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: "sweets" }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Sweets
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: "snacks" }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Snacks
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: "namkeen" }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Namkeen
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: "beverages" }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Beverages
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: "cookies" }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Cookies
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/products"
+                    search={{ category: "accompaniments" }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Accompaniments
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
           <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground">
             <p>
-              © {new Date().getFullYear()} Gujrat Sweet Mart. Built with ❤️ using{' '}
+              © {new Date().getFullYear()} Gujrat Sweet Mart. Built with ❤️ using{" "}
               <a
                 href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
                 target="_blank"
@@ -171,27 +347,90 @@ const rootRoute = createRootRoute({
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  path: "/",
   component: Home,
 });
 
 const productsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/products',
+  path: "/products",
+  validateSearch: (search: Record<string, unknown>): { category?: string } => ({
+    category: typeof search.category === "string" ? search.category : undefined,
+  }),
   component: Products,
 });
 
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/admin',
+  path: "/admin",
   component: Admin,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, productsRoute, adminRoute]);
+const cartRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/cart",
+  component: Cart,
+});
+
+const checkoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/checkout",
+  component: Checkout,
+});
+
+const orderConfirmationRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/order-confirmation/$orderId",
+  component: OrderConfirmation,
+});
+
+const paymentSuccessRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/payment-success",
+  component: PaymentSuccess,
+});
+
+const paymentFailureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/payment-failure",
+  component: PaymentFailure,
+});
+
+const myOrdersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/my-orders",
+  component: MyOrders,
+});
+
+const deliveryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/delivery",
+  component: Delivery,
+});
+
+const profileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/profile",
+  component: Profile,
+});
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  productsRoute,
+  adminRoute,
+  cartRoute,
+  checkoutRoute,
+  orderConfirmationRoute,
+  paymentSuccessRoute,
+  paymentFailureRoute,
+  myOrdersRoute,
+  deliveryRoute,
+  profileRoute,
+]);
 
 const router = createRouter({ routeTree });
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }

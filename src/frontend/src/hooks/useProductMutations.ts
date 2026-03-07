@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import { Category, ProductId, Unit } from '../backend';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Category, ProductId, Unit } from "../backend";
+import { useActor } from "./useActor";
 
 interface AddProductParams {
   name: string;
@@ -29,7 +29,7 @@ export function useAddProduct() {
 
   return useMutation({
     mutationFn: async (params: AddProductParams) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.addProduct(
         params.name,
         params.category,
@@ -37,11 +37,11 @@ export function useAddProduct() {
         params.price,
         params.available,
         params.unit,
-        params.photoUrl
+        params.photoUrl,
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 }
@@ -52,7 +52,7 @@ export function useEditProduct() {
 
   return useMutation({
     mutationFn: async (params: EditProductParams) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.editProduct(
         params.productId,
         params.name,
@@ -61,11 +61,11 @@ export function useEditProduct() {
         params.price,
         params.available,
         params.unit,
-        params.photoUrl
+        params.photoUrl,
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 }
@@ -76,11 +76,11 @@ export function useDeleteProduct() {
 
   return useMutation({
     mutationFn: async (productId: ProductId) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.deleteProduct(productId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 }

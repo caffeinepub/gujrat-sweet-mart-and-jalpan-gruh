@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Product, Category, Unit } from '../backend';
-import { useAddProduct, useEditProduct } from '../hooks/useProductMutations';
-import { Loader2, Upload, X } from 'lucide-react';
-import { toast } from 'sonner';
+import { Loader2, Upload, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Category, type Product, Unit } from "../backend";
+import { useAddProduct, useEditProduct } from "../hooks/useProductMutations";
 
 interface ProductFormProps {
   product?: Product | null;
@@ -10,15 +10,19 @@ interface ProductFormProps {
   onCancel: () => void;
 }
 
-export default function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
-  const [name, setName] = useState('');
+export default function ProductForm({
+  product,
+  onSuccess,
+  onCancel,
+}: ProductFormProps) {
+  const [name, setName] = useState("");
   const [category, setCategory] = useState<Category>(Category.sweets);
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
   const [available, setAvailable] = useState(true);
   const [unit, setUnit] = useState<Unit>(Unit.single);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   const addProductMutation = useAddProduct();
   const editProductMutation = useEditProduct();
@@ -31,18 +35,18 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
       setPrice(product.price.toString());
       setAvailable(product.available);
       setUnit(product.unit);
-      setImagePreview(product.photoUrl || '');
+      setImagePreview(product.photoUrl || "");
       setSelectedFile(null);
     } else {
       // Reset form when switching to add mode
-      setName('');
+      setName("");
       setCategory(Category.sweets);
-      setDescription('');
-      setPrice('');
+      setDescription("");
+      setPrice("");
       setAvailable(true);
       setUnit(Unit.single);
       setSelectedFile(null);
-      setImagePreview('');
+      setImagePreview("");
     }
   }, [product]);
 
@@ -51,16 +55,16 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
     if (!file) return;
 
     // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (!validTypes.includes(file.type)) {
-      toast.error('Please select a valid image file (JPG, PNG, or WebP)');
+      toast.error("Please select a valid image file (JPG, PNG, or WebP)");
       return;
     }
 
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
-      toast.error('Image size must be less than 5MB');
+      toast.error("Image size must be less than 5MB");
       return;
     }
 
@@ -76,7 +80,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
   const removeImage = () => {
     setSelectedFile(null);
-    setImagePreview('');
+    setImagePreview("");
   };
 
   const convertFileToBase64 = (file: File): Promise<string> => {
@@ -94,7 +98,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
     e.preventDefault();
 
     if (!name.trim() || !description.trim() || !price) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -118,7 +122,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
           unit,
           photoUrl,
         });
-        toast.success('Product updated successfully!');
+        toast.success("Product updated successfully!");
       } else {
         await addProductMutation.mutateAsync({
           name,
@@ -129,26 +133,27 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
           unit,
           photoUrl,
         });
-        toast.success('Product added successfully!');
+        toast.success("Product added successfully!");
       }
 
       // Reset form
-      setName('');
+      setName("");
       setCategory(Category.sweets);
-      setDescription('');
-      setPrice('');
+      setDescription("");
+      setPrice("");
       setAvailable(true);
       setUnit(Unit.single);
       setSelectedFile(null);
-      setImagePreview('');
+      setImagePreview("");
 
       onSuccess();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to save product');
+      toast.error(error.message || "Failed to save product");
     }
   };
 
-  const isPending = addProductMutation.isPending || editProductMutation.isPending;
+  const isPending =
+    addProductMutation.isPending || editProductMutation.isPending;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -182,6 +187,8 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
           <option value={Category.snacks}>Snacks</option>
           <option value={Category.namkeen}>Namkeen</option>
           <option value={Category.beverages}>Beverages</option>
+          <option value={Category.cookies}>Cookies</option>
+          <option value={Category.accompaniments}>Accompaniments</option>
         </select>
       </div>
 
@@ -262,7 +269,8 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <Upload className="h-10 w-10 text-muted-foreground mb-2" />
               <p className="text-sm text-muted-foreground mb-1">
-                <span className="font-semibold">Click to upload</span> or drag and drop
+                <span className="font-semibold">Click to upload</span> or drag
+                and drop
               </p>
               <p className="text-xs text-muted-foreground">
                 JPG, PNG or WebP (max 5MB)
@@ -299,7 +307,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
           className="flex-1 bg-primary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-          {product ? 'Update Product' : 'Add Product'}
+          {product ? "Update Product" : "Add Product"}
         </button>
         <button
           type="button"
