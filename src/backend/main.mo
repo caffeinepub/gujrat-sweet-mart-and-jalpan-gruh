@@ -13,8 +13,6 @@ import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 import UserApproval "user-approval/approval";
 
-
-
 actor {
   include MixinStorage();
 
@@ -382,10 +380,16 @@ actor {
       case (?items) { items };
     };
 
+    let calculatedTotalPrice =
+      switch (product.unit) {
+        case (#per_kg) { (product.price * quantity) / 1000 };
+        case (#single) { product.price * quantity };
+      };
+
     cart.add({
       productId;
       quantity;
-      totalPrice = product.price * quantity;
+      totalPrice = calculatedTotalPrice;
     });
 
     shoppingCarts.add(caller, cart);
