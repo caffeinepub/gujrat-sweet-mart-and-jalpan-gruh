@@ -174,6 +174,76 @@ export default function Products() {
         </div>
       </section>
 
+      {/* Sticky Category Quick-Nav */}
+      {!isSearchActive && (
+        <div className="sticky top-16 z-40 bg-background/90 backdrop-blur-sm border-b border-border py-3 shadow-sm">
+          <div className="container mx-auto px-4">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+              {[
+                {
+                  key: "sweets",
+                  label: "Sweets",
+                  ref: sweetsRef,
+                  count: sweets.length,
+                  color: "bg-primary text-primary-foreground",
+                },
+                {
+                  key: "snacks",
+                  label: "Snacks",
+                  ref: snacksRef,
+                  count: snacks.length,
+                  color: "bg-secondary text-secondary-foreground",
+                },
+                {
+                  key: "namkeen",
+                  label: "Namkeen",
+                  ref: namkeenRef,
+                  count: namkeen.length,
+                  color: "bg-accent text-accent-foreground",
+                },
+                {
+                  key: "beverages",
+                  label: "Beverages",
+                  ref: beveragesRef,
+                  count: beverages.length,
+                  color: "bg-blue-500 text-white",
+                },
+                {
+                  key: "cookies",
+                  label: "Cookies",
+                  ref: cookiesRef,
+                  count: cookies.length,
+                  color: "bg-amber-500 text-white",
+                },
+                {
+                  key: "accompaniments",
+                  label: "Accompaniments",
+                  ref: accompanimentsRef,
+                  count: accompaniments.length,
+                  color: "bg-green-600 text-white",
+                },
+              ]
+                .filter((cat) => cat.count > 0)
+                .map((cat) => (
+                  <button
+                    key={cat.key}
+                    type="button"
+                    onClick={() =>
+                      cat.ref.current?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      })
+                    }
+                    className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-90 hover:scale-105 ${cat.color}`}
+                  >
+                    {cat.label} ({cat.count})
+                  </button>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* No results state */}
       {isSearchActive && filteredProducts.length === 0 && (
         <section className="py-16">
@@ -206,7 +276,7 @@ export default function Products() {
                 />
               )}
               <div>
-                <h2 className="text-3xl font-display font-bold text-primary mb-2">
+                <h2 className="text-3xl font-display font-bold text-primary mb-2 animate-fade-in-up">
                   Sweets
                 </h2>
                 <p className="text-muted-foreground">
@@ -214,7 +284,7 @@ export default function Products() {
                 </p>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up delay-200">
               {sweets.map((product) => (
                 <ProductCard key={product.id.toString()} product={product} />
               ))}
@@ -239,13 +309,13 @@ export default function Products() {
       {snacks.length > 0 && (
         <section ref={snacksRef} className="py-12 scroll-mt-20">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-display font-bold text-secondary mb-2">
+            <h2 className="text-3xl font-display font-bold text-secondary mb-2 animate-fade-in-up">
               Snacks
             </h2>
             <p className="text-muted-foreground mb-8">
               Crispy and delicious treats
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up delay-200">
               {snacks.map((product) => (
                 <ProductCard key={product.id.toString()} product={product} />
               ))}
@@ -269,13 +339,13 @@ export default function Products() {
       {namkeen.length > 0 && (
         <section ref={namkeenRef} className="py-12 scroll-mt-20">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-display font-bold text-accent mb-2">
+            <h2 className="text-3xl font-display font-bold text-accent mb-2 animate-fade-in-up">
               Namkeen
             </h2>
             <p className="text-muted-foreground mb-8">
               Savory snacks with authentic spices
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up delay-200">
               {namkeen.map((product) => (
                 <ProductCard key={product.id.toString()} product={product} />
               ))}
@@ -300,7 +370,7 @@ export default function Products() {
         <section ref={beveragesRef} className="py-12 scroll-mt-20">
           <div className="container mx-auto px-4">
             <h2
-              className="text-3xl font-display font-bold mb-2"
+              className="text-3xl font-display font-bold mb-2 animate-fade-in-up"
               style={{ color: "oklch(0.45 0.15 240)" }}
             >
               Beverages
@@ -308,7 +378,7 @@ export default function Products() {
             <p className="text-muted-foreground mb-8">
               Refreshing drinks and traditional beverages
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up delay-200">
               {beverages.map((product) => (
                 <ProductCard key={product.id.toString()} product={product} />
               ))}
@@ -333,13 +403,13 @@ export default function Products() {
       {cookies.length > 0 && (
         <section ref={cookiesRef} className="py-12 scroll-mt-20">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-display font-bold text-primary mb-2">
+            <h2 className="text-3xl font-display font-bold text-amber-600 mb-2 animate-fade-in-up">
               Cookies
             </h2>
             <p className="text-muted-foreground mb-8">
               Freshly baked cookies and biscuits
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up delay-200">
               {cookies.map((product) => (
                 <ProductCard key={product.id.toString()} product={product} />
               ))}
@@ -363,13 +433,13 @@ export default function Products() {
       {accompaniments.length > 0 && (
         <section ref={accompanimentsRef} className="py-12 scroll-mt-20">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-display font-bold text-secondary mb-2">
+            <h2 className="text-3xl font-display font-bold text-green-600 mb-2 animate-fade-in-up">
               Accompaniments
             </h2>
             <p className="text-muted-foreground mb-8">
               Perfect sides and accompaniments
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up delay-200">
               {accompaniments.map((product) => (
                 <ProductCard key={product.id.toString()} product={product} />
               ))}

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   Clock,
   Loader2,
+  MessageCircle,
   Package,
   ShoppingBag,
   Store,
@@ -301,9 +302,9 @@ export default function MyOrders() {
                   </div>
                 </div>
 
-                {/* Cancel Button */}
-                {canCancelOrder(order.status) && (
-                  <div className="pt-2">
+                {/* Actions Row: Cancel + WhatsApp */}
+                <div className="pt-2 flex flex-wrap items-center gap-3">
+                  {canCancelOrder(order.status) && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -313,8 +314,23 @@ export default function MyOrders() {
                       <XCircle className="mr-2 h-4 w-4" />
                       Cancel Order
                     </Button>
-                  </div>
-                )}
+                  )}
+                  <a
+                    href={`https://wa.me/${localStorage.getItem("shop_whatsapp_number") || "917875199999"}?text=${encodeURIComponent(`Hi! I have a query about Order #${order.orderId.toString()} at Gujrat Sweet Mart.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-ocid={`my_orders.whatsapp_button.${sortedOrders.indexOf(order) + 1}`}
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-green-700 border-green-400/50 hover:bg-green-50"
+                    >
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Contact on WhatsApp
+                    </Button>
+                  </a>
+                </div>
               </div>
             </div>
           );

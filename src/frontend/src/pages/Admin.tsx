@@ -1,6 +1,7 @@
 import {
   Home,
   Loader2,
+  MessageCircle,
   Package,
   Pencil,
   Plus,
@@ -14,6 +15,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { type Product, Unit } from "../backend";
 import AccessDeniedScreen from "../components/AccessDeniedScreen";
+import BulkOrderSettings from "../components/BulkOrderSettings";
 import DeliveryApprovalManagement from "../components/DeliveryApprovalManagement";
 import DeliveryStaffManagement from "../components/DeliveryStaffManagement";
 import HomepageConfigForm from "../components/HomepageConfigForm";
@@ -49,6 +51,7 @@ export default function Admin() {
     data: isAdmin,
     isLoading: isCheckingAdmin,
     isFetched: adminCheckFetched,
+    isError: adminCheckError,
   } = useIsCallerAdmin();
   const { data: products, isLoading: productsLoading } = useGetAllProducts();
   const deleteProduct = useDeleteProduct();
@@ -105,7 +108,7 @@ export default function Admin() {
     );
   }
 
-  if (adminCheckFetched && !isAdmin) {
+  if (adminCheckFetched && !isAdmin && !adminCheckError) {
     return <AccessDeniedScreen />;
   }
 
@@ -125,7 +128,7 @@ export default function Admin() {
       <StripePaymentSetup />
 
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid w-full max-w-4xl grid-cols-6 mb-8">
+        <TabsList className="grid w-full max-w-4xl grid-cols-7 mb-8">
           <TabsTrigger
             value="products"
             className="flex items-center gap-1.5 text-xs sm:text-sm"
@@ -167,6 +170,14 @@ export default function Admin() {
           >
             <Home className="h-4 w-4" />
             <span className="hidden sm:inline">Homepage</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="bulk-orders"
+            className="flex items-center gap-1.5 text-xs sm:text-sm"
+            data-ocid="admin.bulk_orders_tab"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span className="hidden sm:inline">Bulk Orders</span>
           </TabsTrigger>
         </TabsList>
 
@@ -304,6 +315,10 @@ export default function Admin() {
             </p>
           </div>
           <HomepageConfigForm />
+        </TabsContent>
+
+        <TabsContent value="bulk-orders">
+          <BulkOrderSettings />
         </TabsContent>
       </Tabs>
 

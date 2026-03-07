@@ -9,6 +9,7 @@ import {
 import {
   ClipboardList,
   Menu,
+  PackagePlus,
   Shield,
   ShoppingCart,
   Truck,
@@ -18,12 +19,12 @@ import {
 import { useState } from "react";
 import LoginButton from "./components/LoginButton";
 import ProfileSetup from "./components/ProfileSetup";
-import { useIsCallerAdmin } from "./hooks/useAuth";
 import { useGetCart } from "./hooks/useCart";
 import { useIsDeliveryPerson } from "./hooks/useDeliveryRole";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import { useGetCallerUserProfile } from "./hooks/useUserProfile";
 import Admin from "./pages/Admin";
+import BulkOrder from "./pages/BulkOrder";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Delivery from "./pages/Delivery";
@@ -37,7 +38,6 @@ import Profile from "./pages/Profile";
 
 function Layout() {
   const { identity } = useInternetIdentity();
-  const { data: isAdmin } = useIsCallerAdmin();
   const { data: isDeliveryPerson } = useIsDeliveryPerson();
   const { data: cartItems } = useGetCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,10 +46,13 @@ function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-50 bg-card border-b-2 border-primary/20 shadow-sm">
+      <header className="sticky top-0 z-50 glass border-b-2 border-primary/20 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center space-x-2">
+            <Link
+              to="/"
+              className="flex items-center space-x-2 transition-transform hover:scale-105"
+            >
               <h1 className="text-xl md:text-2xl font-display font-bold text-primary">
                 Gujrat Sweet Mart
               </h1>
@@ -59,22 +62,31 @@ function Layout() {
             <nav className="hidden md:flex items-center space-x-6">
               <Link
                 to="/"
-                className="text-foreground hover:text-primary transition-colors font-medium"
+                className="relative text-foreground hover:text-primary transition-colors font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                 activeProps={{ className: "text-primary" }}
               >
                 Home
               </Link>
               <Link
                 to="/products"
-                className="text-foreground hover:text-primary transition-colors font-medium"
+                className="relative text-foreground hover:text-primary transition-colors font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                 activeProps={{ className: "text-primary" }}
               >
                 Products
               </Link>
+              <Link
+                to="/bulk-order"
+                className="relative text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+                activeProps={{ className: "text-primary" }}
+                data-ocid="nav.bulk_order_link"
+              >
+                <PackagePlus className="h-4 w-4" />
+                Bulk Order
+              </Link>
               {identity && (
                 <Link
                   to="/my-orders"
-                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  className="relative text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                   activeProps={{ className: "text-primary" }}
                 >
                   <ClipboardList className="h-4 w-4" />
@@ -84,7 +96,7 @@ function Layout() {
               {identity && (
                 <Link
                   to="/profile"
-                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  className="relative text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                   activeProps={{ className: "text-primary" }}
                 >
                   <UserCircle className="h-4 w-4" />
@@ -94,17 +106,17 @@ function Layout() {
               {identity && isDeliveryPerson && (
                 <Link
                   to="/delivery"
-                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  className="relative text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                   activeProps={{ className: "text-primary" }}
                 >
                   <Truck className="h-4 w-4" />
                   Delivery
                 </Link>
               )}
-              {identity && isAdmin && (
+              {identity && (
                 <Link
                   to="/admin"
-                  className="text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1"
+                  className="relative text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                   activeProps={{ className: "text-primary" }}
                 >
                   <Shield className="h-4 w-4" />
@@ -144,7 +156,7 @@ function Layout() {
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <nav className="md:hidden py-4 space-y-3 border-t">
+            <nav className="md:hidden py-4 space-y-3 border-t animate-fade-in-up">
               <Link
                 to="/"
                 className="block text-foreground hover:text-primary transition-colors font-medium"
@@ -160,6 +172,16 @@ function Layout() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Products
+              </Link>
+              <Link
+                to="/bulk-order"
+                className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
+                activeProps={{ className: "text-primary" }}
+                onClick={() => setMobileMenuOpen(false)}
+                data-ocid="nav.bulk_order_link"
+              >
+                <PackagePlus className="h-4 w-4" />
+                Bulk Order
               </Link>
               {identity && (
                 <Link
@@ -194,7 +216,7 @@ function Layout() {
                   Delivery
                 </Link>
               )}
-              {identity && isAdmin && (
+              {identity && (
                 <Link
                   to="/admin"
                   className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
@@ -256,6 +278,14 @@ function Layout() {
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     Products
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/bulk-order"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Bulk Order
                   </Link>
                 </li>
               </ul>
@@ -414,6 +444,12 @@ const profileRoute = createRoute({
   component: Profile,
 });
 
+const bulkOrderRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/bulk-order",
+  component: BulkOrder,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   productsRoute,
@@ -426,6 +462,7 @@ const routeTree = rootRoute.addChildren([
   myOrdersRoute,
   deliveryRoute,
   profileRoute,
+  bulkOrderRoute,
 ]);
 
 const router = createRouter({ routeTree });

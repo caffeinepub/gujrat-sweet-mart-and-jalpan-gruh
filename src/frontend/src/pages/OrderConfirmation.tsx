@@ -6,10 +6,11 @@ import {
   Copy,
   Home,
   Loader2,
+  MessageCircle,
   Package,
   QrCode,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { TimeUnit, Variant_cashOnDelivery_online } from "../backend";
 import BackButton from "../components/BackButton";
@@ -40,6 +41,13 @@ export default function OrderConfirmation() {
   const { data: products } = useGetAllProducts();
   const { data: upiConfig } = useGetUpiConfig();
   const [upiIdCopied, setUpiIdCopied] = useState(false);
+  const [showWhatsappBtn, setShowWhatsappBtn] = useState(false);
+
+  useEffect(() => {
+    const opted = sessionStorage.getItem("whatsapp_updates_opted") === "true";
+    setShowWhatsappBtn(opted);
+    sessionStorage.removeItem("whatsapp_updates_opted");
+  }, []);
 
   const handleCopyUpiId = async (upiId: string) => {
     try {
@@ -132,6 +140,25 @@ export default function OrderConfirmation() {
           <p className="text-lg text-muted-foreground">
             Thank you for your order
           </p>
+
+          {showWhatsappBtn && (
+            <div className="mt-5 flex justify-center">
+              <a
+                href={`https://wa.me/${localStorage.getItem("shop_whatsapp_number") || "917875199999"}?text=${encodeURIComponent(`Hi! I placed Order #${orderId} at Gujrat Sweet Mart. Please send me updates on WhatsApp. Name: ${order?.name || ""}, Phone: ${order?.phone || ""}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-ocid="order_confirmation.whatsapp_button"
+              >
+                <Button
+                  size="lg"
+                  className="bg-green-600 hover:bg-green-700 text-white rounded-full shadow-md hover:shadow-lg transition-all"
+                >
+                  <MessageCircle className="mr-2 h-5 w-5" />
+                  Get Updates on WhatsApp
+                </Button>
+              </a>
+            </div>
+          )}
         </div>
 
         <div className="bg-card border-2 border-primary/20 rounded-lg p-8 mb-6">
@@ -312,6 +339,24 @@ export default function OrderConfirmation() {
           <Link to="/products">
             <Button size="lg">Continue Shopping</Button>
           </Link>
+        </div>
+
+        {/* Always-visible WhatsApp contact button */}
+        <div className="mt-6 flex justify-center">
+          <a
+            href={`https://wa.me/${localStorage.getItem("shop_whatsapp_number") || "917875199999"}?text=${encodeURIComponent(`Hi! I have a query about Order #${orderId} at Gujrat Sweet Mart.`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-ocid="order_confirmation.whatsapp_contact_button"
+          >
+            <Button
+              size="lg"
+              className="bg-green-600 hover:bg-green-700 text-white rounded-full shadow-md hover:shadow-lg transition-all"
+            >
+              <MessageCircle className="mr-2 h-5 w-5" />
+              Contact us on WhatsApp
+            </Button>
+          </a>
         </div>
       </div>
     </div>

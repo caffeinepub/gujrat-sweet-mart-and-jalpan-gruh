@@ -1,5 +1,11 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { CheckCircle, Loader2, Store, Truck } from "lucide-react";
+import {
+  CheckCircle,
+  Loader2,
+  MessageCircle,
+  Store,
+  Truck,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { type ShoppingItem, Variant_cashOnDelivery_online } from "../backend";
@@ -8,6 +14,8 @@ import CustomerInfoForm from "../components/CustomerInfoForm";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
+import { Checkbox } from "../components/ui/checkbox";
+import { Label } from "../components/ui/label";
 import { useGetCart } from "../hooks/useCart";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useCreateOrder } from "../hooks/useOrders";
@@ -33,6 +41,7 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState<
     "cod" | "upi" | "card" | null
   >(null);
+  const [whatsappUpdates, setWhatsappUpdates] = useState(false);
 
   if (!identity) {
     return (
@@ -139,6 +148,10 @@ export default function Checkout() {
           address: effectiveAddress,
           paymentMethod: Variant_cashOnDelivery_online.online,
         });
+        sessionStorage.setItem(
+          "whatsapp_updates_opted",
+          whatsappUpdates ? "true" : "false",
+        );
         navigate({
           to: "/order-confirmation/$orderId",
           params: { orderId: orderId.toString() },
@@ -154,6 +167,10 @@ export default function Checkout() {
         paymentMethod: Variant_cashOnDelivery_online.cashOnDelivery,
       });
 
+      sessionStorage.setItem(
+        "whatsapp_updates_opted",
+        whatsappUpdates ? "true" : "false",
+      );
       navigate({
         to: "/order-confirmation/$orderId",
         params: { orderId: orderId.toString() },
@@ -207,6 +224,32 @@ export default function Checkout() {
               onProfileComplete={setCustomerInfo}
               hideAddress={deliveryMethod === "pickup"}
             />
+
+            {/* WhatsApp Delivery Updates */}
+            <div className="mt-4 flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <Checkbox
+                id="whatsapp-updates"
+                checked={whatsappUpdates}
+                onCheckedChange={(checked) =>
+                  setWhatsappUpdates(checked === true)
+                }
+                className="mt-0.5"
+                data-ocid="checkout.whatsapp_checkbox"
+              />
+              <Label
+                htmlFor="whatsapp-updates"
+                className="cursor-pointer text-sm leading-relaxed"
+              >
+                <span className="flex items-center gap-1.5 font-semibold text-green-800 mb-0.5">
+                  <MessageCircle className="h-4 w-4" />
+                  Get delivery updates on WhatsApp
+                </span>
+                <span className="text-green-700 text-xs">
+                  We'll send you order status updates on WhatsApp so you always
+                  know where your order is.
+                </span>
+              </Label>
+            </div>
           </div>
 
           {/* Payment Method */}

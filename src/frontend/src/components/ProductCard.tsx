@@ -65,22 +65,22 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className={`relative bg-gradient-to-br ${categoryColors[product.category]} border-2 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all ${isUnavailable ? "opacity-60" : ""}`}
+      className={`group relative bg-gradient-to-br ${categoryColors[product.category]} border-2 rounded-lg overflow-hidden shadow-md hover:shadow-glow-primary transition-all duration-300 hover:scale-[1.02] ${isUnavailable ? "opacity-60" : ""}`}
     >
       {/* Unavailable overlay badge */}
       {isUnavailable && (
-        <div className="absolute top-2 right-2 z-10 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow">
+        <div className="absolute top-2 right-2 z-10 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow animate-scale-in">
           <Ban className="h-3 w-3" />
           Unavailable
         </div>
       )}
 
-      <div className="aspect-video bg-white/50 flex items-center justify-center p-4 relative">
+      <div className="aspect-video bg-white/50 flex items-center justify-center p-4 relative overflow-hidden">
         {product.photoUrl ? (
           <img
             src={product.photoUrl}
             alt={product.name}
-            className={`max-h-full max-w-full object-contain ${isUnavailable ? "grayscale" : ""}`}
+            className={`max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-110 ${isUnavailable ? "grayscale" : ""}`}
           />
         ) : (
           <div className="text-muted-foreground text-sm">No image</div>
@@ -121,7 +121,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     disabled={isUnavailable}
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed ${
                       selectedWeight === weight
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground shadow-sm"
                         : "bg-white/50 hover:bg-white/80"
                     } ${isUnavailable ? "opacity-50" : ""}`}
                   >
@@ -166,7 +166,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="pt-2 border-t">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium">Total:</span>
-              <span className="text-xl font-bold text-foreground">
+              <span className="text-xl font-bold text-foreground transition-all duration-200">
                 ₹{calculateTotal()}
               </span>
             </div>
@@ -175,7 +175,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               type="button"
               onClick={handleAddToCart}
               disabled={addToCart.isPending || !identity || isUnavailable}
-              className="w-full py-2 rounded-md font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+              className="w-full py-2 rounded-md font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-glow-primary"
             >
               {addToCart.isPending ? (
                 <>
