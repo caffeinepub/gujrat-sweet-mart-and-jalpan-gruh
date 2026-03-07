@@ -58,12 +58,14 @@ export default function Cart() {
   }
 
   const DELIVERY_CHARGE = 30;
+  const MINIMUM_ORDER = 50;
 
   const itemsTotal = cartItems.reduce(
     (sum, item) => sum + Number(item.totalPrice),
     0,
   );
   const grandTotal = itemsTotal + DELIVERY_CHARGE;
+  const isBelowMinimum = itemsTotal < MINIMUM_ORDER;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -102,10 +104,21 @@ export default function Cart() {
                 <span>₹{grandTotal.toFixed(2)}</span>
               </div>
             </div>
+            {isBelowMinimum && (
+              <div
+                data-ocid="cart.minimum_order.error_state"
+                className="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 text-center font-medium"
+              >
+                We don't accept orders below ₹{MINIMUM_ORDER}. Add more items to
+                continue.
+              </div>
+            )}
             <Button
+              data-ocid="cart.checkout.primary_button"
               onClick={() => navigate({ to: "/checkout" })}
               className="w-full"
               size="lg"
+              disabled={isBelowMinimum}
             >
               Proceed to Checkout
               <ArrowRight className="ml-2 h-5 w-5" />
