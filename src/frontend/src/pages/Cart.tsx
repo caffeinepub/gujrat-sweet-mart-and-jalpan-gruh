@@ -57,10 +57,13 @@ export default function Cart() {
     );
   }
 
-  const grandTotal = cartItems.reduce(
+  const DELIVERY_CHARGE = 30;
+
+  const itemsTotal = cartItems.reduce(
     (sum, item) => sum + Number(item.totalPrice),
     0,
   );
+  const grandTotal = itemsTotal + DELIVERY_CHARGE;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -86,17 +89,17 @@ export default function Cart() {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">
                 <span>Items ({cartItems.length})</span>
-                <span>₹{grandTotal}</span>
+                <span>₹{itemsTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Delivery</span>
-                <span className="text-green-600">FREE</span>
+                <span>Delivery Charge</span>
+                <span className="text-orange-600">₹{DELIVERY_CHARGE}</span>
               </div>
             </div>
             <div className="border-t pt-4 mb-6">
               <div className="flex justify-between font-bold text-xl">
                 <span>Total</span>
-                <span>₹{grandTotal}</span>
+                <span>₹{grandTotal.toFixed(2)}</span>
               </div>
             </div>
             <Button

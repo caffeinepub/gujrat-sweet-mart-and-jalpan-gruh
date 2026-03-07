@@ -97,13 +97,25 @@ export default function OrderConfirmation() {
     );
   }
 
+  const DELIVERY_CHARGE = 30;
   const isUpiOrder =
     order.paymentMethod === Variant_cashOnDelivery_online.online &&
     order.paymentStatus === "pending";
-  const grandTotal = order.items.reduce(
+  const isCodOrder =
+    order.paymentMethod === Variant_cashOnDelivery_online.cashOnDelivery;
+  const itemsTotal = order.items.reduce(
     (sum, item) => sum + Number(item.totalPrice),
     0,
   );
+  const isPickup = order.address === "STORE PICKUP";
+  const totalWithDelivery = isPickup
+    ? itemsTotal
+    : itemsTotal + DELIVERY_CHARGE;
+  const cashRoundedTotal = Math.ceil(totalWithDelivery);
+  const cashRoundOff = Number.parseFloat(
+    (cashRoundedTotal - totalWithDelivery).toFixed(2),
+  );
+  const grandTotal = isCodOrder ? cashRoundedTotal : totalWithDelivery;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -219,7 +231,7 @@ export default function OrderConfirmation() {
                           Amount to Pay
                         </p>
                         <p className="text-2xl font-display font-bold text-primary">
-                          ₹{grandTotal}
+                          ₹{totalWithDelivery.toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -254,16 +266,39 @@ export default function OrderConfirmation() {
                       {item.quantity.toString()}
                     </span>
                     <span className="font-semibold">
-                      ₹{Number(item.totalPrice)}
+                      ₹{Number(item.totalPrice).toFixed(2)}
                     </span>
                   </div>
                 );
               })}
             </div>
-            <div className="flex justify-between font-bold text-xl mt-4 pt-4 border-t">
+            <div className="mt-3 space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Items Subtotal</span>
+                <span>₹{itemsTotal.toFixed(2)}</span>
+              </div>
+              {!isPickup && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Delivery Charge</span>
+                  <span className="text-orange-600">₹{DELIVERY_CHARGE}</span>
+                </div>
+              )}
+              {isCodOrder && cashRoundOff > 0 && (
+                <div className="flex justify-between text-blue-700 bg-blue-50 rounded px-2 py-1">
+                  <span>Cash Round Off</span>
+                  <span>+₹{cashRoundOff.toFixed(2)}</span>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-between font-bold text-xl mt-3 pt-3 border-t">
               <span>Total:</span>
               <span>₹{grandTotal}</span>
             </div>
+            {isCodOrder && cashRoundOff > 0 && (
+              <p className="text-xs text-blue-600 mt-1">
+                Rounded up for cash payment convenience
+              </p>
+            )}
           </div>
         </div>
 

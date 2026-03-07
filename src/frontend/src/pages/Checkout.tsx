@@ -68,10 +68,19 @@ export default function Checkout() {
     );
   }
 
-  const grandTotal = cartItems.reduce(
+  const DELIVERY_CHARGE = 30;
+
+  const itemsTotal = cartItems.reduce(
     (sum, item) => sum + Number(item.totalPrice),
     0,
   );
+  const totalWithDelivery =
+    deliveryMethod === "delivery" ? itemsTotal + DELIVERY_CHARGE : itemsTotal;
+  const cashRoundedTotal = Math.ceil(totalWithDelivery);
+  const cashRoundOff = Number.parseFloat(
+    (cashRoundedTotal - totalWithDelivery).toFixed(2),
+  );
+  const grandTotal = totalWithDelivery;
 
   const handlePlaceOrder = async () => {
     if (!customerInfo) {
@@ -245,24 +254,42 @@ export default function Checkout() {
                     <span className="text-muted-foreground">
                       {product?.name || "Product"} × {item.quantity.toString()}
                     </span>
-                    <span>₹{Number(item.totalPrice)}</span>
+                    <span>₹{Number(item.totalPrice).toFixed(2)}</span>
                   </div>
                 );
               })}
+              {deliveryMethod === "delivery" && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Delivery Charge</span>
+                  <span className="text-orange-600">₹{DELIVERY_CHARGE}</span>
+                </div>
+              )}
+              {deliveryMethod === "pickup" && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Delivery Charge</span>
+                  <span className="text-green-600">FREE (Pickup)</span>
+                </div>
+              )}
+              {paymentMethod === "cod" && cashRoundOff > 0 && (
+                <div className="flex justify-between text-sm text-blue-700 bg-blue-50 rounded px-2 py-1">
+                  <span>Cash Round Off</span>
+                  <span>+₹{cashRoundOff.toFixed(2)}</span>
+                </div>
+              )}
             </div>
             <div className="border-t pt-4 mb-6">
               <div className="flex justify-between font-bold text-xl">
                 <span>Total</span>
-                <span>₹{grandTotal}</span>
+                <span>
+                  ₹
+                  {paymentMethod === "cod"
+                    ? cashRoundedTotal
+                    : grandTotal.toFixed(2)}
+                </span>
               </div>
-              {deliveryMethod === "delivery" && (
-                <p className="text-xs text-green-600 mt-1">
-                  Free delivery included
-                </p>
-              )}
-              {deliveryMethod === "pickup" && (
-                <p className="text-xs text-green-600 mt-1">
-                  Pickup from store — no delivery charge
+              {paymentMethod === "cod" && cashRoundOff > 0 && (
+                <p className="text-xs text-blue-600 mt-1">
+                  Rounded up for cash payment convenience
                 </p>
               )}
             </div>
