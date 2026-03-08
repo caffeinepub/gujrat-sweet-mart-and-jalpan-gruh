@@ -293,26 +293,42 @@ export default function Home() {
       {/* Bulk Order CTA Banner */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-secondary/80 to-accent text-white shadow-glow-accent hover:scale-[1.01] transition-transform duration-300">
-            {/* Dot pattern overlay */}
+          <div
+            className="relative overflow-hidden rounded-3xl text-white hover:scale-[1.01] transition-transform duration-300"
+            style={{
+              background:
+                "linear-gradient(135deg, #f59e0b 0%, #ef4444 22%, #ec4899 44%, #8b5cf6 66%, #06b6d4 88%, #10b981 100%)",
+              boxShadow:
+                "0 0 40px 8px rgba(245,158,11,0.35), 0 0 80px 16px rgba(236,72,153,0.2)",
+            }}
+          >
+            {/* Animated diagonal stripe overlay */}
             <div
-              className="absolute inset-0 opacity-15"
+              className="absolute inset-0 opacity-10"
               style={{
                 backgroundImage:
-                  "radial-gradient(circle at 10% 80%, white 1px, transparent 1px), radial-gradient(circle at 90% 20%, white 1px, transparent 1px), radial-gradient(circle at 50% 50%, white 1px, transparent 1px)",
-                backgroundSize: "30px 30px",
+                  "repeating-linear-gradient(45deg, white 0px, white 2px, transparent 2px, transparent 24px)",
+              }}
+            />
+            {/* Confetti dots */}
+            <div
+              className="absolute inset-0 opacity-20"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 8% 75%, white 2px, transparent 2px), radial-gradient(circle at 92% 18%, white 2px, transparent 2px), radial-gradient(circle at 45% 55%, white 1.5px, transparent 1.5px), radial-gradient(circle at 75% 85%, white 1.5px, transparent 1.5px), radial-gradient(circle at 25% 20%, white 2px, transparent 2px)",
+                backgroundSize: "40px 40px",
               }}
             />
             {/* Glowing edge highlight */}
-            <div className="absolute inset-0 rounded-3xl ring-2 ring-white/20 pointer-events-none" />
+            <div className="absolute inset-0 rounded-3xl ring-2 ring-white/30 pointer-events-none" />
             <div className="relative flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-12">
               <div className="flex items-center gap-5">
                 <div className="w-18 h-18 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-sm p-4">
                   <PackagePlus className="h-9 w-9 text-white drop-shadow-lg" />
                 </div>
                 <div>
-                  <span className="inline-flex items-center gap-1.5 bg-white/25 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full mb-2 border border-white/30">
-                    Special Pricing Available
+                  <span className="inline-flex items-center gap-1.5 bg-yellow-300 text-yellow-900 text-xs font-black px-3 py-1 rounded-full mb-2 shadow-md tracking-wide uppercase">
+                    ✨ Special Pricing Available
                   </span>
                   <h2 className="text-2xl md:text-3xl font-display font-bold mb-1 drop-shadow-md">
                     Need Bulk Quantities?
@@ -325,7 +341,7 @@ export default function Home() {
               </div>
               <Link
                 to="/bulk-order"
-                className="flex-shrink-0 inline-flex items-center gap-2 bg-white text-primary font-bold px-8 py-3.5 rounded-full hover:bg-white/90 transition-all shadow-md hover:shadow-xl text-base hover:scale-105 active:scale-95"
+                className="flex-shrink-0 inline-flex items-center gap-2 bg-white text-orange-600 font-black px-8 py-3.5 rounded-full hover:bg-yellow-50 transition-all shadow-lg hover:shadow-2xl text-base hover:scale-105 active:scale-95 border-2 border-white"
                 data-ocid="home.bulk_order_button"
               >
                 Place Bulk Order
