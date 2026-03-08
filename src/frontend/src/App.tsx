@@ -126,12 +126,12 @@ function Layout() {
               {identity && (
                 <Link
                   to="/cart"
-                  className={`relative text-foreground hover:text-primary transition-colors rounded-full p-1 ${cartItemCount > 0 ? "animate-glow-pulse" : ""}`}
+                  className="relative text-foreground hover:text-primary transition-colors rounded-full p-1"
                   activeProps={{ className: "text-primary" }}
                 >
                   <ShoppingCart className="h-6 w-6" />
                   {cartItemCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-bounce">
+                    <span className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center transition-transform hover:scale-110">
                       {cartItemCount}
                     </span>
                   )}
@@ -246,25 +246,10 @@ function Layout() {
         </div>
       </header>
 
-      {/* Marquee ticker strip */}
-      <div className="overflow-hidden bg-primary text-primary-foreground py-1.5 text-sm font-semibold">
-        <div
-          className="animate-marquee flex whitespace-nowrap gap-8"
-          style={{ width: "max-content" }}
-        >
-          {[1, 2].map((i) => (
-            <span key={i} className="flex items-center gap-8">
-              <span>🍬 Fresh Daily</span>
-              <span>✨ Authentic Recipes</span>
-              <span>🏡 Made in Jalgaon</span>
-              <span>🧁 Sweets &amp; Namkeen</span>
-              <span>🎉 Festival Specials</span>
-              <span>🛵 Home Delivery Available</span>
-              <span>🍮 Traditional Mithai</span>
-              <span>🌸 Premium Quality</span>
-            </span>
-          ))}
-        </div>
+      {/* Slim info band */}
+      <div className="bg-primary/10 border-b border-primary/20 py-2 text-xs text-foreground/70 text-center tracking-wide font-medium">
+        Fresh Daily · Authentic Recipes · Made in Jalgaon · Home Delivery
+        Available
       </div>
 
       <main className="flex-1">

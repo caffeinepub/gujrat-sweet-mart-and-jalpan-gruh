@@ -20,50 +20,56 @@ const CATEGORIES = [
   {
     key: "sweets",
     label: "Sweets",
-    emoji: "🍬",
     desc: "Traditional Indian mithai made with love",
-    gradient: "from-primary via-primary/70 to-secondary/50",
-    hoverShadow: "hover:shadow-glow-primary",
+    accentClass: "border-primary/40 hover:border-primary/70",
+    labelClass: "text-primary",
+    bgClass: "bg-gradient-to-br from-primary/10 to-primary/5",
+    hoverShadow: "hover-glow-primary",
   },
   {
     key: "snacks",
     label: "Snacks",
-    emoji: "🥜",
-    desc: "Crispy and flavorful snacks for any time",
-    gradient: "from-secondary via-secondary/70 to-accent/50",
-    hoverShadow: "hover:shadow-glow-secondary",
+    desc: "Crispy, flavorful bites for any time",
+    accentClass: "border-secondary/40 hover:border-secondary/70",
+    labelClass: "text-secondary",
+    bgClass: "bg-gradient-to-br from-secondary/10 to-secondary/5",
+    hoverShadow: "hover-glow-secondary",
   },
   {
     key: "namkeen",
     label: "Namkeen",
-    emoji: "🧂",
     desc: "Savory treats with authentic spices",
-    gradient: "from-accent via-accent/70 to-primary/50",
-    hoverShadow: "hover:shadow-glow-accent",
+    accentClass: "border-accent/40 hover:border-accent/70",
+    labelClass: "text-accent",
+    bgClass: "bg-gradient-to-br from-accent/10 to-accent/5",
+    hoverShadow: "hover-glow-accent",
   },
   {
     key: "beverages",
     label: "Beverages",
-    emoji: "🥤",
-    desc: "Refreshing drinks and traditional beverages",
-    gradient: "from-blue-600 via-blue-500/80 to-cyan-500/50",
-    hoverShadow: "hover:shadow-[0_0_30px_rgba(37,99,235,0.6)]",
+    desc: "Refreshing drinks and traditional sherbets",
+    accentClass: "border-blue-500/40 hover:border-blue-500/70",
+    labelClass: "text-blue-400",
+    bgClass: "bg-gradient-to-br from-blue-600/10 to-blue-600/5",
+    hoverShadow: "hover:shadow-[0_8px_28px_rgba(37,99,235,0.22)]",
   },
   {
     key: "cookies",
     label: "Cookies",
-    emoji: "🍪",
     desc: "Freshly baked cookies and biscuits",
-    gradient: "from-amber-600 via-amber-500/80 to-primary/50",
-    hoverShadow: "hover:shadow-[0_0_30px_rgba(217,119,6,0.6)]",
+    accentClass: "border-amber-500/40 hover:border-amber-500/70",
+    labelClass: "text-amber-400",
+    bgClass: "bg-gradient-to-br from-amber-600/10 to-amber-600/5",
+    hoverShadow: "hover:shadow-[0_8px_28px_rgba(217,119,6,0.22)]",
   },
   {
     key: "accompaniments",
     label: "Accompaniments",
-    emoji: "🫙",
-    desc: "Perfect sides and accompaniments",
-    gradient: "from-emerald-600 via-emerald-500/80 to-teal-500/50",
-    hoverShadow: "hover:shadow-[0_0_30px_rgba(5,150,105,0.6)]",
+    desc: "Perfect sides and condiments",
+    accentClass: "border-emerald-500/40 hover:border-emerald-500/70",
+    labelClass: "text-emerald-400",
+    bgClass: "bg-gradient-to-br from-emerald-600/10 to-emerald-600/5",
+    hoverShadow: "hover:shadow-[0_8px_28px_rgba(5,150,105,0.22)]",
   },
 ];
 
@@ -91,74 +97,48 @@ export default function Home() {
     <div className="w-full">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-mandala bg-festival">
-        <div className="absolute inset-0 pattern-border opacity-20" />
-
-        {/* Floating festive decorations */}
-        <div className="absolute top-4 left-8 text-4xl animate-diya-flicker opacity-60 select-none pointer-events-none">
-          🪔
-        </div>
-        <div
-          className="absolute top-8 right-12 text-3xl animate-float opacity-50 select-none pointer-events-none"
-          style={{ animationDelay: "0.5s" }}
-        >
-          ✨
-        </div>
-        <div className="absolute bottom-12 left-16 text-3xl animate-spin-slow opacity-30 select-none pointer-events-none">
-          🌸
-        </div>
-        <div
-          className="absolute bottom-8 right-8 text-4xl animate-float opacity-50 select-none pointer-events-none"
-          style={{ animationDelay: "1s" }}
-        >
-          ⭐
-        </div>
-        <div
-          className="absolute top-1/2 left-4 text-2xl animate-diya-flicker opacity-40 select-none pointer-events-none"
-          style={{ animationDelay: "0.8s" }}
-        >
-          🎆
-        </div>
-        <div
-          className="absolute top-1/3 right-4 text-2xl animate-float opacity-35 select-none pointer-events-none"
-          style={{ animationDelay: "1.3s" }}
-        >
-          🎊
-        </div>
+        {/* Subtle geometric corner accents */}
+        <div className="absolute top-0 left-0 w-32 h-32 border-l-2 border-t-2 border-primary/20 rounded-tl-2xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-32 h-32 border-r-2 border-t-2 border-secondary/20 rounded-tr-2xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 border-l-2 border-b-2 border-accent/15 rounded-bl-2xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-24 h-24 border-r-2 border-b-2 border-primary/15 rounded-br-2xl pointer-events-none" />
 
         <div className="container mx-auto px-4 py-12 md:py-20 relative">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-6 animate-scale-in">
+            <div className="mb-6 animate-fade-in-up">
               {configLoading ? (
                 <Skeleton className="w-full h-48 rounded-2xl" />
               ) : logoUrl ? (
                 <img
                   src={logoUrl}
                   alt="Gujrat Sweet Mart Banner"
-                  className="w-full h-auto rounded-2xl shadow-paisley object-cover max-h-[400px] border border-primary/20"
+                  className="w-full h-auto rounded-2xl object-cover max-h-[400px] border border-primary/20 shadow-[0_8px_48px_oklch(var(--primary)/0.18)]"
                 />
               ) : (
                 <img
                   src="/assets/generated/shop-banner.dim_1200x400.png"
                   alt="Gujrat Sweet Mart Banner"
-                  className="w-full h-auto rounded-2xl shadow-paisley border border-primary/20"
+                  className="w-full h-auto rounded-2xl border border-primary/20 shadow-[0_8px_48px_oklch(var(--primary)/0.18)]"
                 />
               )}
             </div>
-            <h1 className="text-4xl md:text-6xl font-display font-bold text-gold-shimmer mb-4 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-display font-bold text-gold-shimmer mb-4 leading-tight animate-fade-in-up delay-100">
               Gujrat Sweet Mart and Jalpan Gruh
             </h1>
-            <p className="text-lg md:text-xl text-foreground/80 mb-8 max-w-2xl mx-auto animate-fade-in-up delay-200">
+            <p className="text-lg md:text-xl text-foreground/75 mb-8 max-w-2xl mx-auto animate-fade-in-up delay-200">
               Experience the authentic taste of Gujarat with our handcrafted
               sweets, savory snacks, and traditional namkeen. Made with love and
               the finest ingredients.
             </p>
-            <Link
-              to="/products"
-              className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-8 py-3.5 rounded-full font-bold text-lg hover:bg-accent/90 transition-all duration-300 shadow-glow-accent hover:scale-105 animate-fade-in-up delay-300 animate-glow-pulse"
-            >
-              Explore Our Products
-              <ArrowRight className="h-5 w-5 animate-bounce" />
-            </Link>
+            <div className="animate-fade-in-up delay-300">
+              <Link
+                to="/products"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg font-semibold text-base hover:bg-primary/90 transition-all duration-200 shadow-[0_4px_20px_oklch(var(--primary)/0.35)] hover:shadow-[0_6px_28px_oklch(var(--primary)/0.45)] hover:-translate-y-0.5"
+              >
+                Explore Our Products
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -175,8 +155,8 @@ export default function Home() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Address */}
-              <div className="group bg-card rounded-2xl p-6 card-festive flex flex-col items-center text-center gap-3 animate-bounce-in delay-100 hover:shadow-glow-primary transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 group-hover:animate-sparkle-pop">
+              <div className="group bg-card rounded-2xl p-6 card-festive flex flex-col items-center text-center gap-3 animate-fade-in-up delay-100 hover-glow-primary transition-all duration-300 hover:-translate-y-1">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105">
                   <MapPin className="h-7 w-7 text-white" />
                 </div>
                 <div>
@@ -197,8 +177,8 @@ export default function Home() {
               </div>
 
               {/* Hours */}
-              <div className="group bg-card rounded-2xl p-6 card-festive flex flex-col items-center text-center gap-3 animate-bounce-in delay-200 hover:shadow-glow-secondary transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-gradient-to-br from-secondary to-accent rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 group-hover:animate-sparkle-pop">
+              <div className="group bg-card rounded-2xl p-6 card-festive flex flex-col items-center text-center gap-3 animate-fade-in-up delay-200 hover-glow-secondary transition-all duration-300 hover:-translate-y-1">
+                <div className="w-14 h-14 bg-gradient-to-br from-secondary to-accent rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105">
                   <Clock className="h-7 w-7 text-white" />
                 </div>
                 <div className="w-full">
@@ -234,8 +214,8 @@ export default function Home() {
               </div>
 
               {/* Phone */}
-              <div className="group bg-card rounded-2xl p-6 card-festive flex flex-col items-center text-center gap-3 animate-bounce-in delay-300 hover:shadow-glow-accent transition-all duration-300 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 group-hover:animate-sparkle-pop">
+              <div className="group bg-card rounded-2xl p-6 card-festive flex flex-col items-center text-center gap-3 animate-fade-in-up delay-300 hover-glow-accent transition-all duration-300 hover:-translate-y-1">
+                <div className="w-14 h-14 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105">
                   <Phone className="h-7 w-7 text-white" />
                 </div>
                 <div>
@@ -263,36 +243,36 @@ export default function Home() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 bg-card rounded-2xl card-festive animate-bounce-in delay-100 group hover:shadow-glow-primary transition-all duration-300 hover:-translate-y-1">
-              <div className="text-6xl mb-4 group-hover:animate-wiggle inline-block select-none drop-shadow-lg">
-                🏺
+            <div className="text-center p-8 bg-card rounded-2xl card-festive animate-fade-in-up delay-100 group hover-glow-primary transition-all duration-300 hover:-translate-y-1">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-primary/15 flex items-center justify-center transition-transform group-hover:scale-105">
+                <span className="text-3xl select-none">🏺</span>
               </div>
               <h3 className="font-display font-bold text-xl mb-2 text-foreground">
                 Authentic Recipes
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 Traditional recipes passed down through generations
               </p>
             </div>
-            <div className="text-center p-8 bg-card rounded-2xl card-festive animate-bounce-in delay-200 group hover:shadow-glow-secondary transition-all duration-300 hover:-translate-y-1">
-              <div className="text-6xl mb-4 group-hover:animate-wiggle inline-block select-none drop-shadow-lg">
-                🌿
+            <div className="text-center p-8 bg-card rounded-2xl card-festive animate-fade-in-up delay-200 group hover-glow-secondary transition-all duration-300 hover:-translate-y-1">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-secondary/15 flex items-center justify-center transition-transform group-hover:scale-105">
+                <span className="text-3xl select-none">🌿</span>
               </div>
               <h3 className="font-display font-bold text-xl mb-2 text-foreground">
                 Fresh Daily
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 Made fresh every day with premium ingredients
               </p>
             </div>
-            <div className="text-center p-8 bg-card rounded-2xl card-festive animate-bounce-in delay-300 group hover:shadow-glow-accent transition-all duration-300 hover:-translate-y-1">
-              <div className="text-6xl mb-4 group-hover:animate-wiggle inline-block select-none drop-shadow-lg">
-                🎊
+            <div className="text-center p-8 bg-card rounded-2xl card-festive animate-fade-in-up delay-300 group hover-glow-accent transition-all duration-300 hover:-translate-y-1">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-accent/15 flex items-center justify-center transition-transform group-hover:scale-105">
+                <span className="text-3xl select-none">🎁</span>
               </div>
               <h3 className="font-display font-bold text-xl mb-2 text-foreground">
                 Wide Variety
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 From sweets to savory, something for everyone
               </p>
             </div>
@@ -317,13 +297,12 @@ export default function Home() {
             <div className="absolute inset-0 rounded-3xl ring-2 ring-white/20 pointer-events-none" />
             <div className="relative flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-12">
               <div className="flex items-center gap-5">
-                <div className="w-18 h-18 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-sm animate-glow-pulse p-4">
+                <div className="w-18 h-18 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-sm p-4">
                   <PackagePlus className="h-9 w-9 text-white drop-shadow-lg" />
                 </div>
                 <div>
-                  {/* Pulsing special pricing badge */}
-                  <span className="inline-flex items-center gap-1.5 bg-white/25 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full mb-2 animate-glow-pulse border border-white/30">
-                    🎉 Special Pricing Available!
+                  <span className="inline-flex items-center gap-1.5 bg-white/25 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full mb-2 border border-white/30">
+                    Special Pricing Available
                   </span>
                   <h2 className="text-2xl md:text-3xl font-display font-bold mb-1 drop-shadow-md">
                     Need Bulk Quantities?
@@ -350,41 +329,36 @@ export default function Home() {
       {/* Categories Preview */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-12 text-gold-shimmer animate-fade-in-up">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-2 text-gold-shimmer animate-fade-in-up">
             Our Categories
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+          <p className="text-center text-muted-foreground text-sm mb-10 animate-fade-in-up delay-100">
+            Explore our full range of handcrafted sweets and snacks
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {CATEGORIES.map((cat, idx) => (
               <Link
                 key={cat.key}
                 to="/products"
                 search={{ category: cat.key }}
-                className={`group relative overflow-hidden rounded-2xl shadow-xl cursor-pointer block animate-tilt-in ${STAGGER_DELAYS[idx]} ${cat.hoverShadow} hover:-translate-y-2 hover:scale-[1.04] transition-all duration-300`}
+                className={`group relative overflow-hidden rounded-xl border-2 ${cat.accentClass} ${cat.bgClass} ${cat.hoverShadow} cursor-pointer block animate-fade-in-up ${STAGGER_DELAYS[idx]} hover:-translate-y-1.5 transition-all duration-300`}
                 data-ocid={`home.${cat.key}.link`}
               >
-                <div
-                  className={`aspect-[3/4] bg-gradient-to-br ${cat.gradient} flex flex-col items-center justify-center gap-3 p-6 relative`}
-                >
-                  {/* Dark overlay for text readability */}
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/15 transition-all duration-300" />
-                  <span className="text-5xl md:text-6xl group-hover:animate-wiggle select-none drop-shadow-lg relative z-10">
-                    {cat.emoji}
-                  </span>
-                  <h3
-                    className="text-xl md:text-2xl font-display font-bold text-white text-center drop-shadow-lg relative z-10"
-                    style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
-                  >
-                    {cat.label}
-                  </h3>
-                  <p
-                    className="text-xs md:text-sm text-white text-center relative z-10 drop-shadow-md font-medium"
-                    style={{ textShadow: "0 1px 4px rgba(0,0,0,0.7)" }}
-                  >
-                    {cat.desc}
-                  </p>
-                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-white bg-white/25 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 relative z-10 backdrop-blur-sm">
-                    Browse →
-                  </span>
+                <div className="p-6 md:p-8 flex flex-col justify-between min-h-[160px] md:min-h-[200px]">
+                  <div>
+                    <h3
+                      className={`text-xl md:text-2xl font-display font-bold mb-2 ${cat.labelClass}`}
+                    >
+                      {cat.label}
+                    </h3>
+                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                      {cat.desc}
+                    </p>
+                  </div>
+                  <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-foreground/50 group-hover:text-foreground/80 transition-colors duration-200">
+                    <span>Browse all</span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+                  </div>
                 </div>
               </Link>
             ))}
