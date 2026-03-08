@@ -21,55 +21,65 @@ const CATEGORIES = [
     key: "sweets",
     label: "Sweets",
     desc: "Traditional Indian mithai made with love",
-    accentClass: "border-primary/40 hover:border-primary/70",
-    labelClass: "text-primary",
-    bgClass: "bg-gradient-to-br from-primary/10 to-primary/5",
+    accentClass: "border-primary/60 hover:border-primary",
+    labelClass: "text-primary drop-shadow-sm",
+    bgClass: "bg-gradient-to-br from-primary/30 via-primary/15 to-primary/5",
     hoverShadow: "hover-glow-primary",
+    iconEmoji: "🍮",
   },
   {
     key: "snacks",
     label: "Snacks",
     desc: "Crispy, flavorful bites for any time",
-    accentClass: "border-secondary/40 hover:border-secondary/70",
-    labelClass: "text-secondary",
-    bgClass: "bg-gradient-to-br from-secondary/10 to-secondary/5",
-    hoverShadow: "hover-glow-secondary",
+    accentClass: "border-pink-400/60 hover:border-pink-400",
+    labelClass: "text-pink-400 drop-shadow-sm",
+    bgClass:
+      "bg-gradient-to-br from-pink-500/30 via-secondary/20 to-pink-500/5",
+    hoverShadow: "hover:shadow-[0_8px_32px_rgba(236,72,153,0.35)]",
+    iconEmoji: "🍿",
   },
   {
     key: "namkeen",
     label: "Namkeen",
     desc: "Savory treats with authentic spices",
-    accentClass: "border-accent/40 hover:border-accent/70",
-    labelClass: "text-accent",
-    bgClass: "bg-gradient-to-br from-accent/10 to-accent/5",
-    hoverShadow: "hover-glow-accent",
+    accentClass: "border-emerald-400/60 hover:border-emerald-400",
+    labelClass: "text-emerald-400 drop-shadow-sm",
+    bgClass:
+      "bg-gradient-to-br from-emerald-500/30 via-accent/20 to-emerald-500/5",
+    hoverShadow: "hover:shadow-[0_8px_32px_rgba(52,211,153,0.35)]",
+    iconEmoji: "🌶️",
   },
   {
     key: "beverages",
     label: "Beverages",
     desc: "Refreshing drinks and traditional sherbets",
-    accentClass: "border-blue-500/40 hover:border-blue-500/70",
-    labelClass: "text-blue-400",
-    bgClass: "bg-gradient-to-br from-blue-600/10 to-blue-600/5",
-    hoverShadow: "hover:shadow-[0_8px_28px_rgba(37,99,235,0.22)]",
+    accentClass: "border-blue-400/60 hover:border-blue-400",
+    labelClass: "text-blue-400 drop-shadow-sm",
+    bgClass: "bg-gradient-to-br from-blue-500/30 via-blue-400/15 to-blue-500/5",
+    hoverShadow: "hover:shadow-[0_8px_32px_rgba(96,165,250,0.35)]",
+    iconEmoji: "🥤",
   },
   {
     key: "cookies",
     label: "Cookies",
     desc: "Freshly baked cookies and biscuits",
-    accentClass: "border-amber-500/40 hover:border-amber-500/70",
-    labelClass: "text-amber-400",
-    bgClass: "bg-gradient-to-br from-amber-600/10 to-amber-600/5",
-    hoverShadow: "hover:shadow-[0_8px_28px_rgba(217,119,6,0.22)]",
+    accentClass: "border-amber-400/60 hover:border-amber-400",
+    labelClass: "text-amber-400 drop-shadow-sm",
+    bgClass:
+      "bg-gradient-to-br from-amber-500/30 via-amber-400/15 to-amber-500/5",
+    hoverShadow: "hover:shadow-[0_8px_32px_rgba(251,191,36,0.35)]",
+    iconEmoji: "🍪",
   },
   {
     key: "accompaniments",
     label: "Accompaniments",
     desc: "Perfect sides and condiments",
-    accentClass: "border-emerald-500/40 hover:border-emerald-500/70",
-    labelClass: "text-emerald-400",
-    bgClass: "bg-gradient-to-br from-emerald-600/10 to-emerald-600/5",
-    hoverShadow: "hover:shadow-[0_8px_28px_rgba(5,150,105,0.22)]",
+    accentClass: "border-violet-400/60 hover:border-violet-400",
+    labelClass: "text-violet-400 drop-shadow-sm",
+    bgClass:
+      "bg-gradient-to-br from-violet-500/30 via-violet-400/15 to-violet-500/5",
+    hoverShadow: "hover:shadow-[0_8px_32px_rgba(167,139,250,0.35)]",
+    iconEmoji: "🫙",
   },
 ];
 
@@ -346,12 +356,15 @@ export default function Home() {
               >
                 <div className="p-6 md:p-8 flex flex-col justify-between min-h-[160px] md:min-h-[200px]">
                   <div>
+                    <div className="text-3xl mb-3 select-none">
+                      {cat.iconEmoji}
+                    </div>
                     <h3
                       className={`text-xl md:text-2xl font-display font-bold mb-2 ${cat.labelClass}`}
                     >
                       {cat.label}
                     </h3>
-                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-xs md:text-sm text-foreground/70 leading-relaxed">
                       {cat.desc}
                     </p>
                   </div>
