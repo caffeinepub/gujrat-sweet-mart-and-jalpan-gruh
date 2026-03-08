@@ -1,13 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Clock,
-  GlassWater,
-  MapPin,
-  PackagePlus,
-  Phone,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Clock, MapPin, PackagePlus, Phone } from "lucide-react";
 import { Skeleton } from "../components/ui/skeleton";
 import { useGetHomepageConfig } from "../hooks/useHomepageConfig";
 
@@ -24,6 +16,66 @@ const DEFAULT_HOURS = [
   { day: "Sunday", hours: "7 am–10 pm" },
 ];
 
+const CATEGORIES = [
+  {
+    key: "sweets",
+    label: "Sweets",
+    emoji: "🍬",
+    desc: "Traditional Indian mithai made with love",
+    gradient: "from-primary via-primary/70 to-secondary/50",
+    hoverShadow: "hover:shadow-glow-primary",
+  },
+  {
+    key: "snacks",
+    label: "Snacks",
+    emoji: "🥜",
+    desc: "Crispy and flavorful snacks for any time",
+    gradient: "from-secondary via-secondary/70 to-accent/50",
+    hoverShadow: "hover:shadow-glow-secondary",
+  },
+  {
+    key: "namkeen",
+    label: "Namkeen",
+    emoji: "🧂",
+    desc: "Savory treats with authentic spices",
+    gradient: "from-accent via-accent/70 to-primary/50",
+    hoverShadow: "hover:shadow-glow-accent",
+  },
+  {
+    key: "beverages",
+    label: "Beverages",
+    emoji: "🥤",
+    desc: "Refreshing drinks and traditional beverages",
+    gradient: "from-blue-600 via-blue-500/80 to-cyan-500/50",
+    hoverShadow: "hover:shadow-[0_0_30px_rgba(37,99,235,0.6)]",
+  },
+  {
+    key: "cookies",
+    label: "Cookies",
+    emoji: "🍪",
+    desc: "Freshly baked cookies and biscuits",
+    gradient: "from-amber-600 via-amber-500/80 to-primary/50",
+    hoverShadow: "hover:shadow-[0_0_30px_rgba(217,119,6,0.6)]",
+  },
+  {
+    key: "accompaniments",
+    label: "Accompaniments",
+    emoji: "🫙",
+    desc: "Perfect sides and accompaniments",
+    gradient: "from-emerald-600 via-emerald-500/80 to-teal-500/50",
+    hoverShadow: "hover:shadow-[0_0_30px_rgba(5,150,105,0.6)]",
+  },
+];
+
+const STAGGER_DELAYS = [
+  "delay-100",
+  "delay-200",
+  "delay-300",
+  "delay-400",
+  "delay-500",
+  "delay-600",
+];
+
 export default function Home() {
   const { data: homepageConfig, isLoading: configLoading } =
     useGetHomepageConfig();
@@ -38,61 +90,97 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-mandala">
-        <div className="absolute inset-0 pattern-border opacity-30" />
+      <section className="relative overflow-hidden bg-mandala bg-festival">
+        <div className="absolute inset-0 pattern-border opacity-20" />
+
+        {/* Floating festive decorations */}
+        <div className="absolute top-4 left-8 text-4xl animate-diya-flicker opacity-60 select-none pointer-events-none">
+          🪔
+        </div>
+        <div
+          className="absolute top-8 right-12 text-3xl animate-float opacity-50 select-none pointer-events-none"
+          style={{ animationDelay: "0.5s" }}
+        >
+          ✨
+        </div>
+        <div className="absolute bottom-12 left-16 text-3xl animate-spin-slow opacity-30 select-none pointer-events-none">
+          🌸
+        </div>
+        <div
+          className="absolute bottom-8 right-8 text-4xl animate-float opacity-50 select-none pointer-events-none"
+          style={{ animationDelay: "1s" }}
+        >
+          ⭐
+        </div>
+        <div
+          className="absolute top-1/2 left-4 text-2xl animate-diya-flicker opacity-40 select-none pointer-events-none"
+          style={{ animationDelay: "0.8s" }}
+        >
+          🎆
+        </div>
+        <div
+          className="absolute top-1/3 right-4 text-2xl animate-float opacity-35 select-none pointer-events-none"
+          style={{ animationDelay: "1.3s" }}
+        >
+          🎊
+        </div>
+
         <div className="container mx-auto px-4 py-12 md:py-20 relative">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-6 animate-scale-in">
               {configLoading ? (
-                <Skeleton className="w-full h-48 rounded-lg" />
+                <Skeleton className="w-full h-48 rounded-2xl" />
               ) : logoUrl ? (
                 <img
                   src={logoUrl}
                   alt="Gujrat Sweet Mart Banner"
-                  className="w-full h-auto rounded-lg shadow-paisley object-cover max-h-[400px]"
+                  className="w-full h-auto rounded-2xl shadow-paisley object-cover max-h-[400px] border border-primary/20"
                 />
               ) : (
                 <img
                   src="/assets/generated/shop-banner.dim_1200x400.png"
                   alt="Gujrat Sweet Mart Banner"
-                  className="w-full h-auto rounded-lg shadow-paisley"
+                  className="w-full h-auto rounded-2xl shadow-paisley border border-primary/20"
                 />
               )}
             </div>
-            <h1 className="text-4xl md:text-6xl font-display font-bold text-shimmer mb-4">
+            <h1 className="text-4xl md:text-6xl font-display font-bold text-gold-shimmer mb-4 leading-tight">
               Gujrat Sweet Mart and Jalpan Gruh
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in-up delay-200">
+            <p className="text-lg md:text-xl text-foreground/80 mb-8 max-w-2xl mx-auto animate-fade-in-up delay-200">
               Experience the authentic taste of Gujarat with our handcrafted
               sweets, savory snacks, and traditional namkeen. Made with love and
               the finest ingredients.
             </p>
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-glow-primary hover:scale-105 animate-fade-in-up delay-300"
+              className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-8 py-3.5 rounded-full font-bold text-lg hover:bg-accent/90 transition-all duration-300 shadow-glow-accent hover:scale-105 animate-fade-in-up delay-300 animate-glow-pulse"
             >
               Explore Our Products
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="h-5 w-5 animate-bounce" />
             </Link>
           </div>
         </div>
       </section>
 
       {/* Business Info Section */}
-      <section className="py-12 bg-primary/5 border-y border-primary/20">
+      <section
+        className="py-12 border-y border-primary/20"
+        style={{ background: "oklch(0.22 0.04 35)" }}
+      >
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-center text-primary mb-8">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-center text-gold-shimmer mb-8">
               Visit Us
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Address */}
-              <div className="group bg-card rounded-xl p-6 shadow-sm border border-primary/10 flex flex-col items-center text-center gap-3 animate-fade-in-up delay-100 hover:shadow-glow-primary transition-all duration-300">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110">
-                  <MapPin className="h-6 w-6 text-primary" />
+              <div className="group bg-card rounded-2xl p-6 card-festive flex flex-col items-center text-center gap-3 animate-bounce-in delay-100 hover:shadow-glow-primary transition-all duration-300 hover:-translate-y-1">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 group-hover:animate-sparkle-pop">
+                  <MapPin className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-display font-bold text-lg mb-1">
+                  <h3 className="font-display font-bold text-lg mb-1 text-foreground">
                     Address
                   </h3>
                   {configLoading ? (
@@ -109,12 +197,14 @@ export default function Home() {
               </div>
 
               {/* Hours */}
-              <div className="group bg-card rounded-xl p-6 shadow-sm border border-primary/10 flex flex-col items-center text-center gap-3 animate-fade-in-up delay-200 hover:shadow-glow-secondary transition-all duration-300">
-                <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110">
-                  <Clock className="h-6 w-6 text-secondary" />
+              <div className="group bg-card rounded-2xl p-6 card-festive flex flex-col items-center text-center gap-3 animate-bounce-in delay-200 hover:shadow-glow-secondary transition-all duration-300 hover:-translate-y-1">
+                <div className="w-14 h-14 bg-gradient-to-br from-secondary to-accent rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 group-hover:animate-sparkle-pop">
+                  <Clock className="h-7 w-7 text-white" />
                 </div>
                 <div className="w-full">
-                  <h3 className="font-display font-bold text-lg mb-2">Hours</h3>
+                  <h3 className="font-display font-bold text-lg mb-2 text-foreground">
+                    Hours
+                  </h3>
                   {configLoading ? (
                     <div className="space-y-1">
                       {["mon", "tue", "wed", "thu"].map((day) => (
@@ -144,18 +234,20 @@ export default function Home() {
               </div>
 
               {/* Phone */}
-              <div className="group bg-card rounded-xl p-6 shadow-sm border border-primary/10 flex flex-col items-center text-center gap-3 animate-fade-in-up delay-300 hover:shadow-glow-accent transition-all duration-300">
-                <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110">
-                  <Phone className="h-6 w-6 text-accent" />
+              <div className="group bg-card rounded-2xl p-6 card-festive flex flex-col items-center text-center gap-3 animate-bounce-in delay-300 hover:shadow-glow-accent transition-all duration-300 hover:-translate-y-1">
+                <div className="w-14 h-14 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 group-hover:animate-sparkle-pop">
+                  <Phone className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-display font-bold text-lg mb-1">Phone</h3>
+                  <h3 className="font-display font-bold text-lg mb-1 text-foreground">
+                    Phone
+                  </h3>
                   {configLoading ? (
                     <Skeleton className="h-5 w-32 mx-auto" />
                   ) : (
                     <a
                       href={`tel:${phone.replace(/\s/g, "")}`}
-                      className="text-primary font-semibold text-lg hover:underline"
+                      className="text-primary font-bold text-lg hover:underline hover:text-primary/80 transition-colors"
                     >
                       {phone}
                     </a>
@@ -168,36 +260,36 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-6 bg-card rounded-lg shadow-sm animate-fade-in-up delay-100 group hover:shadow-lg transition-all duration-300">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Sparkles className="h-8 w-8 text-primary group-hover:animate-float" />
+            <div className="text-center p-8 bg-card rounded-2xl card-festive animate-bounce-in delay-100 group hover:shadow-glow-primary transition-all duration-300 hover:-translate-y-1">
+              <div className="text-6xl mb-4 group-hover:animate-wiggle inline-block select-none drop-shadow-lg">
+                🏺
               </div>
-              <h3 className="font-display font-bold text-xl mb-2">
+              <h3 className="font-display font-bold text-xl mb-2 text-foreground">
                 Authentic Recipes
               </h3>
               <p className="text-muted-foreground">
                 Traditional recipes passed down through generations
               </p>
             </div>
-            <div className="text-center p-6 bg-card rounded-lg shadow-sm animate-fade-in-up delay-200 group hover:shadow-lg transition-all duration-300">
-              <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Sparkles className="h-8 w-8 text-secondary group-hover:animate-float" />
+            <div className="text-center p-8 bg-card rounded-2xl card-festive animate-bounce-in delay-200 group hover:shadow-glow-secondary transition-all duration-300 hover:-translate-y-1">
+              <div className="text-6xl mb-4 group-hover:animate-wiggle inline-block select-none drop-shadow-lg">
+                🌿
               </div>
-              <h3 className="font-display font-bold text-xl mb-2">
+              <h3 className="font-display font-bold text-xl mb-2 text-foreground">
                 Fresh Daily
               </h3>
               <p className="text-muted-foreground">
                 Made fresh every day with premium ingredients
               </p>
             </div>
-            <div className="text-center p-6 bg-card rounded-lg shadow-sm animate-fade-in-up delay-300 group hover:shadow-lg transition-all duration-300">
-              <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Sparkles className="h-8 w-8 text-accent group-hover:animate-float" />
+            <div className="text-center p-8 bg-card rounded-2xl card-festive animate-bounce-in delay-300 group hover:shadow-glow-accent transition-all duration-300 hover:-translate-y-1">
+              <div className="text-6xl mb-4 group-hover:animate-wiggle inline-block select-none drop-shadow-lg">
+                🎊
               </div>
-              <h3 className="font-display font-bold text-xl mb-2">
+              <h3 className="font-display font-bold text-xl mb-2 text-foreground">
                 Wide Variety
               </h3>
               <p className="text-muted-foreground">
@@ -211,22 +303,29 @@ export default function Home() {
       {/* Bulk Order CTA Banner */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-600 via-green-500 to-orange-500 text-white shadow-xl hover:scale-[1.01] transition-transform duration-300">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-secondary/80 to-accent text-white shadow-glow-accent hover:scale-[1.01] transition-transform duration-300">
+            {/* Dot pattern overlay */}
             <div
-              className="absolute inset-0 opacity-10"
+              className="absolute inset-0 opacity-15"
               style={{
                 backgroundImage:
-                  "radial-gradient(circle at 10% 80%, white 1px, transparent 1px), radial-gradient(circle at 90% 20%, white 1px, transparent 1px)",
+                  "radial-gradient(circle at 10% 80%, white 1px, transparent 1px), radial-gradient(circle at 90% 20%, white 1px, transparent 1px), radial-gradient(circle at 50% 50%, white 1px, transparent 1px)",
                 backgroundSize: "30px 30px",
               }}
             />
-            <div className="relative flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-10">
+            {/* Glowing edge highlight */}
+            <div className="absolute inset-0 rounded-3xl ring-2 ring-white/20 pointer-events-none" />
+            <div className="relative flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-12">
               <div className="flex items-center gap-5">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-sm animate-pulse-glow">
-                  <PackagePlus className="h-8 w-8 text-white" />
+                <div className="w-18 h-18 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-sm animate-glow-pulse p-4">
+                  <PackagePlus className="h-9 w-9 text-white drop-shadow-lg" />
                 </div>
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-display font-bold mb-1">
+                  {/* Pulsing special pricing badge */}
+                  <span className="inline-flex items-center gap-1.5 bg-white/25 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full mb-2 animate-glow-pulse border border-white/30">
+                    🎉 Special Pricing Available!
+                  </span>
+                  <h2 className="text-2xl md:text-3xl font-display font-bold mb-1 drop-shadow-md">
                     Need Bulk Quantities?
                   </h2>
                   <p className="text-white/90 text-sm md:text-base max-w-md">
@@ -237,7 +336,8 @@ export default function Home() {
               </div>
               <Link
                 to="/bulk-order"
-                className="flex-shrink-0 inline-flex items-center gap-2 bg-white text-green-700 font-bold px-7 py-3 rounded-full hover:bg-green-50 transition-all shadow-md hover:shadow-lg text-base"
+                className="flex-shrink-0 inline-flex items-center gap-2 bg-white text-primary font-bold px-8 py-3.5 rounded-full hover:bg-white/90 transition-all shadow-md hover:shadow-xl text-base hover:scale-105 active:scale-95"
+                data-ocid="home.bulk_order_button"
               >
                 Place Bulk Order
                 <ArrowRight className="h-4 w-4" />
@@ -250,138 +350,44 @@ export default function Home() {
       {/* Categories Preview */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-12 animate-fade-in-up">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-12 text-gold-shimmer animate-fade-in-up">
             Our Categories
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
-            {/* Sweets */}
-            <Link
-              to="/products"
-              search={{ category: "sweets" }}
-              className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer block animate-scale-in delay-100 hover:scale-[1.03] hover-glow-primary"
-            >
-              <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/10 transition-all duration-500">
-                <h3 className="text-2xl font-display font-bold text-primary transition-transform group-hover:scale-105 duration-300">
-                  Sweets
-                </h3>
-              </div>
-              <div className="p-4 bg-card">
-                <p className="text-sm text-muted-foreground">
-                  Delicious traditional Indian sweets
-                </p>
-                <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                  Browse Sweets <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </Link>
-
-            {/* Snacks */}
-            <Link
-              to="/products"
-              search={{ category: "snacks" }}
-              className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer block animate-scale-in delay-200 hover:scale-[1.03] hover-glow-secondary"
-            >
-              <div className="aspect-[4/3] bg-gradient-to-br from-secondary/20 to-secondary/5 flex items-center justify-center group-hover:from-secondary/30 group-hover:to-secondary/10 transition-all duration-500">
-                <h3 className="text-2xl font-display font-bold text-secondary transition-transform group-hover:scale-105 duration-300">
-                  Snacks
-                </h3>
-              </div>
-              <div className="p-4 bg-card">
-                <p className="text-sm text-muted-foreground">
-                  Crispy and flavorful snacks for any time
-                </p>
-                <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
-                  Browse Snacks <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </Link>
-
-            {/* Namkeen */}
-            <Link
-              to="/products"
-              search={{ category: "namkeen" }}
-              className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer block animate-scale-in delay-300 hover:scale-[1.03] hover-glow-accent"
-            >
-              <div className="aspect-[4/3] bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center group-hover:from-accent/30 group-hover:to-accent/10 transition-all duration-500">
-                <h3 className="text-2xl font-display font-bold text-accent transition-transform group-hover:scale-105 duration-300">
-                  Namkeen
-                </h3>
-              </div>
-              <div className="p-4 bg-card">
-                <p className="text-sm text-muted-foreground">
-                  Savory treats with authentic spices
-                </p>
-                <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                  Browse Namkeen <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </Link>
-
-            {/* Beverages */}
-            <Link
-              to="/products"
-              search={{ category: "beverages" }}
-              className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer block animate-scale-in delay-400 hover:scale-[1.03]"
-            >
-              <div className="aspect-[4/3] bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center group-hover:from-blue-500/30 group-hover:to-blue-500/10 transition-all duration-500">
-                <div className="flex flex-col items-center gap-2 transition-transform group-hover:scale-105 duration-300">
-                  <GlassWater className="h-10 w-10 text-blue-600" />
-                  <h3 className="text-2xl font-display font-bold text-blue-600">
-                    Beverages
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+            {CATEGORIES.map((cat, idx) => (
+              <Link
+                key={cat.key}
+                to="/products"
+                search={{ category: cat.key }}
+                className={`group relative overflow-hidden rounded-2xl shadow-xl cursor-pointer block animate-tilt-in ${STAGGER_DELAYS[idx]} ${cat.hoverShadow} hover:-translate-y-2 hover:scale-[1.04] transition-all duration-300`}
+                data-ocid={`home.${cat.key}.link`}
+              >
+                <div
+                  className={`aspect-[3/4] bg-gradient-to-br ${cat.gradient} flex flex-col items-center justify-center gap-3 p-6 relative`}
+                >
+                  {/* Dark overlay for text readability */}
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/15 transition-all duration-300" />
+                  <span className="text-5xl md:text-6xl group-hover:animate-wiggle select-none drop-shadow-lg relative z-10">
+                    {cat.emoji}
+                  </span>
+                  <h3
+                    className="text-xl md:text-2xl font-display font-bold text-white text-center drop-shadow-lg relative z-10"
+                    style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
+                  >
+                    {cat.label}
                   </h3>
+                  <p
+                    className="text-xs md:text-sm text-white text-center relative z-10 drop-shadow-md font-medium"
+                    style={{ textShadow: "0 1px 4px rgba(0,0,0,0.7)" }}
+                  >
+                    {cat.desc}
+                  </p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-white bg-white/25 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 relative z-10 backdrop-blur-sm">
+                    Browse →
+                  </span>
                 </div>
-              </div>
-              <div className="p-4 bg-card">
-                <p className="text-sm text-muted-foreground">
-                  Refreshing drinks and traditional beverages
-                </p>
-                <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Browse Beverages <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </Link>
-
-            {/* Cookies */}
-            <Link
-              to="/products"
-              search={{ category: "cookies" }}
-              className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer block animate-scale-in delay-500 hover:scale-[1.03]"
-            >
-              <div className="aspect-[4/3] bg-gradient-to-br from-amber-500/20 to-amber-500/5 flex items-center justify-center group-hover:from-amber-500/30 group-hover:to-amber-500/10 transition-all duration-500">
-                <h3 className="text-2xl font-display font-bold text-amber-600 transition-transform group-hover:scale-105 duration-300">
-                  Cookies
-                </h3>
-              </div>
-              <div className="p-4 bg-card">
-                <p className="text-sm text-muted-foreground">
-                  Freshly baked cookies and biscuits
-                </p>
-                <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Browse Cookies <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </Link>
-
-            {/* Accompaniments */}
-            <Link
-              to="/products"
-              search={{ category: "accompaniments" }}
-              className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer block animate-scale-in delay-600 hover:scale-[1.03]"
-            >
-              <div className="aspect-[4/3] bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center group-hover:from-green-500/30 group-hover:to-green-500/10 transition-all duration-500">
-                <h3 className="text-2xl font-display font-bold text-green-600 transition-transform group-hover:scale-105 duration-300">
-                  Accompaniments
-                </h3>
-              </div>
-              <div className="p-4 bg-card">
-                <p className="text-sm text-muted-foreground">
-                  Perfect sides and accompaniments
-                </p>
-                <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-green-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Browse Accompaniments <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </Link>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

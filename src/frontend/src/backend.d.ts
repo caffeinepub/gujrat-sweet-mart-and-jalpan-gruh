@@ -24,6 +24,16 @@ export interface TransformationOutput {
     headers: Array<http_header>;
 }
 export type Time = bigint;
+export interface PromoCode {
+    active: boolean;
+    discountValue: bigint;
+    code: string;
+    discountType: Variant_fixed_percentage;
+    usedCount: bigint;
+    description: string;
+    minOrderAmount: bigint;
+    maxUses: bigint;
+}
 export interface HomepageConfig {
     hours: string;
     logo: ExternalBlob;
@@ -61,6 +71,8 @@ export interface Order {
     paymentStatus: PaymentStatus;
     paymentMethod: Variant_cashOnDelivery_online;
     customerPrincipal: Principal;
+    appliedPromoCode?: string;
+    discountAmount: bigint;
     name: string;
     deliveryTime?: DeliveryTime;
     orderId: bigint;
@@ -160,6 +172,10 @@ export enum Variant_cashOnDelivery_online {
     cashOnDelivery = "cashOnDelivery",
     online = "online"
 }
+export enum Variant_fixed_percentage {
+    fixed = "fixed",
+    percentage = "percentage"
+}
 export interface backendInterface {
     addProduct(name: string, category: Category, description: string, price: bigint, available: boolean, unit: Unit, photoUrl: string): Promise<ProductId>;
     addToCart(productId: ProductId, quantity: bigint): Promise<void>;
@@ -169,13 +185,17 @@ export interface backendInterface {
     cancelOrder(orderId: bigint): Promise<void>;
     clearCart(): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
-    createOrder(name: string, phone: string, address: string, paymentMethod: Variant_cashOnDelivery_online): Promise<bigint>;
+    createOrder(name: string, phone: string, address: string, paymentMethod: Variant_cashOnDelivery_online, promoCode: string | null): Promise<bigint>;
+    createPromoCode(code: string, discountType: Variant_fixed_percentage, discountValue: bigint, minOrderAmount: bigint, maxUses: bigint, description: string): Promise<void>;
     deleteProduct(productId: ProductId): Promise<void>;
+    deletePromoCode(code: string): Promise<void>;
     editProduct(productId: ProductId, name: string, category: Category, description: string, price: bigint, available: boolean, unit: Unit, photoUrl: string): Promise<void>;
+    editPromoCode(code: string, discountType: Variant_fixed_percentage, discountValue: bigint, minOrderAmount: bigint, maxUses: bigint, description: string): Promise<void>;
     getActiveOrdersForDelivery(): Promise<Array<Order>>;
     getAllOrders(): Promise<Array<Order>>;
     getAllPendingDeliveryProfiles(): Promise<Array<UserProfile>>;
     getAllProducts(): Promise<Array<Product>>;
+    getAllPromoCodes(): Promise<Array<PromoCode>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
@@ -202,9 +222,11 @@ export interface backendInterface {
     setDeliveryTime(orderId: bigint, value: bigint, unit: TimeUnit): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     setUpiConfig(config: UpiConfig): Promise<void>;
+    togglePromoCode(code: string): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateOrderStatus(orderId: bigint, newStatus: OrderStatus): Promise<void>;
     updateOrderStatusByDeliveryPerson(orderId: bigint, newStatus: OrderStatus): Promise<void>;
     updatePaymentStatus(orderId: bigint, newStatus: PaymentStatus): Promise<void>;
+    validatePromoCode(code: string, orderTotal: bigint): Promise<PromoCode | null>;
 }

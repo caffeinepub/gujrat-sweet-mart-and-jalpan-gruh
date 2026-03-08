@@ -77,6 +77,8 @@ export const Order = IDL.Record({
     'online' : IDL.Null,
   }),
   'customerPrincipal' : IDL.Principal,
+  'appliedPromoCode' : IDL.Opt(IDL.Text),
+  'discountAmount' : IDL.Nat,
   'name' : IDL.Text,
   'deliveryTime' : IDL.Opt(DeliveryTime),
   'orderId' : IDL.Nat,
@@ -106,6 +108,16 @@ export const Product = IDL.Record({
   'available' : IDL.Bool,
   'category' : Category,
   'price' : IDL.Nat,
+});
+export const PromoCode = IDL.Record({
+  'active' : IDL.Bool,
+  'discountValue' : IDL.Nat,
+  'code' : IDL.Text,
+  'discountType' : IDL.Variant({ 'fixed' : IDL.Null, 'percentage' : IDL.Null }),
+  'usedCount' : IDL.Nat,
+  'description' : IDL.Text,
+  'minOrderAmount' : IDL.Nat,
+  'maxUses' : IDL.Nat,
 });
 export const CustomerProfile = IDL.Record({
   'principal' : IDL.Principal,
@@ -213,11 +225,25 @@ export const idlService = IDL.Service({
         IDL.Text,
         IDL.Text,
         IDL.Variant({ 'cashOnDelivery' : IDL.Null, 'online' : IDL.Null }),
+        IDL.Opt(IDL.Text),
       ],
       [IDL.Nat],
       [],
     ),
+  'createPromoCode' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Variant({ 'fixed' : IDL.Null, 'percentage' : IDL.Null }),
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Text,
+      ],
+      [],
+      [],
+    ),
   'deleteProduct' : IDL.Func([ProductId], [], []),
+  'deletePromoCode' : IDL.Func([IDL.Text], [], []),
   'editProduct' : IDL.Func(
       [
         ProductId,
@@ -232,6 +258,18 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
+  'editPromoCode' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Variant({ 'fixed' : IDL.Null, 'percentage' : IDL.Null }),
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Text,
+      ],
+      [],
+      [],
+    ),
   'getActiveOrdersForDelivery' : IDL.Func([], [IDL.Vec(Order)], ['query']),
   'getAllOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
   'getAllPendingDeliveryProfiles' : IDL.Func(
@@ -240,6 +278,7 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+  'getAllPromoCodes' : IDL.Func([], [IDL.Vec(PromoCode)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
@@ -270,6 +309,7 @@ export const idlService = IDL.Service({
   'setDeliveryTime' : IDL.Func([IDL.Nat, IDL.Nat, TimeUnit], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'setUpiConfig' : IDL.Func([UpiConfig], [], []),
+  'togglePromoCode' : IDL.Func([IDL.Text], [], []),
   'transform' : IDL.Func(
       [TransformationInput],
       [TransformationOutput],
@@ -283,6 +323,11 @@ export const idlService = IDL.Service({
       [],
     ),
   'updatePaymentStatus' : IDL.Func([IDL.Nat, PaymentStatus], [], []),
+  'validatePromoCode' : IDL.Func(
+      [IDL.Text, IDL.Nat],
+      [IDL.Opt(PromoCode)],
+      ['query'],
+    ),
 });
 
 export const idlInitArgs = [];
@@ -354,6 +399,8 @@ export const idlFactory = ({ IDL }) => {
       'online' : IDL.Null,
     }),
     'customerPrincipal' : IDL.Principal,
+    'appliedPromoCode' : IDL.Opt(IDL.Text),
+    'discountAmount' : IDL.Nat,
     'name' : IDL.Text,
     'deliveryTime' : IDL.Opt(DeliveryTime),
     'orderId' : IDL.Nat,
@@ -383,6 +430,19 @@ export const idlFactory = ({ IDL }) => {
     'available' : IDL.Bool,
     'category' : Category,
     'price' : IDL.Nat,
+  });
+  const PromoCode = IDL.Record({
+    'active' : IDL.Bool,
+    'discountValue' : IDL.Nat,
+    'code' : IDL.Text,
+    'discountType' : IDL.Variant({
+      'fixed' : IDL.Null,
+      'percentage' : IDL.Null,
+    }),
+    'usedCount' : IDL.Nat,
+    'description' : IDL.Text,
+    'minOrderAmount' : IDL.Nat,
+    'maxUses' : IDL.Nat,
   });
   const CustomerProfile = IDL.Record({
     'principal' : IDL.Principal,
@@ -484,11 +544,25 @@ export const idlFactory = ({ IDL }) => {
           IDL.Text,
           IDL.Text,
           IDL.Variant({ 'cashOnDelivery' : IDL.Null, 'online' : IDL.Null }),
+          IDL.Opt(IDL.Text),
         ],
         [IDL.Nat],
         [],
       ),
+    'createPromoCode' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Variant({ 'fixed' : IDL.Null, 'percentage' : IDL.Null }),
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Text,
+        ],
+        [],
+        [],
+      ),
     'deleteProduct' : IDL.Func([ProductId], [], []),
+    'deletePromoCode' : IDL.Func([IDL.Text], [], []),
     'editProduct' : IDL.Func(
         [
           ProductId,
@@ -503,6 +577,18 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
+    'editPromoCode' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Variant({ 'fixed' : IDL.Null, 'percentage' : IDL.Null }),
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Text,
+        ],
+        [],
+        [],
+      ),
     'getActiveOrdersForDelivery' : IDL.Func([], [IDL.Vec(Order)], ['query']),
     'getAllOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
     'getAllPendingDeliveryProfiles' : IDL.Func(
@@ -511,6 +597,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getAllProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+    'getAllPromoCodes' : IDL.Func([], [IDL.Vec(PromoCode)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
@@ -545,6 +632,7 @@ export const idlFactory = ({ IDL }) => {
     'setDeliveryTime' : IDL.Func([IDL.Nat, IDL.Nat, TimeUnit], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'setUpiConfig' : IDL.Func([UpiConfig], [], []),
+    'togglePromoCode' : IDL.Func([IDL.Text], [], []),
     'transform' : IDL.Func(
         [TransformationInput],
         [TransformationOutput],
@@ -558,6 +646,11 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'updatePaymentStatus' : IDL.Func([IDL.Nat, PaymentStatus], [], []),
+    'validatePromoCode' : IDL.Func(
+        [IDL.Text, IDL.Nat],
+        [IDL.Opt(PromoCode)],
+        ['query'],
+      ),
   });
 };
 

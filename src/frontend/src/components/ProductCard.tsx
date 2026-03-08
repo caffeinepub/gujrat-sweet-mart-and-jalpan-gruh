@@ -4,6 +4,9 @@ import { toast } from "sonner";
 import { Category, type Product, Unit } from "../backend";
 import { useAddToCart } from "../hooks/useCart";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import { useGetReviewsForProduct } from "../hooks/useReviews";
+import ProductReviews from "./ProductReviews";
+import { StarRatingDisplay } from "./StarRating";
 
 interface ProductCardProps {
   product: Product;
@@ -12,8 +15,14 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const { identity } = useInternetIdentity();
   const addToCart = useAddToCart();
+  const { data: reviews } = useGetReviewsForProduct(product.id);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [selectedWeight, setSelectedWeight] = useState(250);
+
+  const averageRating =
+    reviews && reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + Number(r.rating), 0) / reviews.length
+      : 0;
 
   const categoryColors = {
     [Category.sweets]: "from-primary/20 to-primary/5 border-primary/30",
@@ -93,6 +102,23 @@ export default function ProductCard({ product }: ProductCardProps) {
         >
           {product.name}
         </h3>
+
+        {/* Star rating summary */}
+        <div className="mb-1">
+          {reviews && reviews.length > 0 ? (
+            <StarRatingDisplay
+              rating={averageRating}
+              size="sm"
+              showCount={true}
+              count={reviews.length}
+            />
+          ) : (
+            <span className="text-xs text-muted-foreground">
+              No reviews yet
+            </span>
+          )}
+        </div>
+
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
           {product.description}
         </p>
@@ -196,6 +222,9 @@ export default function ProductCard({ product }: ProductCardProps) {
             </button>
           </div>
         </div>
+
+        {/* Reviews section */}
+        <ProductReviews productId={product.id} productName={product.name} />
       </div>
     </div>
   );

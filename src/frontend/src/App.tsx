@@ -46,14 +46,14 @@ function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-50 glass border-b-2 border-primary/20 shadow-sm">
+      <header className="sticky top-0 z-50 glass border-b-2 border-primary/30 shadow-lg">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link
               to="/"
               className="flex items-center space-x-2 transition-transform hover:scale-105"
             >
-              <h1 className="text-xl md:text-2xl font-display font-bold text-primary">
+              <h1 className="text-xl md:text-2xl font-display font-bold text-gold-shimmer">
                 Gujrat Sweet Mart
               </h1>
             </Link>
@@ -126,12 +126,12 @@ function Layout() {
               {identity && (
                 <Link
                   to="/cart"
-                  className="relative text-foreground hover:text-primary transition-colors"
+                  className={`relative text-foreground hover:text-primary transition-colors rounded-full p-1 ${cartItemCount > 0 ? "animate-glow-pulse" : ""}`}
                   activeProps={{ className: "text-primary" }}
                 >
                   <ShoppingCart className="h-6 w-6" />
                   {cartItemCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-bounce">
                       {cartItemCount}
                     </span>
                   )}
@@ -246,15 +246,36 @@ function Layout() {
         </div>
       </header>
 
+      {/* Marquee ticker strip */}
+      <div className="overflow-hidden bg-primary text-primary-foreground py-1.5 text-sm font-semibold">
+        <div
+          className="animate-marquee flex whitespace-nowrap gap-8"
+          style={{ width: "max-content" }}
+        >
+          {[1, 2].map((i) => (
+            <span key={i} className="flex items-center gap-8">
+              <span>🍬 Fresh Daily</span>
+              <span>✨ Authentic Recipes</span>
+              <span>🏡 Made in Jalgaon</span>
+              <span>🧁 Sweets &amp; Namkeen</span>
+              <span>🎉 Festival Specials</span>
+              <span>🛵 Home Delivery Available</span>
+              <span>🍮 Traditional Mithai</span>
+              <span>🌸 Premium Quality</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
       <main className="flex-1">
         <Outlet />
       </main>
 
-      <footer className="bg-card border-t-2 border-primary/20 mt-12">
+      <footer className="bg-card border-t-2 border-primary/30 mt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="font-display font-bold text-lg text-primary mb-2">
+              <h3 className="font-display font-bold text-lg text-gold-shimmer mb-2">
                 Gujrat Sweet Mart and Jalpan Gruh
               </h3>
               <p className="text-sm text-muted-foreground">

@@ -47,6 +47,8 @@ export interface Order {
   'paymentMethod' : { 'cashOnDelivery' : null } |
     { 'online' : null },
   'customerPrincipal' : Principal,
+  'appliedPromoCode' : [] | [string],
+  'discountAmount' : bigint,
   'name' : string,
   'deliveryTime' : [] | [DeliveryTime],
   'orderId' : bigint,
@@ -75,6 +77,17 @@ export interface Product {
   'price' : bigint,
 }
 export type ProductId = bigint;
+export interface PromoCode {
+  'active' : boolean,
+  'discountValue' : bigint,
+  'code' : string,
+  'discountType' : { 'fixed' : null } |
+    { 'percentage' : null },
+  'usedCount' : bigint,
+  'description' : string,
+  'minOrderAmount' : bigint,
+  'maxUses' : bigint,
+}
 export interface ShoppingItem {
   'productName' : string,
   'currency' : string,
@@ -169,18 +182,51 @@ export interface _SERVICE {
     string
   >,
   'createOrder' : ActorMethod<
-    [string, string, string, { 'cashOnDelivery' : null } | { 'online' : null }],
+    [
+      string,
+      string,
+      string,
+      { 'cashOnDelivery' : null } |
+        { 'online' : null },
+      [] | [string],
+    ],
     bigint
   >,
+  'createPromoCode' : ActorMethod<
+    [
+      string,
+      { 'fixed' : null } |
+        { 'percentage' : null },
+      bigint,
+      bigint,
+      bigint,
+      string,
+    ],
+    undefined
+  >,
   'deleteProduct' : ActorMethod<[ProductId], undefined>,
+  'deletePromoCode' : ActorMethod<[string], undefined>,
   'editProduct' : ActorMethod<
     [ProductId, string, Category, string, bigint, boolean, Unit, string],
+    undefined
+  >,
+  'editPromoCode' : ActorMethod<
+    [
+      string,
+      { 'fixed' : null } |
+        { 'percentage' : null },
+      bigint,
+      bigint,
+      bigint,
+      string,
+    ],
     undefined
   >,
   'getActiveOrdersForDelivery' : ActorMethod<[], Array<Order>>,
   'getAllOrders' : ActorMethod<[], Array<Order>>,
   'getAllPendingDeliveryProfiles' : ActorMethod<[], Array<UserProfile>>,
   'getAllProducts' : ActorMethod<[], Array<Product>>,
+  'getAllPromoCodes' : ActorMethod<[], Array<PromoCode>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
@@ -207,6 +253,7 @@ export interface _SERVICE {
   'setDeliveryTime' : ActorMethod<[bigint, bigint, TimeUnit], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'setUpiConfig' : ActorMethod<[UpiConfig], undefined>,
+  'togglePromoCode' : ActorMethod<[string], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateHomepageConfig' : ActorMethod<[HomepageConfig], undefined>,
   'updateOrderStatus' : ActorMethod<[bigint, OrderStatus], undefined>,
@@ -215,6 +262,7 @@ export interface _SERVICE {
     undefined
   >,
   'updatePaymentStatus' : ActorMethod<[bigint, PaymentStatus], undefined>,
+  'validatePromoCode' : ActorMethod<[string, bigint], [] | [PromoCode]>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

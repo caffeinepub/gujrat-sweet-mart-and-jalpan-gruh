@@ -1,4 +1,5 @@
 import {
+  Coins,
   Home,
   Loader2,
   MessageCircle,
@@ -7,6 +8,8 @@ import {
   Plus,
   QrCode,
   ShoppingBag,
+  Star,
+  Tag,
   Trash2,
   Truck,
   UserCheck,
@@ -15,7 +18,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { type Product, Unit } from "../backend";
 import AccessDeniedScreen from "../components/AccessDeniedScreen";
+import AdminLoyalty from "../components/AdminLoyalty";
+import AdminReviews from "../components/AdminReviews";
 import BulkOrderSettings from "../components/BulkOrderSettings";
+import CouponManagement from "../components/CouponManagement";
 import DeliveryApprovalManagement from "../components/DeliveryApprovalManagement";
 import DeliveryStaffManagement from "../components/DeliveryStaffManagement";
 import HomepageConfigForm from "../components/HomepageConfigForm";
@@ -128,7 +134,7 @@ export default function Admin() {
       <StripePaymentSetup />
 
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid w-full max-w-4xl grid-cols-7 mb-8">
+        <TabsList className="grid w-full max-w-5xl grid-cols-10 mb-8">
           <TabsTrigger
             value="products"
             className="flex items-center gap-1.5 text-xs sm:text-sm"
@@ -178,6 +184,30 @@ export default function Admin() {
           >
             <MessageCircle className="h-4 w-4" />
             <span className="hidden sm:inline">Bulk Orders</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="coupons"
+            className="flex items-center gap-1.5 text-xs sm:text-sm"
+            data-ocid="admin.coupons_tab"
+          >
+            <Tag className="h-4 w-4" />
+            <span className="hidden sm:inline">Coupons</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="reviews"
+            className="flex items-center gap-1.5 text-xs sm:text-sm"
+            data-ocid="admin.reviews_tab"
+          >
+            <Star className="h-4 w-4" />
+            <span className="hidden sm:inline">Reviews</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="loyalty"
+            className="flex items-center gap-1.5 text-xs sm:text-sm"
+            data-ocid="admin.loyalty_tab"
+          >
+            <Coins className="h-4 w-4" />
+            <span className="hidden sm:inline">Loyalty</span>
           </TabsTrigger>
         </TabsList>
 
@@ -319,6 +349,18 @@ export default function Admin() {
 
         <TabsContent value="bulk-orders">
           <BulkOrderSettings />
+        </TabsContent>
+
+        <TabsContent value="coupons">
+          <CouponManagement />
+        </TabsContent>
+
+        <TabsContent value="reviews">
+          <AdminReviews products={products} />
+        </TabsContent>
+
+        <TabsContent value="loyalty">
+          <AdminLoyalty />
         </TabsContent>
       </Tabs>
 

@@ -6,6 +6,7 @@ import {
   Package,
   ShoppingBag,
   Store,
+  Tag,
   Truck,
   XCircle,
 } from "lucide-react";
@@ -13,6 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { OrderStatus, TimeUnit } from "../backend";
 import BackButton from "../components/BackButton";
+import LoyaltyCard from "../components/LoyaltyCard";
 import OrderTrackingTimeline from "../components/OrderTrackingTimeline";
 import {
   AlertDialog,
@@ -161,6 +163,11 @@ export default function MyOrders() {
         My Orders
       </h1>
 
+      {/* Loyalty rewards card */}
+      <div className="mb-8 max-w-lg" data-ocid="loyalty.card">
+        <LoyaltyCard />
+      </div>
+
       <div className="space-y-8">
         {sortedOrders.map((order) => {
           const orderTotal = order.items.reduce(
@@ -271,6 +278,21 @@ export default function MyOrders() {
                       );
                     })}
                   </div>
+                  {order.appliedPromoCode &&
+                    Number(order.discountAmount) > 0 && (
+                      <div className="flex justify-between text-sm text-green-700 bg-green-50 rounded px-3 py-1.5 mt-2">
+                        <span className="flex items-center gap-1.5">
+                          <Tag className="h-3 w-3" />
+                          Coupon Applied:{" "}
+                          <span className="font-mono font-bold">
+                            {order.appliedPromoCode}
+                          </span>
+                        </span>
+                        <span className="font-semibold">
+                          -₹{Number(order.discountAmount)}
+                        </span>
+                      </div>
+                    )}
                   <div className="flex justify-between font-bold text-base mt-3 pt-3 border-t">
                     <span>Order Total</span>
                     <span className="text-primary">₹{orderTotal}</span>

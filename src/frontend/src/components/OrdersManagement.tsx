@@ -1,4 +1,4 @@
-import { Clock, Loader2, Package, Store, Truck } from "lucide-react";
+import { Clock, Loader2, Package, Store, Tag, Truck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -370,6 +370,18 @@ export default function OrdersManagement() {
                         <span>+₹{cashRoundOff.toFixed(2)}</span>
                       </div>
                     )}
+                    {order.appliedPromoCode &&
+                      Number(order.discountAmount) > 0 && (
+                        <div className="flex justify-between text-green-700 bg-green-50 rounded px-2 py-1">
+                          <span className="flex items-center gap-1">
+                            <Tag className="h-3 w-3" />
+                            Coupon ({order.appliedPromoCode})
+                          </span>
+                          <span className="font-semibold">
+                            -₹{Number(order.discountAmount)}
+                          </span>
+                        </div>
+                      )}
                   </div>
                   <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t">
                     <span>Total:</span>

@@ -4,14 +4,17 @@ import {
   Loader2,
   MessageCircle,
   Store,
+  Tag,
   Truck,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { type ShoppingItem, Variant_cashOnDelivery_online } from "../backend";
 import BackButton from "../components/BackButton";
+import CouponInput from "../components/CouponInput";
 import CustomerInfoForm from "../components/CustomerInfoForm";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
+import RedeemPoints from "../components/RedeemPoints";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
@@ -42,6 +45,20 @@ export default function Checkout() {
     "cod" | "upi" | "card" | null
   >(null);
   const [whatsappUpdates, setWhatsappUpdates] = useState(false);
+  const [appliedPromoCode, setAppliedPromoCode] = useState<string | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [redeemedPoints, setRedeemedPoints] = useState<bigint>(0n);
+  const [pointsDiscount, setPointsDiscount] = useState(0);
+
+  const handleCouponApply = (code: string | null, amount: number) => {
+    setAppliedPromoCode(code);
+    setDiscountAmount(amount);
+  };
+
+  const handleRedeemPoints = (points: bigint, discount: number) => {
+    setRedeemedPoints(points);
+    setPointsDiscount(discount);
+  };
 
   if (!identity) {
     return (
@@ -83,13 +100,19 @@ export default function Checkout() {
     (sum, item) => sum + Number(item.totalPrice),
     0,
   );
-  const totalWithDelivery =
-    deliveryMethod === "delivery" ? itemsTotal + DELIVERY_CHARGE : itemsTotal;
-  const cashRoundedTotal = Math.ceil(totalWithDelivery);
+  const deliveryCharge = deliveryMethod === "delivery" ? DELIVERY_CHARGE : 0;
+  const totalBeforeDiscount = itemsTotal + deliveryCharge;
+  const totalAfterCoupon = Math.max(0, totalBeforeDiscount - discountAmount);
+  const totalAfterDiscount = Math.max(0, totalAfterCoupon - pointsDiscount);
+  const cashRoundedTotal = Math.ceil(totalAfterDiscount);
   const cashRoundOff = Number.parseFloat(
-    (cashRoundedTotal - totalWithDelivery).toFixed(2),
+    (cashRoundedTotal - totalAfterDiscount).toFixed(2),
   );
-  const grandTotal = totalWithDelivery;
+  const grandTotal = totalAfterDiscount;
+
+  // Minimum order check uses discounted total
+  const isBelowMinimum = totalAfterDiscount < 50;
+  const orderTotalBigInt = BigInt(Math.round(totalBeforeDiscount));
 
   const handlePlaceOrder = async () => {
     if (!customerInfo) {
@@ -118,6 +141,8 @@ export default function Checkout() {
           phone: customerInfo.phone,
           address: effectiveAddress,
           paymentMethod: Variant_cashOnDelivery_online.online,
+          promoCode: appliedPromoCode,
+          redeemPoints: redeemedPoints,
         });
 
         const shoppingItems: ShoppingItem[] = cartItems.map((item) => {
@@ -147,6 +172,8 @@ export default function Checkout() {
           phone: customerInfo.phone,
           address: effectiveAddress,
           paymentMethod: Variant_cashOnDelivery_online.online,
+          promoCode: appliedPromoCode,
+          redeemPoints: redeemedPoints,
         });
         sessionStorage.setItem(
           "whatsapp_updates_opted",
@@ -165,6 +192,8 @@ export default function Checkout() {
         phone: customerInfo.phone,
         address: effectiveAddress,
         paymentMethod: Variant_cashOnDelivery_online.cashOnDelivery,
+        promoCode: appliedPromoCode,
+        redeemPoints: redeemedPoints,
       });
 
       sessionStorage.setItem(
@@ -262,6 +291,31 @@ export default function Checkout() {
               onSelect={setPaymentMethod}
             />
           </div>
+
+          {/* Coupon Code */}
+          <div>
+            <h2 className="text-2xl font-display font-bold mb-4">
+              Discount Coupon
+            </h2>
+            <CouponInput
+              orderTotal={totalBeforeDiscount}
+              onApply={handleCouponApply}
+              appliedCode={appliedPromoCode}
+              discountAmount={discountAmount}
+            />
+          </div>
+
+          {/* Redeem Loyalty Points */}
+          <div>
+            <h2 className="text-2xl font-display font-bold mb-4">
+              Loyalty Points
+            </h2>
+            <RedeemPoints
+              orderTotal={orderTotalBigInt}
+              onRedeem={handleRedeemPoints}
+              redeemedPoints={redeemedPoints}
+            />
+          </div>
         </div>
 
         {/* Order Summary */}
@@ -301,6 +355,10 @@ export default function Checkout() {
                   </div>
                 );
               })}
+              <div className="flex justify-between text-sm pt-1 border-t border-border/50">
+                <span className="text-muted-foreground">Items Subtotal</span>
+                <span>₹{itemsTotal.toFixed(2)}</span>
+              </div>
               {deliveryMethod === "delivery" && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Delivery Charge</span>
@@ -311,6 +369,27 @@ export default function Checkout() {
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Delivery Charge</span>
                   <span className="text-green-600">FREE (Pickup)</span>
+                </div>
+              )}
+              {appliedPromoCode && discountAmount > 0 && (
+                <div className="flex justify-between text-sm text-green-700 bg-green-50 rounded px-2 py-1">
+                  <span className="flex items-center gap-1">
+                    <Tag className="h-3 w-3" />
+                    Coupon ({appliedPromoCode})
+                  </span>
+                  <span className="font-semibold">
+                    -₹{discountAmount.toFixed(2)}
+                  </span>
+                </div>
+              )}
+              {redeemedPoints > 0n && pointsDiscount > 0 && (
+                <div className="flex justify-between text-sm text-amber-700 bg-amber-50 rounded px-2 py-1">
+                  <span className="flex items-center gap-1">
+                    🪙 Points ({redeemedPoints.toString()} pts)
+                  </span>
+                  <span className="font-semibold">
+                    -₹{pointsDiscount.toFixed(2)}
+                  </span>
                 </div>
               )}
               {paymentMethod === "cod" && cashRoundOff > 0 && (
@@ -330,6 +409,19 @@ export default function Checkout() {
                     : grandTotal.toFixed(2)}
                 </span>
               </div>
+              {(appliedPromoCode && discountAmount > 0) ||
+              pointsDiscount > 0 ? (
+                <p className="text-xs text-green-600 mt-1">
+                  🎉 You're saving ₹
+                  {(discountAmount + pointsDiscount).toFixed(2)} total
+                  {appliedPromoCode && discountAmount > 0
+                    ? ` (Coupon: ₹${discountAmount.toFixed(2)})`
+                    : ""}
+                  {pointsDiscount > 0
+                    ? ` (Points: ₹${pointsDiscount.toFixed(2)})`
+                    : ""}
+                </p>
+              ) : null}
               {paymentMethod === "cod" && cashRoundOff > 0 && (
                 <p className="text-xs text-blue-600 mt-1">
                   Rounded up for cash payment convenience
@@ -341,7 +433,12 @@ export default function Checkout() {
               onClick={handlePlaceOrder}
               className="w-full"
               size="lg"
-              disabled={isPlacingOrder || !customerInfo || !paymentMethod}
+              disabled={
+                isPlacingOrder ||
+                !customerInfo ||
+                !paymentMethod ||
+                isBelowMinimum
+              }
               data-ocid="checkout.submit_button"
             >
               {isPlacingOrder ? (
@@ -370,6 +467,11 @@ export default function Checkout() {
             {customerInfo && !paymentMethod && (
               <p className="text-xs text-muted-foreground mt-2 text-center">
                 Please select a payment method
+              </p>
+            )}
+            {isBelowMinimum && (
+              <p className="text-xs text-destructive mt-2 text-center font-medium">
+                We don't accept orders below ₹50
               </p>
             )}
           </div>

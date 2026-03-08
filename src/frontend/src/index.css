@@ -1,15 +1,15 @@
 @font-face {
-  font-family: "Bricolage Grotesque";
-  src: url("/assets/fonts/BricolageGrotesque-latin.woff2") format("woff2");
-  font-weight: 400 700;
+  font-family: "Mona Sans";
+  src: url("/assets/fonts/MonaSans-latin.woff2") format("woff2");
+  font-weight: 200 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Playfair Display";
-  src: url("/assets/fonts/PlayfairDisplay-latin.woff2") format("woff2");
-  font-weight: 400 900;
+  font-family: "Fraunces";
+  src: url("/assets/fonts/Fraunces-latin.woff2") format("woff2");
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -20,104 +20,55 @@
 
 @layer base {
   :root {
-    --radius: 0.625rem;
-    /* Warm cream background */
-    --background: 0.97 0.02 45;
-    --foreground: 0.25 0.03 30;
+    --radius: 0.75rem;
 
-    /* Saffron/Orange primary */
-    --primary: 0.68 0.18 45;
-    --primary-foreground: 0.98 0.01 45;
+    /* Deep warm dark background — the Festival Jewel theme IS the theme */
+    --background: 0.18 0.04 35;
+    --foreground: 0.96 0.015 50;
 
-    /* Deep red secondary */
-    --secondary: 0.52 0.2 25;
-    --secondary-foreground: 0.98 0.01 45;
+    /* Vivid saffron/turmeric primary */
+    --primary: 0.72 0.19 55;
+    --primary-foreground: 0.15 0.02 35;
 
-    /* Marigold accent */
-    --accent: 0.75 0.16 60;
-    --accent-foreground: 0.25 0.03 30;
+    /* Hot pink/magenta secondary */
+    --secondary: 0.62 0.22 350;
+    --secondary-foreground: 0.96 0.015 50;
 
-    /* Gold muted */
-    --muted: 0.92 0.03 50;
-    --muted-foreground: 0.5 0.02 30;
+    /* Emerald green accent */
+    --accent: 0.68 0.19 160;
+    --accent-foreground: 0.96 0.015 50;
 
-    --card: 0.99 0.01 45;
-    --card-foreground: 0.25 0.03 30;
+    /* Subtle dark muted */
+    --muted: 0.28 0.03 35;
+    --muted-foreground: 0.65 0.02 45;
 
-    --popover: 0.99 0.01 45;
-    --popover-foreground: 0.25 0.03 30;
+    --card: 0.24 0.04 35;
+    --card-foreground: 0.96 0.015 50;
 
-    --destructive: 0.55 0.22 20;
-    --destructive-foreground: 0.98 0.01 45;
+    --popover: 0.24 0.04 35;
+    --popover-foreground: 0.96 0.015 50;
 
-    --border: 0.85 0.04 45;
-    --input: 0.85 0.04 45;
-    --ring: 0.68 0.18 45;
+    --destructive: 0.58 0.22 20;
+    --destructive-foreground: 0.96 0.015 50;
 
-    --chart-1: 0.68 0.18 45;
-    --chart-2: 0.52 0.2 25;
-    --chart-3: 0.75 0.16 60;
-    --chart-4: 0.6 0.15 35;
-    --chart-5: 0.8 0.14 55;
+    --border: 0.32 0.04 40;
+    --input: 0.32 0.04 40;
+    --ring: 0.72 0.19 55;
 
-    --sidebar: 0.97 0.02 45;
-    --sidebar-foreground: 0.25 0.03 30;
-    --sidebar-primary: 0.68 0.18 45;
-    --sidebar-primary-foreground: 0.98 0.01 45;
-    --sidebar-accent: 0.92 0.03 50;
-    --sidebar-accent-foreground: 0.25 0.03 30;
-    --sidebar-border: 0.85 0.04 45;
-    --sidebar-ring: 0.68 0.18 45;
-  }
+    --chart-1: 0.72 0.19 55;
+    --chart-2: 0.62 0.22 350;
+    --chart-3: 0.68 0.19 160;
+    --chart-4: 0.65 0.18 85;
+    --chart-5: 0.55 0.18 240;
 
-  .dark {
-    /* Dark warm brown background */
-    --background: 0.2 0.03 30;
-    --foreground: 0.95 0.02 45;
-
-    /* Bright saffron primary */
-    --primary: 0.75 0.18 45;
-    --primary-foreground: 0.2 0.03 30;
-
-    /* Deep red secondary */
-    --secondary: 0.45 0.2 25;
-    --secondary-foreground: 0.95 0.02 45;
-
-    /* Bright marigold accent */
-    --accent: 0.7 0.16 60;
-    --accent-foreground: 0.2 0.03 30;
-
-    /* Muted brown */
-    --muted: 0.3 0.03 30;
-    --muted-foreground: 0.7 0.02 40;
-
-    --card: 0.25 0.03 30;
-    --card-foreground: 0.95 0.02 45;
-
-    --popover: 0.25 0.03 30;
-    --popover-foreground: 0.95 0.02 45;
-
-    --destructive: 0.6 0.22 20;
-    --destructive-foreground: 0.95 0.02 45;
-
-    --border: 0.35 0.03 30;
-    --input: 0.35 0.03 30;
-    --ring: 0.75 0.18 45;
-
-    --chart-1: 0.75 0.18 45;
-    --chart-2: 0.6 0.2 25;
-    --chart-3: 0.7 0.16 60;
-    --chart-4: 0.65 0.15 35;
-    --chart-5: 0.8 0.14 55;
-
-    --sidebar: 0.25 0.03 30;
-    --sidebar-foreground: 0.95 0.02 45;
-    --sidebar-primary: 0.75 0.18 45;
-    --sidebar-primary-foreground: 0.2 0.03 30;
-    --sidebar-accent: 0.3 0.03 30;
-    --sidebar-accent-foreground: 0.95 0.02 45;
-    --sidebar-border: 0.35 0.03 30;
-    --sidebar-ring: 0.75 0.18 45;
+    --sidebar: 0.22 0.04 35;
+    --sidebar-foreground: 0.96 0.015 50;
+    --sidebar-primary: 0.72 0.19 55;
+    --sidebar-primary-foreground: 0.15 0.02 35;
+    --sidebar-accent: 0.28 0.03 35;
+    --sidebar-accent-foreground: 0.96 0.015 50;
+    --sidebar-border: 0.32 0.04 40;
+    --sidebar-ring: 0.72 0.19 55;
   }
 
   * {
@@ -134,14 +85,14 @@
     45deg,
     transparent,
     transparent 10px,
-    oklch(var(--primary) / 0.1) 10px,
-    oklch(var(--primary) / 0.1) 20px
+    oklch(var(--primary) / 0.15) 10px,
+    oklch(var(--primary) / 0.15) 20px
   );
 }
 
 .paisley-shadow {
-  box-shadow: 0 4px 6px -1px oklch(var(--primary) / 0.2), 0 2px 4px -1px
-    oklch(var(--secondary) / 0.1);
+  box-shadow: 0 4px 6px -1px oklch(var(--primary) / 0.3), 0 2px 4px -1px
+    oklch(var(--secondary) / 0.2);
 }
 
 @layer utilities {
@@ -165,7 +116,24 @@
     animation-delay: 600ms;
   }
 
-  /* Shimmer text effect for headings */
+  /* Gold shimmer — primary display heading effect */
+  .text-gold-shimmer {
+    background: linear-gradient(
+      90deg,
+      oklch(0.85 0.18 85) 0%,
+      oklch(0.95 0.22 75) 20%,
+      oklch(0.72 0.19 55) 40%,
+      oklch(0.9 0.2 80) 60%,
+      oklch(0.85 0.18 85) 100%
+    );
+    background-size: 250% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* Legacy shimmer (kept for compatibility) */
   .text-shimmer {
     background: linear-gradient(
       90deg,
@@ -182,21 +150,53 @@
     animation: shimmer 4s linear infinite;
   }
 
+  /* Festival radial gradient background overlay */
+  .bg-festival {
+    background-image: radial-gradient(
+        circle at 15% 15%,
+        oklch(var(--primary) / 0.12) 0%,
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 85% 85%,
+        oklch(var(--secondary) / 0.1) 0%,
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 50% 50%,
+        oklch(var(--accent) / 0.06) 0%,
+        transparent 60%
+      );
+  }
+
+  /* Festive card with left border accent */
+  .card-festive {
+    border-left: 4px solid oklch(var(--primary));
+    box-shadow: 0 4px 24px oklch(var(--primary) / 0.15), inset 0 1px 0
+      oklch(var(--primary) / 0.1);
+  }
+
+  /* Diya-style dashed border */
+  .border-diya {
+    border: 2px dashed oklch(var(--primary) / 0.4);
+    border-radius: 12px;
+  }
+
   /* Mandala-inspired radial gradient hero background */
   .bg-mandala {
     background-image: radial-gradient(
         ellipse 80% 50% at 50% 0%,
-        oklch(var(--primary) / 0.12) 0%,
+        oklch(var(--primary) / 0.18) 0%,
         transparent 70%
       ),
       radial-gradient(
         ellipse 60% 40% at 20% 100%,
-        oklch(var(--secondary) / 0.08) 0%,
+        oklch(var(--secondary) / 0.12) 0%,
         transparent 60%
       ),
       radial-gradient(
         ellipse 50% 30% at 80% 50%,
-        oklch(var(--accent) / 0.07) 0%,
+        oklch(var(--accent) / 0.1) 0%,
         transparent 50%
       );
   }
@@ -217,15 +217,15 @@
       4;
   }
 
-  /* Category card hover glow classes */
+  /* Category card hover glow classes — stronger opacity */
   .hover-glow-primary:hover {
-    box-shadow: 0 0 20px oklch(var(--primary) / 0.35);
+    box-shadow: 0 0 30px oklch(var(--primary) / 0.5);
   }
   .hover-glow-secondary:hover {
-    box-shadow: 0 0 20px oklch(var(--secondary) / 0.35);
+    box-shadow: 0 0 30px oklch(var(--secondary) / 0.5);
   }
   .hover-glow-accent:hover {
-    box-shadow: 0 0 20px oklch(var(--accent) / 0.35);
+    box-shadow: 0 0 30px oklch(var(--accent) / 0.5);
   }
 
   /* Frosted glass */
@@ -242,5 +242,198 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Animation utility classes */
+  .animate-bounce-in {
+    animation: bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .animate-wiggle {
+    animation: wiggle 0.5s ease-in-out;
+  }
+  .animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+  }
+  .animate-sparkle-pop {
+    animation: sparkle-pop 0.4s ease-out both;
+  }
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  .animate-tilt-in {
+    animation: tilt-in 0.5s ease-out both;
+  }
+  .animate-diya-flicker {
+    animation: diya-flicker 1.5s ease-in-out infinite;
+  }
+}
+
+/* ========== Keyframe Definitions ========== */
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(30px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08) translateY(-6px);
+  }
+  80% {
+    transform: scale(0.97) translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  40% {
+    transform: rotate(8deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  80% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sparkle-pop {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.4) rotate(12deg);
+  }
+  60% {
+    transform: scale(0.9) rotate(-6deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(var(--primary) / 0.6), 0 0 20px
+      oklch(var(--primary) / 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px oklch(var(--primary) / 0), 0 0 35px
+      oklch(var(--primary) / 0.5);
+  }
+}
+
+@keyframes tilt-in {
+  from {
+    opacity: 0;
+    transform: perspective(600px) rotateY(-15deg) translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(600px) rotateY(0deg) translateX(0);
+  }
+}
+
+@keyframes diya-flicker {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-2deg);
+  }
+  25% {
+    opacity: 0.85;
+    transform: scale(1.05) rotate(2deg);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(0.97) rotate(-1deg);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1.02) rotate(1deg);
+  }
+}
+
+/* Existing keyframes kept for compatibility */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(var(--primary) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px oklch(var(--primary) / 0);
   }
 }

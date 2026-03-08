@@ -46,19 +46,32 @@ export function useCreateOrder() {
       phone,
       address,
       paymentMethod,
+      promoCode,
+      redeemPoints,
     }: {
       name: string;
       phone: string;
       address: string;
       paymentMethod: Variant_cashOnDelivery_online;
+      promoCode?: string | null;
+      redeemPoints?: bigint;
     }) => {
       if (!actor) throw new Error("Actor not available");
-      return actor.createOrder(name, phone, address, paymentMethod);
+      return (actor as any).createOrder(
+        name,
+        phone,
+        address,
+        paymentMethod,
+        promoCode ?? null,
+        redeemPoints ?? 0n,
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       queryClient.invalidateQueries({ queryKey: ["allOrders"] });
+      queryClient.invalidateQueries({ queryKey: ["loyaltyAccount"] });
+      queryClient.invalidateQueries({ queryKey: ["loyaltyTransactions"] });
     },
   });
 }

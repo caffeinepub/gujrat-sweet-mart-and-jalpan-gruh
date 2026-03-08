@@ -5,13 +5,16 @@ import List "mo:core/List";
 import Stripe "stripe/stripe";
 import OutCall "http-outcalls/outcall";
 import Storage "blob-storage/Storage";
+
 import Runtime "mo:core/Runtime";
 import Principal "mo:core/Principal";
 import MixinStorage "blob-storage/Mixin";
 import Iter "mo:core/Iter";
+import Text "mo:core/Text";
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 import UserApproval "user-approval/approval";
+
 
 actor {
   include MixinStorage();
@@ -297,6 +300,20 @@ actor {
     unit : TimeUnit;
   };
 
+  // Coupon specific types and maps
+  public type PromoCode = {
+    code : Text;
+    discountType : { #percentage; #fixed };
+    discountValue : Nat;
+    minOrderAmount : Nat;
+    maxUses : Nat;
+    usedCount : Nat;
+    active : Bool;
+    description : Text;
+  };
+
+  var promoCodes : Map.Map<Text, PromoCode> = Map.empty<Text, PromoCode>();
+
   public type Order = {
     orderId : Nat;
     customerPrincipal : Principal;
@@ -309,6 +326,8 @@ actor {
     paymentStatus : PaymentStatus;
     timestamp : Time.Time;
     deliveryTime : ?DeliveryTime;
+    appliedPromoCode : ?Text;
+    discountAmount : Nat;
   };
 
   public type OrderStatus = {
@@ -441,14 +460,143 @@ actor {
     customerProfiles.get(caller);
   };
 
+  // Coupon (Promo code) management functions
+  public shared ({ caller }) func createPromoCode(
+    code : Text,
+    discountType : { #percentage; #fixed },
+    discountValue : Nat,
+    minOrderAmount : Nat,
+    maxUses : Nat,
+    description : Text
+  ) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can create promo codes");
+    };
+
+    let uppercaseCode = code.toUpper();
+    let newPromoCode : PromoCode = {
+      code = uppercaseCode;
+      discountType;
+      discountValue;
+      minOrderAmount;
+      maxUses;
+      usedCount = 0;
+      active = true;
+      description;
+    };
+
+    promoCodes.add(uppercaseCode, newPromoCode);
+  };
+
+  public shared ({ caller }) func editPromoCode(
+    code : Text,
+    discountType : { #percentage; #fixed },
+    discountValue : Nat,
+    minOrderAmount : Nat,
+    maxUses : Nat,
+    description : Text
+  ) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can edit promo codes");
+    };
+
+    let uppercaseCode = code.toUpper();
+    switch (promoCodes.get(uppercaseCode)) {
+      case (null) { Runtime.trap("Promo code not found") };
+      case (?existing) {
+        let updatedPromoCode = {
+          code = uppercaseCode;
+          discountType;
+          discountValue;
+          minOrderAmount;
+          maxUses;
+          usedCount = existing.usedCount;
+          active = existing.active;
+          description;
+        };
+        promoCodes.add(uppercaseCode, updatedPromoCode);
+      };
+    };
+  };
+
+  public shared ({ caller }) func deletePromoCode(code : Text) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can delete promo codes");
+    };
+
+    let uppercaseCode = code.toUpper();
+    switch (promoCodes.get(uppercaseCode)) {
+      case (null) { Runtime.trap("Promo code not found") };
+      case (_) {
+        promoCodes.remove(uppercaseCode);
+      };
+    };
+  };
+
+  public shared ({ caller }) func togglePromoCode(code : Text) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can toggle promo codes");
+    };
+
+    let uppercaseCode = code.toUpper();
+    switch (promoCodes.get(uppercaseCode)) {
+      case (null) { Runtime.trap("Promo code not found") };
+      case (?existing) {
+        let updatedPromoCode = {
+          existing with active = not existing.active
+        };
+        promoCodes.add(uppercaseCode, updatedPromoCode);
+      };
+    };
+  };
+
+  public query ({ caller }) func getAllPromoCodes() : async [PromoCode] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can view all promo codes");
+    };
+    promoCodes.values().toArray();
+  };
+
+  public query func validatePromoCode(
+    code : Text,
+    orderTotal : Nat,
+  ) : async ?PromoCode {
+    // No authorization check - this is a public query function
+    // Anyone (including guests) can validate promo codes
+    let uppercaseCode = code.toUpper();
+    switch (promoCodes.get(uppercaseCode)) {
+      case (null) { null };
+      case (?promo) {
+        if (
+          not promo.active or
+          orderTotal < promo.minOrderAmount or
+          promo.usedCount >= promo.maxUses
+        ) {
+          null;
+        } else { ?promo };
+      };
+    };
+  };
+
+  func calculateDiscount(orderTotal : Nat, promo : PromoCode) : Nat {
+    switch (promo.discountType) {
+      case (#percentage) {
+        (orderTotal * promo.discountValue) / 100;
+      };
+      case (#fixed) { promo.discountValue };
+    };
+  };
+
+  // Updated createOrder function to handle promo codes
   public shared ({ caller }) func createOrder(
     name : Text,
     phone : Text,
     address : Text,
-    paymentMethod : { #cashOnDelivery; #online }
+    paymentMethod : { #cashOnDelivery; #online },
+    promoCode : ?Text,
   ) : async Nat {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can create orders");
+      Runtime.trap("Only users can create orders");
     };
 
     let cart = switch (shoppingCarts.get(caller)) {
@@ -461,22 +609,57 @@ actor {
     };
 
     let orderId = nextOrderId;
+    let items = cart.toArray();
+    let orderTotal = items.foldLeft(0, func(acc, item) { acc + item.totalPrice });
+    var discountAmount = 0;
+    var appliedPromoCode : ?Text = null;
+    let uppercasePromoCode = switch (promoCode) {
+      case (null) { null };
+      case (?code) { ?code.toUpper() };
+    };
+
+    switch (uppercasePromoCode) {
+      case (null) {};
+      case (?code) {
+        switch (promoCodes.get(code)) {
+          case (null) {};
+          case (?promo) {
+            if (
+              promo.active and
+              orderTotal >= promo.minOrderAmount and
+              promo.usedCount < promo.maxUses
+            ) {
+              discountAmount := calculateDiscount(orderTotal, promo);
+              appliedPromoCode := ?promo.code;
+              let updatedPromo = {
+                promo with
+                usedCount = promo.usedCount + 1;
+              };
+              promoCodes.add(code, updatedPromo);
+            };
+          };
+        };
+      };
+    };
+
     let newOrder : Order = {
       orderId;
       customerPrincipal = caller;
       name;
       phone;
       address;
-      items = cart.toArray();
+      items;
       paymentMethod;
       status = #orderPlaced;
       paymentStatus = #pending;
       timestamp = Time.now();
       deliveryTime = null;
+      appliedPromoCode;
+      discountAmount;
     };
 
     orders.add(orderId, newOrder);
-    shoppingCarts.remove(caller); // Clear cart after successful order
+    shoppingCarts.remove(caller); // Clear cart after order
     nextOrderId += 1;
     orderId;
   };
