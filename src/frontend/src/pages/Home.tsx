@@ -249,6 +249,90 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Google Maps Location Section */}
+      <section
+        className="py-14 border-b border-primary/20"
+        style={{ background: "oklch(0.20 0.035 35)" }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            {/* Section heading */}
+            <div className="text-center mb-8 animate-fade-in-up">
+              <div className="inline-flex items-center gap-2 bg-primary/15 border border-primary/30 rounded-full px-4 py-1.5 mb-4">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span className="text-primary text-xs font-semibold uppercase tracking-widest">
+                  Find Our Shop
+                </span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-gold-shimmer">
+                Our Location
+              </h2>
+              <p className="text-muted-foreground text-sm mt-2 max-w-md mx-auto">
+                Gujrat Sweet Mart &amp; Jalpan Gruh — Visanji Nagar, Jaikisan
+                Wadi, Jalgaon, Maharashtra
+              </p>
+            </div>
+
+            {/* Map wrapper */}
+            <div
+              className="animate-fade-in-up delay-100 rounded-2xl overflow-hidden border border-primary/20 shadow-[0_8px_48px_oklch(var(--primary)/0.15)] bg-card"
+              data-ocid="home.location.map_marker"
+            >
+              {/* Decorative top bar */}
+              <div className="h-1.5 w-full bg-gradient-to-r from-primary via-secondary to-accent" />
+
+              {/* Responsive iframe container — 16:9 on mobile, fixed 450px on md+ */}
+              <div
+                className="relative w-full"
+                style={{ paddingBottom: "56.25%" }}
+              >
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.4970678171376!2d75.56210938885498!3d21.01278810000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd90fa46c0e2009%3A0x21b8ff57c8fdd4df!2sGujrat%20Sweet%20Mart%20%26%20Jalpan%20Gruh!5e0!3m2!1sen!2sin!4v1773053217003!5m2!1sen!2sin"
+                  className="absolute inset-0 w-full h-full md:hidden"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Gujrat Sweet Mart & Jalpan Gruh on Google Maps"
+                />
+                {/* Desktop: fixed height iframe, hidden on mobile */}
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.4970678171376!2d75.56210938885498!3d21.01278810000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd90fa46c0e2009%3A0x21b8ff57c8fdd4df!2sGujrat%20Sweet%20Mart%20%26%20Jalpan%20Gruh!5e0!3m2!1sen!2sin!4v1773053217003!5m2!1sen!2sin"
+                  width="100%"
+                  height="450"
+                  className="hidden md:block relative"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Gujrat Sweet Mart & Jalpan Gruh on Google Maps"
+                />
+              </div>
+
+              {/* Bottom info bar */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 bg-card/80 border-t border-primary/15">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>
+                    Visanji Nagar, Jaikisan Wadi, Jalgaon, Maharashtra 425001
+                  </span>
+                </div>
+                <a
+                  href="https://maps.google.com/maps?q=Gujrat+Sweet+Mart+%26+Jalpan+Gruh,+Jalgaon"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
+                  data-ocid="home.location.link"
+                >
+                  Open in Google Maps
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">

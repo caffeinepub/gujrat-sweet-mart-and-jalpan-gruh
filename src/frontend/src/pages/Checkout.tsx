@@ -24,6 +24,7 @@ import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useCreateOrder } from "../hooks/useOrders";
 import { useGetAllProducts } from "../hooks/useProducts";
 import { useCreateCheckoutSession } from "../hooks/useStripeCheckout";
+import { notifyAdminWhatsApp } from "../utils/whatsappNotify";
 
 export default function Checkout() {
   const { identity } = useInternetIdentity();
@@ -114,6 +115,34 @@ export default function Checkout() {
   const isBelowMinimum = totalAfterDiscount < 50;
   const orderTotalBigInt = BigInt(Math.round(totalBeforeDiscount));
 
+  const buildAdminNotify = (
+    orderId: bigint | number,
+    method: "cod" | "upi" | "card",
+  ) => {
+    if (!customerInfo) return;
+    const items =
+      cartItems?.map((item) => {
+        const product = products?.find((p) => p.id === item.productId);
+        return {
+          name: product?.name || "Product",
+          quantity: Number(item.quantity),
+          totalPrice: Number(item.totalPrice),
+        };
+      }) || [];
+    notifyAdminWhatsApp({
+      orderId,
+      customerName: customerInfo.name,
+      customerPhone: customerInfo.phone,
+      address:
+        deliveryMethod === "pickup" ? "STORE PICKUP" : customerInfo.address,
+      items,
+      paymentMethod: method,
+      grandTotal:
+        method === "cod" ? cashRoundedTotal : Number(grandTotal.toFixed(2)),
+      deliveryMethod,
+    });
+  };
+
   const handlePlaceOrder = async () => {
     if (!customerInfo) {
       toast.error("Please complete your information");
@@ -136,7 +165,7 @@ export default function Checkout() {
           return;
         }
 
-        await createOrder.mutateAsync({
+        const cardOrderId = await createOrder.mutateAsync({
           name: customerInfo.name,
           phone: customerInfo.phone,
           address: effectiveAddress,
@@ -144,6 +173,7 @@ export default function Checkout() {
           promoCode: appliedPromoCode,
           redeemPoints: redeemedPoints,
         });
+        buildAdminNotify(cardOrderId, "card");
 
         const shoppingItems: ShoppingItem[] = cartItems.map((item) => {
           const product = products.find((p) => p.id === item.productId);
@@ -175,6 +205,7 @@ export default function Checkout() {
           promoCode: appliedPromoCode,
           redeemPoints: redeemedPoints,
         });
+        buildAdminNotify(orderId, "upi");
         sessionStorage.setItem(
           "whatsapp_updates_opted",
           whatsappUpdates ? "true" : "false",
@@ -195,6 +226,7 @@ export default function Checkout() {
         promoCode: appliedPromoCode,
         redeemPoints: redeemedPoints,
       });
+      buildAdminNotify(orderId, "cod");
 
       sessionStorage.setItem(
         "whatsapp_updates_opted",
