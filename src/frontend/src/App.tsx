@@ -19,6 +19,7 @@ import {
 import { useState } from "react";
 import LoginButton from "./components/LoginButton";
 import ProfileSetup from "./components/ProfileSetup";
+import { useIsCallerAdmin } from "./hooks/useAuth";
 import { useGetCart } from "./hooks/useCart";
 import { useIsDeliveryPerson } from "./hooks/useDeliveryRole";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
@@ -40,13 +41,14 @@ function Layout() {
   const { identity } = useInternetIdentity();
   const { data: isDeliveryPerson } = useIsDeliveryPerson();
   const { data: cartItems } = useGetCart();
+  const { data: isAdmin } = useIsCallerAdmin();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const cartItemCount = cartItems?.length || 0;
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-50 glass border-b-2 border-primary/30 shadow-lg">
+      <header className="sticky top-0 z-50 bg-card backdrop-blur-md border-b-2 border-primary/30 shadow-lg">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link
@@ -113,7 +115,7 @@ function Layout() {
                   Delivery
                 </Link>
               )}
-              {identity && (
+              {identity && isAdmin === true && (
                 <Link
                   to="/admin"
                   className="relative text-foreground hover:text-primary transition-colors font-medium inline-flex items-center gap-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
@@ -153,97 +155,97 @@ function Layout() {
               )}
             </button>
           </div>
-
-          {/* Mobile Navigation */}
-          {mobileMenuOpen && (
-            <nav className="md:hidden py-4 space-y-3 border-t animate-fade-in-up">
-              <Link
-                to="/"
-                className="block text-foreground hover:text-primary transition-colors font-medium"
-                activeProps={{ className: "text-primary" }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                to="/products"
-                className="block text-foreground hover:text-primary transition-colors font-medium"
-                activeProps={{ className: "text-primary" }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Products
-              </Link>
-              <Link
-                to="/bulk-order"
-                className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
-                activeProps={{ className: "text-primary" }}
-                onClick={() => setMobileMenuOpen(false)}
-                data-ocid="nav.bulk_order_link"
-              >
-                <PackagePlus className="h-4 w-4" />
-                Bulk Order
-              </Link>
-              {identity && (
-                <Link
-                  to="/my-orders"
-                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
-                  activeProps={{ className: "text-primary" }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <ClipboardList className="h-4 w-4" />
-                  My Orders
-                </Link>
-              )}
-              {identity && (
-                <Link
-                  to="/profile"
-                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
-                  activeProps={{ className: "text-primary" }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <UserCircle className="h-4 w-4" />
-                  Profile
-                </Link>
-              )}
-              {identity && isDeliveryPerson && (
-                <Link
-                  to="/delivery"
-                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
-                  activeProps={{ className: "text-primary" }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Truck className="h-4 w-4" />
-                  Delivery
-                </Link>
-              )}
-              {identity && (
-                <Link
-                  to="/admin"
-                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
-                  activeProps={{ className: "text-primary" }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Shield className="h-4 w-4" />
-                  Admin
-                </Link>
-              )}
-              {identity && (
-                <Link
-                  to="/cart"
-                  className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium"
-                  activeProps={{ className: "text-primary" }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  Cart {cartItemCount > 0 && `(${cartItemCount})`}
-                </Link>
-              )}
-              <div className="pt-2">
-                <LoginButton />
-              </div>
-            </nav>
-          )}
         </div>
+
+        {/* Mobile Navigation — absolutely positioned below the header bar */}
+        {mobileMenuOpen && (
+          <nav className="md:hidden fixed left-0 right-0 top-16 bg-card border-b-2 border-primary/30 shadow-xl z-50 py-4 px-6 space-y-4 animate-fade-in-up max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <Link
+              to="/"
+              className="block text-foreground hover:text-primary transition-colors font-medium py-1"
+              activeProps={{ className: "text-primary" }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
+              to="/products"
+              className="block text-foreground hover:text-primary transition-colors font-medium py-1"
+              activeProps={{ className: "text-primary" }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Products
+            </Link>
+            <Link
+              to="/bulk-order"
+              className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium py-1"
+              activeProps={{ className: "text-primary" }}
+              onClick={() => setMobileMenuOpen(false)}
+              data-ocid="nav.bulk_order_link"
+            >
+              <PackagePlus className="h-4 w-4" />
+              Bulk Order
+            </Link>
+            {identity && (
+              <Link
+                to="/my-orders"
+                className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium py-1"
+                activeProps={{ className: "text-primary" }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ClipboardList className="h-4 w-4" />
+                My Orders
+              </Link>
+            )}
+            {identity && (
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium py-1"
+                activeProps={{ className: "text-primary" }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <UserCircle className="h-4 w-4" />
+                Profile
+              </Link>
+            )}
+            {identity && isDeliveryPerson && (
+              <Link
+                to="/delivery"
+                className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium py-1"
+                activeProps={{ className: "text-primary" }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Truck className="h-4 w-4" />
+                Delivery
+              </Link>
+            )}
+            {identity && isAdmin === true && (
+              <Link
+                to="/admin"
+                className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium py-1"
+                activeProps={{ className: "text-primary" }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Shield className="h-4 w-4" />
+                Admin
+              </Link>
+            )}
+            {identity && (
+              <Link
+                to="/cart"
+                className="flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium py-1"
+                activeProps={{ className: "text-primary" }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                Cart {cartItemCount > 0 && `(${cartItemCount})`}
+              </Link>
+            )}
+            <div className="pt-2">
+              <LoginButton />
+            </div>
+          </nav>
+        )}
       </header>
 
       {/* Slim info band */}
