@@ -32,6 +32,7 @@ export function useSetUsername() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["callerUsername"] });
+      queryClient.invalidateQueries({ queryKey: ["currentUserProfile"] });
     },
   });
 }
