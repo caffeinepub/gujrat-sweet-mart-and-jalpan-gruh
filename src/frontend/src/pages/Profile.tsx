@@ -1,9 +1,10 @@
 import {
+  AtSign,
   Check,
   Clock,
-  Copy,
   Loader2,
   Mail,
+  Pencil,
   Phone,
   ShieldCheck,
   Truck,
@@ -28,6 +29,11 @@ import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useMyProfile, useSaveMyProfile } from "../hooks/useMyProfile";
+import {
+  useCallerUsername,
+  useCheckUsernameAvailable,
+  useSetUsername,
+} from "../hooks/useUsername";
 
 function DeliveryStatusBadge({ status }: { status: DeliveryApprovalStatus }) {
   switch (status) {
@@ -61,13 +67,19 @@ export default function Profile() {
   const { identity } = useInternetIdentity();
   const { data: profile, isLoading } = useMyProfile();
   const saveProfile = useSaveMyProfile();
+  const { data: currentUsername, isLoading: usernameLoading } =
+    useCallerUsername();
+  const setUsernameMutation = useSetUsername();
+  const checkUsernameAvailable = useCheckUsernameAvailable();
 
   const [fullName, setFullName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [copied, setCopied] = useState(false);
 
-  const principalId = identity?.getPrincipal().toText() ?? "";
+  // Username edit state
+  const [editingUsername, setEditingUsername] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
 
   useEffect(() => {
     if (profile) {
@@ -77,14 +89,42 @@ export default function Profile() {
     }
   }, [profile]);
 
-  const handleCopyPrincipal = async () => {
+  const validateUsernameLocal = (val: string): string => {
+    if (val.length === 0) return "";
+    if (val.length <= 8) return "Username must be more than 8 characters";
+    if (!/^[a-zA-Z0-9_]+$/.test(val))
+      return "Only letters, numbers and underscores allowed";
+    return "";
+  };
+
+  const handleUsernameChange = (val: string) => {
+    setNewUsername(val);
+    setUsernameError(validateUsernameLocal(val));
+  };
+
+  const handleSaveUsername = async () => {
+    const localErr = validateUsernameLocal(newUsername);
+    if (localErr) {
+      setUsernameError(localErr);
+      return;
+    }
     try {
-      await navigator.clipboard.writeText(principalId);
-      setCopied(true);
-      toast.success("Principal ID copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy to clipboard");
+      const available = await checkUsernameAvailable(newUsername);
+      if (!available) {
+        setUsernameError("This username is already occupied");
+        return;
+      }
+      await setUsernameMutation.mutateAsync(newUsername.trim());
+      setEditingUsername(false);
+      setNewUsername("");
+      toast.success("Username updated!");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes("already occupied")) {
+        setUsernameError("This username is already occupied");
+      } else {
+        toast.error(message || "Failed to update username");
+      }
     }
   };
 
@@ -101,8 +141,10 @@ export default function Profile() {
         email: email.trim(),
       });
       toast.success("Profile saved successfully");
-    } catch (error: any) {
-      toast.error(error?.message || "Failed to save profile");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Failed to save profile";
+      toast.error(message);
     }
   };
 
@@ -119,7 +161,7 @@ export default function Profile() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || usernameLoading) {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
@@ -139,42 +181,94 @@ export default function Profile() {
         My Profile
       </h1>
 
-      {/* Principal ID Card */}
+      {/* Username / Identity Card */}
       <Card className="mb-6 border-2 border-primary/20">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
-            <User className="h-5 w-5 text-primary" />
-            Identity
+            <AtSign className="h-5 w-5 text-primary" />
+            Your Username
           </CardTitle>
           <CardDescription>
-            Your unique identifier on the Internet Computer
+            Your public identity on the platform
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Label className="text-xs text-muted-foreground uppercase tracking-wide mb-2 block">
-            Principal ID
-          </Label>
-          <div className="flex items-center gap-2">
-            <div className="flex-1 bg-muted/50 rounded-md px-3 py-2 font-mono text-sm break-all">
-              {principalId}
+        <CardContent className="space-y-3">
+          {!editingUsername ? (
+            <div className="flex items-center gap-3">
+              <div className="flex-1 bg-muted/50 rounded-md px-4 py-3">
+                {currentUsername ? (
+                  <span className="text-xl font-semibold text-primary">
+                    @{currentUsername}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground italic text-sm">
+                    No username set yet
+                  </span>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  setNewUsername("");
+                  setUsernameError("");
+                  setEditingUsername(true);
+                }}
+                title="Change username"
+                data-ocid="profile.username.edit_button"
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleCopyPrincipal}
-              className="flex-shrink-0"
-              title="Copy Principal ID"
-            >
-              {copied ? (
-                <Check className="h-4 w-4 text-green-600" />
-              ) : (
-                <Copy className="h-4 w-4" />
+          ) : (
+            <div className="space-y-2">
+              <Input
+                value={newUsername}
+                onChange={(e) => handleUsernameChange(e.target.value)}
+                placeholder="New username (min. 9 characters)"
+                data-ocid="profile.username.input"
+              />
+              {usernameError && (
+                <p
+                  className="text-red-500 text-sm"
+                  data-ocid="profile.username.error_state"
+                >
+                  {usernameError}
+                </p>
               )}
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Share this ID with the admin to get delivery access or other
-            permissions.
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={handleSaveUsername}
+                  disabled={
+                    setUsernameMutation.isPending ||
+                    newUsername.length <= 8 ||
+                    !!usernameError
+                  }
+                  data-ocid="profile.username.save_button"
+                >
+                  {setUsernameMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4 mr-1" /> Save
+                    </>
+                  )}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setEditingUsername(false)}
+                  data-ocid="profile.username.cancel_button"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Usernames must be more than 8 characters and can contain letters,
+            numbers, and underscores.
           </p>
         </CardContent>
       </Card>
@@ -244,6 +338,7 @@ export default function Profile() {
                 placeholder="Enter your full name"
                 required
                 disabled={saveProfile.isPending}
+                data-ocid="profile.fullname.input"
               />
             </div>
 
@@ -262,6 +357,7 @@ export default function Profile() {
                 onChange={(e) => setContactNumber(e.target.value)}
                 placeholder="e.g. +91 98765 43210"
                 disabled={saveProfile.isPending}
+                data-ocid="profile.contact.input"
               />
             </div>
 
@@ -277,6 +373,7 @@ export default function Profile() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. you@example.com"
                 disabled={saveProfile.isPending}
+                data-ocid="profile.email.input"
               />
             </div>
 
@@ -284,6 +381,7 @@ export default function Profile() {
               type="submit"
               className="w-full"
               disabled={saveProfile.isPending || !fullName.trim()}
+              data-ocid="profile.save.submit_button"
             >
               {saveProfile.isPending ? (
                 <>

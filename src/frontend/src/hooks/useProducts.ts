@@ -3,14 +3,20 @@ import type { Product } from "../backend";
 import { useActor } from "./useActor";
 
 export function useGetAllProducts() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: isActorFetching } = useActor();
 
-  return useQuery<Product[]>({
+  const query = useQuery<Product[]>({
     queryKey: ["products"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getAllProducts();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isActorFetching,
   });
+
+  return {
+    ...query,
+    // Show loading spinner while actor is initializing OR while products are fetching
+    isLoading: isActorFetching || query.isLoading || query.isFetching,
+  };
 }

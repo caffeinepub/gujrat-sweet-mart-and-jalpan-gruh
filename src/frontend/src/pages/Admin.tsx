@@ -1,6 +1,7 @@
 import {
   Coins,
   Home,
+  KeyRound,
   Loader2,
   MessageCircle,
   Package,
@@ -47,9 +48,78 @@ import {
   TabsTrigger,
 } from "../components/ui/tabs";
 import { useIsCallerAdmin } from "../hooks/useAuth";
+import { useInitializeUser } from "../hooks/useInitializeUser";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useDeleteProduct } from "../hooks/useProductMutations";
 import { useGetAllProducts } from "../hooks/useProducts";
+
+function AdminSetupForm() {
+  const [token, setToken] = useState("");
+  const initializeUser = useInitializeUser();
+  const { refetch } = useIsCallerAdmin();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await initializeUser.mutateAsync(token);
+      toast.success("Access initialized! Checking admin status...");
+      setTimeout(() => refetch(), 1000);
+    } catch {
+      toast.error(
+        "Failed to initialize. Please check the token and try again.",
+      );
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <div className="max-w-md mx-auto">
+        <div className="bg-card border-2 border-primary/20 rounded-xl p-8 text-center shadow-lg">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <KeyRound className="h-8 w-8 text-primary" />
+          </div>
+          <h2 className="text-2xl font-display font-bold text-primary mb-2">
+            Admin Setup
+          </h2>
+          <p className="text-muted-foreground mb-6 text-sm">
+            Enter the admin secret token to claim admin access. This is set when
+            the app was first deployed.
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-4 text-left">
+            <div>
+              <label
+                htmlFor="admin-token"
+                className="block text-sm font-medium mb-1"
+              >
+                Admin Secret Token
+              </label>
+              <input
+                type="password"
+                id="admin-token"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+                placeholder="Enter admin token"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={initializeUser.isPending}
+            >
+              {initializeUser.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <KeyRound className="h-4 w-4 mr-2" />
+              )}
+              Claim Admin Access
+            </Button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Admin() {
   const { identity } = useInternetIdentity();
@@ -114,8 +184,14 @@ export default function Admin() {
     );
   }
 
-  if (adminCheckFetched && !isAdmin && !adminCheckError) {
-    return <AccessDeniedScreen />;
+  // If there's an error (user not registered in access control), show setup form
+  if (adminCheckError) {
+    return <AdminSetupForm />;
+  }
+
+  // If user is confirmed non-admin, show setup form first (allows claiming admin)
+  if (adminCheckFetched && !isAdmin) {
+    return <AdminSetupForm />;
   }
 
   const getUnitDisplay = (product: Product) => {

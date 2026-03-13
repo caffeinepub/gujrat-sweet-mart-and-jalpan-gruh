@@ -322,6 +322,10 @@ export interface backendInterface {
     updateOrderStatusByDeliveryPerson(orderId: bigint, newStatus: OrderStatus): Promise<void>;
     updatePaymentStatus(orderId: bigint, newStatus: PaymentStatus): Promise<void>;
     validatePromoCode(code: string, orderTotal: bigint): Promise<PromoCode | null>;
+    checkUsernameAvailable(username: string): Promise<boolean>;
+    getCallerUsername(): Promise<string | null>;
+    getUsername(user: import("@icp-sdk/core/principal").Principal): Promise<string | null>;
+    setUsername(username: string): Promise<void>;
 }
 import type { ApprovalStatus as _ApprovalStatus, CartItem as _CartItem, Category as _Category, CustomerProfile as _CustomerProfile, DeliveryApprovalStatus as _DeliveryApprovalStatus, DeliveryTime as _DeliveryTime, ExternalBlob as _ExternalBlob, HomepageConfig as _HomepageConfig, Order as _Order, OrderStatus as _OrderStatus, PaymentStatus as _PaymentStatus, Product as _Product, ProductId as _ProductId, PromoCode as _PromoCode, StripeSessionStatus as _StripeSessionStatus, Time as _Time, TimeUnit as _TimeUnit, Unit as _Unit, UpiConfig as _UpiConfig, UserApprovalInfo as _UserApprovalInfo, UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -1150,6 +1154,47 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.validatePromoCode(arg0, arg1);
             return from_candid_opt_n79(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async checkUsernameAvailable(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.checkUsernameAvailable(arg0);
+                return result;
+            } catch (e) { this.processError(e); throw new Error("unreachable"); }
+        } else {
+            const result = await this.actor.checkUsernameAvailable(arg0);
+            return result;
+        }
+    }
+    async getCallerUsername(): Promise<string | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCallerUsername();
+                return result.length > 0 ? result[0] : null;
+            } catch (e) { this.processError(e); throw new Error("unreachable"); }
+        } else {
+            const result = await this.actor.getCallerUsername();
+            return result.length > 0 ? result[0] : null;
+        }
+    }
+    async getUsername(arg0: import("@icp-sdk/core/principal").Principal): Promise<string | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUsername(arg0);
+                return result.length > 0 ? result[0] : null;
+            } catch (e) { this.processError(e); throw new Error("unreachable"); }
+        } else {
+            const result = await this.actor.getUsername(arg0);
+            return result.length > 0 ? result[0] : null;
+        }
+    }
+    async setUsername(arg0: string): Promise<void> {
+        if (this.processError) {
+            try { await this.actor.setUsername(arg0); }
+            catch (e) { this.processError(e); throw new Error("unreachable"); }
+        } else {
+            await this.actor.setUsername(arg0);
         }
     }
 }

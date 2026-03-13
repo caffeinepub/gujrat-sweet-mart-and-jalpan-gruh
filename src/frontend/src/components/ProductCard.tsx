@@ -29,6 +29,9 @@ export default function ProductCard({ product }: ProductCardProps) {
     [Category.snacks]: "from-secondary/20 to-secondary/5 border-secondary/30",
     [Category.namkeen]: "from-accent/20 to-accent/5 border-accent/30",
     [Category.beverages]: "from-blue-500/20 to-blue-500/5 border-blue-500/30",
+    [Category.cookies]: "from-amber-500/20 to-amber-500/5 border-amber-500/30",
+    [Category.accompaniments]:
+      "from-emerald-500/20 to-emerald-500/5 border-emerald-500/30",
   };
 
   const categoryTextColors = {
@@ -36,6 +39,8 @@ export default function ProductCard({ product }: ProductCardProps) {
     [Category.snacks]: "text-secondary",
     [Category.namkeen]: "text-accent",
     [Category.beverages]: "text-blue-600",
+    [Category.cookies]: "text-amber-600",
+    [Category.accompaniments]: "text-emerald-600",
   };
 
   const isPerKg = product.unit === Unit.per_kg;
@@ -74,7 +79,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className={`group relative bg-gradient-to-br ${categoryColors[product.category]} border-2 rounded-lg overflow-hidden shadow-md hover:shadow-glow-primary transition-all duration-300 hover:scale-[1.02] ${isUnavailable ? "opacity-60" : ""}`}
+      className={`group relative bg-gradient-to-br ${categoryColors[product.category] ?? "from-primary/20 to-primary/5 border-primary/30"} border-2 rounded-lg overflow-hidden shadow-md hover:shadow-glow-primary transition-all duration-300 hover:scale-[1.02] ${isUnavailable ? "opacity-60" : ""}`}
     >
       {/* Unavailable overlay badge */}
       {isUnavailable && (
@@ -84,21 +89,24 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       )}
 
-      <div className="aspect-video bg-white/50 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Product image — fills container edge-to-edge, no white padding */}
+      <div className="aspect-video relative overflow-hidden">
         {product.photoUrl ? (
           <img
             src={product.photoUrl}
             alt={product.name}
-            className={`max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-110 ${isUnavailable ? "grayscale" : ""}`}
+            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${isUnavailable ? "grayscale" : ""}`}
           />
         ) : (
-          <div className="text-muted-foreground text-sm">No image</div>
+          <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground text-sm">
+            No image
+          </div>
         )}
       </div>
 
       <div className="p-4">
         <h3
-          className={`font-display font-bold text-lg mb-1 ${categoryTextColors[product.category]}`}
+          className={`font-display font-bold text-lg mb-1 ${categoryTextColors[product.category] ?? "text-primary"}`}
         >
           {product.name}
         </h3>

@@ -177,12 +177,14 @@ export enum Variant_fixed_percentage {
     percentage = "percentage"
 }
 export interface backendInterface {
+    _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     addProduct(name: string, category: Category, description: string, price: bigint, available: boolean, unit: Unit, photoUrl: string): Promise<ProductId>;
     addToCart(productId: ProductId, quantity: bigint): Promise<void>;
     approveDeliveryPrincipal(principal: Principal): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignDeliveryRole(deliveryPerson: Principal): Promise<void>;
     cancelOrder(orderId: bigint): Promise<void>;
+    checkUsernameAvailable(username: string): Promise<boolean>;
     clearCart(): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     createOrder(name: string, phone: string, address: string, paymentMethod: Variant_cashOnDelivery_online, promoCode: string | null): Promise<bigint>;
@@ -197,6 +199,7 @@ export interface backendInterface {
     getAllProducts(): Promise<Array<Product>>;
     getAllPromoCodes(): Promise<Array<PromoCode>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUsername(): Promise<string | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCustomerProfile(): Promise<CustomerProfile | null>;
@@ -208,6 +211,7 @@ export interface backendInterface {
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getUpiConfig(): Promise<UpiConfig | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    getUsername(user: Principal): Promise<string | null>;
     isCallerAdmin(): Promise<boolean>;
     isCallerApproved(): Promise<boolean>;
     isDeliveryPerson(): Promise<boolean>;
@@ -222,6 +226,7 @@ export interface backendInterface {
     setDeliveryTime(orderId: bigint, value: bigint, unit: TimeUnit): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     setUpiConfig(config: UpiConfig): Promise<void>;
+    setUsername(username: string): Promise<void>;
     togglePromoCode(code: string): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateHomepageConfig(config: HomepageConfig): Promise<void>;

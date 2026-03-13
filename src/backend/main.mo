@@ -57,7 +57,8 @@ actor {
     qrCode : Storage.ExternalBlob;
   };
 
-  var upiConfig : ?UpiConfig = null;
+  stable var stableUpiConfig : ?UpiConfig = null;
+  var upiConfig : ?UpiConfig = stableUpiConfig;
 
   public shared ({ caller }) func setUpiConfig(config : UpiConfig) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
@@ -72,7 +73,9 @@ actor {
 
   type ProductAlias = Product; // Alias for Map type inference
   type ProductMap = Map.Map<ProductId, ProductAlias>;
-  var nextProductId : ProductId = 0;
+  stable var stableNextProductId : ProductId = 0;
+  var nextProductId : ProductId = stableNextProductId;
+  stable var stableProducts : [(ProductId, Product)] = [];
   let products : ProductMap = Map.empty<ProductId, ProductAlias>();
 
   public type DeliveryApprovalStatus = { #pending; #approved; #rejected };
@@ -87,11 +90,73 @@ actor {
 
   // State maps from migration, must be kept at bottom
   type UserProfileMap = Map.Map<Principal, UserProfile>;
+  stable var stableUserProfiles : [(Principal, UserProfile)] = [];
   let userProfiles : UserProfileMap = Map.empty<Principal, UserProfile>();
+
+  // Username system: separate maps to avoid breaking stable storage
+  // principal -> username
+  stable var stableUsernames : [(Principal, Text)] = [];
+  let usernames : Map.Map<Principal, Text> = Map.empty<Principal, Text>();
+  // username (lowercased) -> principal (for uniqueness)
+  stable var stableUsernameIndex : [(Text, Principal)] = [];
+  let usernameIndex : Map.Map<Text, Principal> = Map.empty<Text, Principal>();
+
+  public query func checkUsernameAvailable(username : Text) : async Bool {
+    let lower = username.toLower();
+    not (usernameIndex.containsKey(lower));
+  };
+
+  public shared ({ caller }) func setUsername(username : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can set a username");
+    };
+
+    // Length validation: must be more than 8 characters
+    if (username.size() <= 8) {
+      Runtime.trap("Username must be more than 8 characters long");
+    };
+
+    let lower = username.toLower();
+
+    // Uniqueness check
+    switch (usernameIndex.get(lower)) {
+      case (?existingPrincipal) {
+        if (existingPrincipal != caller) {
+          Runtime.trap("This username is already occupied");
+        };
+        // Same caller re-setting same username is fine
+      };
+      case (null) {
+        // Remove old username from index if caller already had one
+        switch (usernames.get(caller)) {
+          case (?oldUsername) {
+            usernameIndex.remove(oldUsername.toLower());
+          };
+          case (null) {};
+        };
+      };
+    };
+
+    usernames.add(caller, username);
+    usernameIndex.add(lower, caller);
+  };
+
+  public query ({ caller }) func getCallerUsername() : async ?Text {
+    usernames.get(caller);
+  };
+
+  public query func getUsername(user : Principal) : async ?Text {
+    usernames.get(user);
+  };
 
   public shared ({ caller }) func saveCallerUserProfile(fullName : Text, contactNumber : Text, email : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
+    };
+
+    let existingDeliveryStatus = switch (userProfiles.get(caller)) {
+      case (?existing) { existing.deliveryApprovalStatus };
+      case (null) { #pending };
     };
 
     let newProfile : UserProfile = {
@@ -99,7 +164,7 @@ actor {
       contactNumber;
       email;
       principalId = caller;
-      deliveryApprovalStatus = #pending;
+      deliveryApprovalStatus = existingDeliveryStatus;
     };
     userProfiles.add(caller, newProfile);
   };
@@ -164,8 +229,8 @@ actor {
       Runtime.trap("Unauthorized: Only admins can view all pending profiles");
     };
 
-    let profiles = userProfiles.values().toArray();
-    profiles.filter(func(profile) { profile.deliveryApprovalStatus == #pending });
+    let profilesArr = userProfiles.values().toArray();
+    profilesArr.filter(func(profile) { profile.deliveryApprovalStatus == #pending });
   };
 
   public shared ({ caller }) func addProduct(
@@ -280,6 +345,7 @@ actor {
   };
 
   type CustomerProfileMap = Map.Map<Principal, CustomerProfile>;
+  stable var stableCustomerProfiles : [(Principal, CustomerProfile)] = [];
   let customerProfiles : CustomerProfileMap = Map.empty<Principal, CustomerProfile>();
 
   public type PaymentStatus = {
@@ -312,6 +378,7 @@ actor {
     description : Text;
   };
 
+  stable var stablePromoCodes : [(Text, PromoCode)] = [];
   var promoCodes : Map.Map<Text, PromoCode> = Map.empty<Text, PromoCode>();
 
   public type Order = {
@@ -339,10 +406,13 @@ actor {
   };
 
   type OrderMap = Map.Map<Nat, Order>;
-  var nextOrderId = 0;
+  stable var stableNextOrderId : Nat = 0;
+  var nextOrderId = stableNextOrderId;
+  stable var stableOrders : [(Nat, Order)] = [];
   let orders : OrderMap = Map.empty<Nat, Order>();
 
-  var configuration : ?Stripe.StripeConfiguration = null;
+  stable var stableConfiguration : ?Stripe.StripeConfiguration = null;
+  var configuration : ?Stripe.StripeConfiguration = stableConfiguration;
 
   public query func isStripeConfigured() : async Bool {
     configuration != null;
@@ -561,8 +631,6 @@ actor {
     code : Text,
     orderTotal : Nat,
   ) : async ?PromoCode {
-    // No authorization check - this is a public query function
-    // Anyone (including guests) can validate promo codes
     let uppercaseCode = code.toUpper();
     switch (promoCodes.get(uppercaseCode)) {
       case (null) { null };
@@ -587,7 +655,6 @@ actor {
     };
   };
 
-  // Updated createOrder function to handle promo codes
   public shared ({ caller }) func createOrder(
     name : Text,
     phone : Text,
@@ -659,7 +726,7 @@ actor {
     };
 
     orders.add(orderId, newOrder);
-    shoppingCarts.remove(caller); // Clear cart after order
+    shoppingCarts.remove(caller);
     nextOrderId += 1;
     orderId;
   };
@@ -792,6 +859,7 @@ actor {
   };
 
   type DeliveryAssignmentsMap = Map.Map<Principal, DeliveryAssignment>;
+  stable var stableDeliveryAssignments : [(Principal, DeliveryAssignment)] = [];
   let deliveryAssignments : DeliveryAssignmentsMap = Map.empty<Principal, DeliveryAssignment>();
 
   public shared ({ caller }) func assignDeliveryRole(deliveryPerson : Principal) : async () {
@@ -872,7 +940,8 @@ actor {
     phone : Text;
   };
 
-  var homepageConfig : ?HomepageConfig = null;
+  stable var stableHomepageConfig : ?HomepageConfig = null;
+  var homepageConfig : ?HomepageConfig = stableHomepageConfig;
 
   public shared ({ caller }) func updateHomepageConfig(config : HomepageConfig) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
@@ -883,5 +952,62 @@ actor {
 
   public query ({ caller }) func getHomepageConfig() : async ?HomepageConfig {
     homepageConfig;
+  };
+
+  // Stable storage hooks - persist all data across canister upgrades
+  system func preupgrade() {
+    stableProducts := products.entries().toArray();
+    stableNextProductId := nextProductId;
+    stableUserProfiles := userProfiles.entries().toArray();
+    stableCustomerProfiles := customerProfiles.entries().toArray();
+    stablePromoCodes := promoCodes.entries().toArray();
+    stableOrders := orders.entries().toArray();
+    stableNextOrderId := nextOrderId;
+    stableDeliveryAssignments := deliveryAssignments.entries().toArray();
+    stableUpiConfig := upiConfig;
+    stableConfiguration := configuration;
+    stableHomepageConfig := homepageConfig;
+    stableUsernames := usernames.entries().toArray();
+    stableUsernameIndex := usernameIndex.entries().toArray();
+  };
+
+  system func postupgrade() {
+    for ((k, v) in stableProducts.vals()) {
+      products.add(k, v);
+    };
+    nextProductId := stableNextProductId;
+
+    for ((k, v) in stableUserProfiles.vals()) {
+      userProfiles.add(k, v);
+    };
+
+    for ((k, v) in stableCustomerProfiles.vals()) {
+      customerProfiles.add(k, v);
+    };
+
+    for ((k, v) in stablePromoCodes.vals()) {
+      promoCodes.add(k, v);
+    };
+
+    for ((k, v) in stableOrders.vals()) {
+      orders.add(k, v);
+    };
+    nextOrderId := stableNextOrderId;
+
+    for ((k, v) in stableDeliveryAssignments.vals()) {
+      deliveryAssignments.add(k, v);
+    };
+
+    upiConfig := stableUpiConfig;
+    configuration := stableConfiguration;
+    homepageConfig := stableHomepageConfig;
+
+    for ((k, v) in stableUsernames.vals()) {
+      usernames.add(k, v);
+    };
+
+    for ((k, v) in stableUsernameIndex.vals()) {
+      usernameIndex.add(k, v);
+    };
   };
 };

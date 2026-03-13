@@ -1,18 +1,19 @@
 import { Principal } from "@dfinity/principal";
 import {
+  AtSign,
   Check,
   CheckCircle2,
   ClipboardList,
-  Copy,
   Loader2,
   Mail,
   Phone,
   User,
   XCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { UserProfile } from "../backend";
+import { useActor } from "../hooks/useActor";
 import {
   useApproveDeliveryPrincipal,
   usePendingDeliveryProfiles,
@@ -25,17 +26,29 @@ import { Card, CardContent } from "./ui/card";
 function ProfileCard({ profile }: { profile: UserProfile }) {
   const approve = useApproveDeliveryPrincipal();
   const reject = useRejectDeliveryPrincipal();
+  const { actor } = useActor();
+  const [username, setUsername] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const principalText = profile.principalId.toText
     ? profile.principalId.toText()
     : String(profile.principalId);
 
-  const handleCopy = async () => {
+  useEffect(() => {
+    if (actor) {
+      actor
+        .getUsername(profile.principalId)
+        .then((u) => setUsername(u))
+        .catch(() => setUsername(null));
+    }
+  }, [actor, profile.principalId]);
+
+  const handleCopyUsername = async () => {
+    const textToCopy = username || principalText;
     try {
-      await navigator.clipboard.writeText(principalText);
+      await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
-      toast.success("Principal ID copied");
+      toast.success("Copied!");
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Failed to copy");
@@ -87,27 +100,37 @@ function ProfileCard({ profile }: { profile: UserProfile }) {
           </div>
         </div>
 
+        {/* Username display — hides principal ID */}
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-1">
-            Principal ID
+            Username
           </p>
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-muted/50 rounded-md px-3 py-1.5 font-mono text-xs break-all">
-              {principalText}
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 h-8 w-8"
-              onClick={handleCopy}
-              title="Copy Principal ID"
-            >
-              {copied ? (
-                <Check className="h-3.5 w-3.5 text-green-600" />
+            <div className="flex-1 bg-muted/50 rounded-md px-3 py-1.5 flex items-center gap-2">
+              <AtSign className="h-4 w-4 text-primary flex-shrink-0" />
+              {username ? (
+                <span className="font-semibold text-primary">{username}</span>
               ) : (
-                <Copy className="h-3.5 w-3.5" />
+                <span className="text-muted-foreground italic text-sm">
+                  No username set
+                </span>
               )}
-            </Button>
+            </div>
+            {username && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="flex-shrink-0 h-8 w-8"
+                onClick={handleCopyUsername}
+                title="Copy username"
+              >
+                {copied ? (
+                  <Check className="h-3.5 w-3.5 text-green-600" />
+                ) : (
+                  <AtSign className="h-3.5 w-3.5" />
+                )}
+              </Button>
+            )}
           </div>
         </div>
 
@@ -117,6 +140,7 @@ function ProfileCard({ profile }: { profile: UserProfile }) {
             onClick={handleApprove}
             disabled={isLoading}
             className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            data-ocid="delivery_approval.approve.primary_button"
           >
             {approve.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -133,6 +157,7 @@ function ProfileCard({ profile }: { profile: UserProfile }) {
             onClick={handleReject}
             disabled={isLoading}
             className="flex-1"
+            data-ocid="delivery_approval.reject.delete_button"
           >
             {reject.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
