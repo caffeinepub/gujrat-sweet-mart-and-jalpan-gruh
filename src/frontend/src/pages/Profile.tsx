@@ -108,12 +108,20 @@ export default function Profile() {
       setUsernameError(localErr);
       return;
     }
+    // Check availability in its own try/catch so it doesn't silently block the save
     try {
       const available = await checkUsernameAvailable(newUsername);
       if (!available) {
         setUsernameError("This username is already occupied");
         return;
       }
+    } catch {
+      // If the availability check fails, show a warning but still attempt the save
+      toast.error(
+        "Could not verify username availability. Trying to save anyway...",
+      );
+    }
+    try {
       await setUsernameMutation.mutateAsync(newUsername.trim());
       setEditingUsername(false);
       setNewUsername("");
@@ -212,6 +220,7 @@ export default function Profile() {
                 onClick={() => {
                   setNewUsername("");
                   setUsernameError("");
+                  setUsernameMutation.reset();
                   setEditingUsername(true);
                 }}
                 title="Change username"
@@ -242,7 +251,7 @@ export default function Profile() {
                   onClick={handleSaveUsername}
                   disabled={
                     setUsernameMutation.isPending ||
-                    newUsername.length <= 8 ||
+                    newUsername.trim().length <= 8 ||
                     !!usernameError
                   }
                   data-ocid="profile.username.save_button"
@@ -258,7 +267,11 @@ export default function Profile() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => setEditingUsername(false)}
+                  onClick={() => {
+                    setUsernameMutation.reset();
+                    setUsernameError("");
+                    setEditingUsername(false);
+                  }}
                   data-ocid="profile.username.cancel_button"
                 >
                   Cancel

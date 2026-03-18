@@ -24,6 +24,10 @@ actor {
 
   let approvalState = UserApproval.initState(accessControlState);
 
+  // Stable storage for access control state (persists across upgrades)
+  stable var stableAdminAssigned : Bool = false;
+  stable var stableUserRoles : [(Principal, AccessControl.UserRole)] = [];
+
   type ProductId = Nat;
   type OrderId = Nat;
 
@@ -101,12 +105,23 @@ actor {
   stable var stableUsernameIndex : [(Text, Principal)] = [];
   let usernameIndex : Map.Map<Text, Principal> = Map.empty<Text, Principal>();
 
+  // Helper: ensure caller is registered as a user (auto-register if needed)
+  func ensureCallerRegistered(caller : Principal) {
+    if (caller.isAnonymous()) { return };
+    if (not accessControlState.userRoles.containsKey(caller)) {
+      accessControlState.userRoles.add(caller, #user);
+    };
+  };
+
   public query func checkUsernameAvailable(username : Text) : async Bool {
     let lower = username.toLower();
     not (usernameIndex.containsKey(lower));
   };
 
   public shared ({ caller }) func setUsername(username : Text) : async () {
+    // Auto-register as user if not yet registered (handles post-upgrade state loss)
+    ensureCallerRegistered(caller);
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can set a username");
     };
@@ -150,6 +165,9 @@ actor {
   };
 
   public shared ({ caller }) func saveCallerUserProfile(fullName : Text, contactNumber : Text, email : Text) : async () {
+    // Auto-register as user if not yet registered (handles post-upgrade state loss)
+    ensureCallerRegistered(caller);
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
@@ -433,6 +451,7 @@ actor {
   };
 
   public shared ({ caller }) func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {
+    ensureCallerRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can check session status");
     };
@@ -440,6 +459,7 @@ actor {
   };
 
   public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
+    ensureCallerRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can create checkout sessions");
     };
@@ -451,6 +471,7 @@ actor {
   };
 
   public shared ({ caller }) func addToCart(productId : ProductId, quantity : Nat) : async () {
+    ensureCallerRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add items to cart");
     };
@@ -496,6 +517,7 @@ actor {
   };
 
   public shared ({ caller }) func clearCart() : async () {
+    ensureCallerRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can clear cart");
     };
@@ -508,6 +530,7 @@ actor {
     phone : Text,
     address : Text
   ) : async () {
+    ensureCallerRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save customer profiles");
     };
@@ -662,6 +685,7 @@ actor {
     paymentMethod : { #cashOnDelivery; #online },
     promoCode : ?Text,
   ) : async Nat {
+    ensureCallerRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Only users can create orders");
     };
@@ -817,6 +841,7 @@ actor {
   };
 
   public shared ({ caller }) func markOrderAsPaid(orderId : Nat) : async () {
+    ensureCallerRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can confirm payment for their orders");
     };
@@ -969,6 +994,9 @@ actor {
     stableHomepageConfig := homepageConfig;
     stableUsernames := usernames.entries().toArray();
     stableUsernameIndex := usernameIndex.entries().toArray();
+    // Persist access control state
+    stableAdminAssigned := accessControlState.adminAssigned;
+    stableUserRoles := accessControlState.userRoles.entries().toArray();
   };
 
   system func postupgrade() {
@@ -1008,6 +1036,12 @@ actor {
 
     for ((k, v) in stableUsernameIndex.vals()) {
       usernameIndex.add(k, v);
+    };
+
+    // Restore access control state
+    accessControlState.adminAssigned := stableAdminAssigned;
+    for ((k, v) in stableUserRoles.vals()) {
+      accessControlState.userRoles.add(k, v);
     };
   };
 };
